@@ -40,8 +40,10 @@
 #define MIDI_NOTE_VELOCITY      (2u)
 
 /* MIDI Notes*/
+#define NOTE_69                 (69u)
 #define NOTE_72                 (72u)
 #define NOTE_76                 (76u)
+#define NOTE_79                 (79u)
 
 /* MIDI Notes Velocity*/
 #define VOLUME_OFF              (0u)
@@ -207,6 +209,21 @@ int main()
     			if (0u != (csButtChange & BUTT1)) 
                 {
     				/* Button determines note number */			
+    				midiMsg[MIDI_NOTE_NUMBER] = NOTE_69;
+    				if (0u != (csButtStates & BUTT1))
+                    {
+                        /* Note On */
+                        midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_ON;		
+                    }
+    				else
+                    {
+                        /* Note Off */
+                        midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_OFF;			
+                    }    
+        			/* Put MIDI Note-On/Off message into input endpoint */
+                    USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                    
+                    /* Button determines note number */			
     				midiMsg[MIDI_NOTE_NUMBER] = NOTE_72;
     				if (0u != (csButtStates & BUTT1))
                     {
@@ -242,6 +259,21 @@ int main()
                     /* Second Note message */
                     midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_ON;
                 	midiMsg[MIDI_NOTE_NUMBER] = NOTE_72;
+                    if (0u != (csButtStates & BUTT2))
+                    {
+                        /* Note On */
+                        midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_ON;		    
+                    }
+    				else
+                    {
+                        /* Note Off */
+                        midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_OFF;			
+                    }    
+        			/* Put MIDI Note-On/Off message into input endpoint */
+                    USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                    
+                    midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_ON;
+                	midiMsg[MIDI_NOTE_NUMBER] = NOTE_79;
                     if (0u != (csButtStates & BUTT2))
                     {
                         /* Note On */
