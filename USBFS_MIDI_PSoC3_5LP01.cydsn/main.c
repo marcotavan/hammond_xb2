@@ -27,6 +27,7 @@
 *******************************************************************************/
 
 #include <project.h>
+#include "tick.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -50,6 +51,9 @@
 #define VOLUME_ON               (100u)
 
 #define USB_SUSPEND_TIMEOUT     (2u)
+
+
+
 
 /* Identity Reply message */
 const uint8 CYCODE MIDI_IDENTITY_REPLY[] = {
@@ -76,7 +80,8 @@ uint8 csButtStatesOld = 0u;
 uint8 csButtChange = 0u;
 uint8 inqFlagsOld = 0u;
 
-
+uint16 play_note = 0;
+int8 note_direction = 1;
 /*******************************************************************************
 * Function Name: SleepIsr
 ********************************************************************************
@@ -120,6 +125,8 @@ int main()
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
 
+    SysTick_Start();  
+    
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
 
@@ -197,9 +204,11 @@ int main()
             {
                 csButtStates &= ~BUTT2;
             }
-            /* Process any button change */
+            
+            
+           
     		if (0u != (csButtChange = csButtStates ^ csButtStatesOld)) 
-            {
+            { /* Process any button change */
     			csButtStatesOld = csButtStates;
 
     			/* All buttons are mapped to Note-On/Off messages */
@@ -302,7 +311,47 @@ int main()
                         #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
                     #endif /* End USB_MIDI_EXT_MODE >= USB_ONE_EXT_INTRF */                
                 #endif
-    		}
+    		} /* Process any button change */
+            
+            
+            if(tick_100ms(TICK_TEST))
+            {
+                midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
+            	midiMsg[MIDI_NOTE_NUMBER] = play_note;
+                USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                
+                play_note += note_direction;
+                midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_ON;
+            	midiMsg[MIDI_NOTE_NUMBER] = play_note;
+                midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_ON;		    
+                USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                
+                switch(play_note) 
+                {
+                    case 88:
+                    {
+                        midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
+                	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
+                        USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                        // play_note = 10;
+                    
+                        note_direction = -1;
+                    }
+                    break;
+                    
+                    case 20:
+                    {
+                        midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
+                	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
+                        USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                        // play_note = 10;
+                    
+                        note_direction = 1;
+                    }
+                    break;
+                }
+                
+            }
         
             /* Check if host requested USB Suspend */
             if( usbActivityCounter >= USB_SUSPEND_TIMEOUT ) 
