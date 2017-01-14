@@ -45,6 +45,8 @@
 #define NOTE_72                 (72u)
 #define NOTE_76                 (76u)
 #define NOTE_79                 (79u)
+#define MIDI_FIRST_NOTE_35      (35u)
+#define MIDI_LAST_NOTE_97       (97u)
 
 /* MIDI Notes Velocity*/
 #define VOLUME_OFF              (0u)
@@ -121,7 +123,8 @@ CY_ISR(SleepIsr)
 int main()
 {
     uint8 midiMsg[MIDI_MSG_SIZE];    
-
+    
+    play_note = MIDI_FIRST_NOTE_35;
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
 
@@ -328,7 +331,7 @@ int main()
                 
                 switch(play_note) 
                 {
-                    case 88:
+                    case MIDI_LAST_NOTE_97: // last note available
                     {
                         midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
                 	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
@@ -339,7 +342,7 @@ int main()
                     }
                     break;
                     
-                    case 20:
+                    case MIDI_FIRST_NOTE_35: // first note available
                     {
                         midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
                 	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
