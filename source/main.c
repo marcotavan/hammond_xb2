@@ -37,8 +37,6 @@
 
 #define USB_SUSPEND_TIMEOUT     (2u)
 
-
-
 volatile uint8 usbActivityCounter = 0u;
 
 uint8 csButtStates = 0u;
@@ -324,16 +322,20 @@ int main()
             /* Check if host requested USB Suspend */
             if( usbActivityCounter >= USB_SUSPEND_TIMEOUT ) 
             {
+                DBG_PRINTF("Prepares system for sleep mode\n");
+                DBG_PRINTF("MIDI_UART_Sleep\n");
                 MIDI1_UART_Sleep();
                 MIDI2_UART_Sleep();
                 
                 /* Power OFF CY8CKIT-044 board */
+                DBG_PRINTF("Power OFF MIDI board\n");
                 MIDI_PWR_Write(1u);     
                 
                 /***************************************************************
                 * Disable USBFS block and set DP Interrupt for wake-up 
                 * from sleep mode. 
                 ***************************************************************/
+                DBG_PRINTF("USB_Suspend\n");
                 USB_Suspend(); 
                 /* Prepares system clocks for sleep mode */
                 CyPmSaveClocks();
@@ -345,12 +347,15 @@ int main()
                 CyPmSleep(PM_SLEEP_TIME_NONE, PM_SLEEP_SRC_PICU);
                 /* Restore clock configuration */
                 CyPmRestoreClocks();
+                
+                DBG_PRINTF("USB_Resume\n");
                 /* Enable USBFS block after power-down mode */
                 USB_Resume();
                 
                 /* Enable output endpoint */
                 USB_MIDI_Init();
                 
+                DBG_PRINTF("Power ON MIDI board\n");
                 /* Power ON CY8CKIT-044 board */
                 MIDI_PWR_Write(0u);
                 
@@ -402,6 +407,7 @@ void USB_callbackLocalMidiEvent(uint8 cable, uint8 *midiMsg) CYREENTRANT
 *******************************************************************************/
 void USB_MIDI1_ProcessUsbOut_EntryCallback(void)
 {
+    DBG_PRINTF("[%s]\n",__func__);
     LED_OutA_Write(1);
 }
 
@@ -415,6 +421,7 @@ void USB_MIDI1_ProcessUsbOut_EntryCallback(void)
 *******************************************************************************/
 void USB_MIDI1_ProcessUsbOut_ExitCallback(void)
 {
+    DBG_PRINTF("[%s]\n",__func__);
     LED_OutA_Write(0);
 }
 
@@ -429,6 +436,7 @@ void USB_MIDI1_ProcessUsbOut_ExitCallback(void)
 *******************************************************************************/
 void USB_MIDI2_ProcessUsbOut_EntryCallback(void)
 {
+    DBG_PRINTF("[%s]\n",__func__);
     LED_OutB_Write(1);
 }
 
@@ -442,6 +450,7 @@ void USB_MIDI2_ProcessUsbOut_EntryCallback(void)
 *******************************************************************************/
 void USB_MIDI2_ProcessUsbOut_ExitCallback(void)
 {
+    DBG_PRINTF("[%s]\n",__func__);
     LED_OutB_Write(0);
 }
 
@@ -457,6 +466,7 @@ void USB_MIDI2_ProcessUsbOut_ExitCallback(void)
 void MIDI1_UART_RXISR_EntryCallback(void)
 {
     /* These LEDs indicate MIDI input activity */
+    DBG_PRINTF("[%s]: MIDI input activity\n",__func__);
     LED_InA_Write(1);
 }
 
@@ -473,7 +483,7 @@ void MIDI1_UART_RXISR_ExitCallback(void)
     #if (USB_EP_MANAGEMENT_DMA_AUTO) 
         USB_MIDI_IN_Service();
     #endif /* (USB_EP_MANAGEMENT_DMA_AUTO) */
-    
+    DBG_PRINTF("[%s]\n",__func__);
     LED_InA_Write(0);
 }
 
@@ -489,6 +499,7 @@ void MIDI1_UART_RXISR_ExitCallback(void)
 void MIDI2_UART_RXISR_EntryCallback(void)
 {
     /* These LEDs indicate MIDI input activity */
+    DBG_PRINTF("[%s]: MIDI input activity\n",__func__);
     LED_InB_Write(1);
 }
 
@@ -505,7 +516,7 @@ void MIDI2_UART_RXISR_ExitCallback(void)
     #if (USB_EP_MANAGEMENT_DMA_AUTO) 
         USB_MIDI_IN_Service();
     #endif /* (USB_EP_MANAGEMENT_DMA_AUTO) */
-    
+    DBG_PRINTF("[%s]\n",__func__);
     LED_InB_Write(0);
 }
 
