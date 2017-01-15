@@ -401,12 +401,12 @@ void MOD_SysLog_Init(void)
     DBG_PRINT_TEXT  ("\r\n");    
     DBG_PRINTF("[%s]\n",__func__);
     printStarLine();
-    DBG_PRINT_TEXT  ("=            HAMMOND XB2 MIDI KEYBOARD 1.0: \r\n");
+    DBG_PRINT_TEXT  ("=            HAMMOND XB2 MIDI KEYBOARD 0.0 \r\n");
     // DBG_PRINTF      ("=     bootloader version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDR_APP_VERSION,0));
     // DBG_PRINTF      ("=           Product type: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_ID,0));
     // DBG_PRINTF      ("=            App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_VERSION,0));   
     // DBG_PRINTF      ("=     Custom App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_CUST_ID,0));   
-    // DBG_PRINTF      ("=  Compile Date and Time: %s %s    \r\n", __DATE__,__TIME__);
+    DBG_PRINTF      ("=  Compile Date and Time: %s %s    \r\n", __DATE__,__TIME__);
     printStarLine();
     DBG_PRINT_TEXT  ("\r\n"); 
 }
