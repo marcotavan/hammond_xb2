@@ -21,40 +21,11 @@
 #include <project.h>
 #include "cytypes.h"
 #include "debug.h"
-#include "common.h"
-#include "Internal_EEPROM.h"
-#include "life_clock.h"
-#include "parametri.h"
-#include "spif_psoc5.h"
-#include "masterReset.h"
 
 char string[256];
 // sprintf(str, "uart_zw_buffer_size:%d ", uart_zw_buffer_size);
 
-#if 0
 
-struct syslog_t slog[MAX_LOG];
-DBG_PRINTF("ciao %d",n);
-DBG_LOG("ciao %d",n);
-
-
-void syslog(char *id, char *str)
-{
-    // sprintf(slog[0].id,id);
-    // sprintf(slog[0].str,str);
-    // sprintf(slog[0].str, "uart_zw_buffer_size:%d ", uart_zw_buffer_size);
-}
-
-#endif
-
-/*
-struct _FIFO_ fifo[NUM_SERIALI];
-
-struct logIndex_t logIndex;
-
-uint16 str_Index = 0;
-uint8 canaleLibero = 1;
-*/
 
 uint8 cc_configuration_data[10];    // array di 10 elementi della cc configuration
 uint8 cc_configuration_data_index;
@@ -194,7 +165,7 @@ void sprintfWrite(void)
 *  Restituisce:  Nessuno                                                      *
 *  Scopo:  UART0_PARSER_Task fa qualcosa ricevendo caratteri dalla seriale    *
 \*****************************************************************************/
-void UART0_PARSER_Task( void )
+void UART_DEBUG_PARSER_Task( void )
 {
     // uint8 index;
     // uint8 *ps;
@@ -341,7 +312,6 @@ void UART0_PARSER_Task( void )
                     DBG_PRINT_ARRAY(cc_configuration_data,cc_configuration_data_index);
                     DBG_PRINTF("\n");
 					fifo[UART0].rxStatus = PARSE_CHM;
-                    FL_CC_CONFIG_SAVE = 1;
 				}
             }
             break;
@@ -369,62 +339,6 @@ void UART0_PARSER_Task( void )
                         
                         switch(fifo[UART0].c)
                         {   
-                            case 1:
-                                // eeprom inspector
-                                internal_eeprom_inspector(0,0x20);
-                            break;
-                            
-                            case 2:
-                            {
-                                DBG_PRINTF("Lifetime clock ");
-                                fifo[UART0].rxStatus = PARSE_CLOCK_PARAM;
-                            }
-                            break;
-                            
-                            case 3:
-                            { // portato in CC COnfiguration
-                                DBG_PRINTF("EEP MARKER RESET\n");
-                                 hardResetFunc();
-                                /*
-                                if(EEPROM_UpdateTemperature() == CYRET_SUCCESS)
-                                {
-                                    // EEPROM_ByteWritePos(uint8 dataByte, uint8 rowNumber, uint8 byteNumber) 
-                                    // EEPROM_ByteWrite(0, MARKER_EEPROM_ROW, MARKER_EEPROM_POSITION);
-                                    task[0] = EEP_RESET_MARKER;
-                                    eeprom_task(task);
-                                    SoftwareReset(SR12);
-                                }
-                                */
-                            }
-                            break;
-                            
-                            case 4:
-                            {
-                                DBG_PRINTF("HeartBeat LED ");
-                                fifo[UART0].rxStatus = PARSE_HB_PARAM;
-                            }
-                            break;
-                            
-                            case 5:
-                            { // portato in cc configuration
-                                DBG_PRINTF("BOARD SOFTWARE RESET\n");
-                                SoftwareReset(SR11);
-                            }
-                            break;
-                            
-                            case 6:
-                            { // portato in CC COnfiguration
-                                DBG_PRINTF("EEP MARKER RESET\n");
-
-                                if(EEPROM_UpdateTemperature() == CYRET_SUCCESS)
-                                {
-                                    task[0] = EEP_RESET_MARKER;
-                                    eeprom_task(task);
-                                    SoftwareReset(SR12);
-                                }
-                            }
-                            break;
-                                
                             default:
                             break;
                         }
@@ -437,78 +351,6 @@ void UART0_PARSER_Task( void )
 				}
             }
 			break;
-            
-            case PARSE_HB_PARAM:
-            {
-                switch(fifo[UART0].c)
-                {
-                    case 0:
-                    DBG_PRINTF("OFF\n");
-                    stato.heartbeat_led = LOCK; // resta qua dentro per sempre
-                    break;
-                    
-                    default:
-                    // DBG_PRINTF("1\n");
-                    DBG_PRINTF("ON\n");
-                    stato.heartbeat_led = ON; // riparte
-                    break;
-                }
-                    
-                fifo[UART0].length--;
-				fifo[UART0].checksum ^= fifo[UART0].c;
-
-				if(fifo[UART0].length == 0)
-				{	// il pacchetto [ finito
-					fifo[UART0].rxStatus = PARSE_CHM;
-				}
-				else
-				{	// ce altro da parsare
-					fifo[UART0].rxStatus = PARSE_CHM;
-				}
-            }
-            break;
-            
-            case PARSE_CLOCK_PARAM:
-            {
-                switch(fifo[UART0].c)
-                {
-                    case 1:
-                    // DBG_PRINTF("1\n");
-                    DBG_PRINTF("ON\n");
-                    // clock.print_enable = 1;
-                    printClock(ON);
-                    break;
-                    
-                    case 2:
-                    DBG_PRINTF("OFF\n");
-                    // clock.print_enable = 0;
-                    printClock(OFF);
-                    // DBG_PRINTF("2\n");
-                    break;
-                    
-                    case 3:
-                    DBG_PRINTF("SAVE\n");
-                    FL_CLOCK_SAVE = 1;
-                    // DBG_PRINTF("2\n");
-                    break;
-                    
-                    default:
-                    break;
-                }
-                    
-                fifo[UART0].length--;
-				fifo[UART0].checksum ^= fifo[UART0].c;
-
-				if(fifo[UART0].length == 0)
-				{	// il pacchetto [ finito
-					fifo[UART0].rxStatus = PARSE_CHM;
-				}
-				else
-				{	// ce altro da parsare
-					fifo[UART0].rxStatus = PARSE_CHM;
-				}
-            }
-            break;
             
 			case PARSE_CHM:
 			{
@@ -538,117 +380,45 @@ void UART0_PARSER_Task( void )
 			break;
 		}
 	}
-    
-    if (FL_CC_CONFIG_SAVE != 0)
-    {
-		#warning "Marco: il passaggio dei parametri alla funzione set_parametro e' cambiato. Attenzione in caso di debug"
-		// setto il parametro e scrivo in eeprom
-        FL_CC_CONFIG_SAVE = 0;
-		set_parametro(
-			cc_configuration_data[0],	// Parameter Number
-			/* Default */ (cc_configuration_data[1] & CONFIGURATION_SET_LEVEL_DEFAULT_BIT_MASK),	// Default
-			/* Size */ (cc_configuration_data[1] & CONFIGURATION_SET_LEVEL_SIZE_MASK),				// Size
-			&cc_configuration_data[2]	// Configuration Values 1..4 (according to Size)
-		);
-    }
-    
-    if(FL_CLOCK_SAVE != 0) // da spostare in un FLAG
-    { // salva l'ora attuale
-        FL_CLOCK_SAVE = 0;
-        
-        task[0] = EEP_SET_CLOCK;
-        eeprom_task(task);
-        
-    }
+ 
 }
 
 /**********************************************************************************************************************************/
 
-#if 0
-CY_ISR_PROTO(ISR_TX_UART_InterruptHandler);
-CY_ISR_PROTO(ISR_RX_UART_InterruptHandler);
-
-/*****************************************************************************\
-*  Funzione:     CY_ISR(ISR_UART_InterruptHandler)                         *
-*  Argomenti:    Nessuno                 				      				  *
-*  Restituisce:  Nessuno                                                      *
-*  Scopo:        Interrupt RX uart                                            *
-\*****************************************************************************/
-CY_ISR(ISR_TX_UART_InterruptHandler)
-{
-    //spif_on();
-    /*
-    if ((str_Index++) < (syslog[logIndex.out].len-1))
-    {
-        // butto fuori i caratteri successivi fino alla fine
-        UART_PutChar(syslog[logIndex.out].str[str_Index]); 
-    }
-    else
-    {
-        // avrei finito ma ... in coda c'e' ancora roba?
-        str_Index = 0;    
-        
-        if (logIndex.out != logIndex.in)
-        {
-            // forse c'e' ancora qualcosa da spedire
-            logIndex.out++;
-            if (logIndex.out == MAXLOG) logIndex.out = 0;
-            // e spedisco il primo carattere
-            UART_PutChar(syslog[logIndex.out].str[str_Index]); 
-        }
-        else
-        {
-            canaleLibero = 1;
-        }
-    }
-    */
-    //spif_off();
-    
-}
-
-/*****************************************************************************\
-*  Funzione:     CY_ISR(ISR_UART_InterruptHandler)                         *
-*  Argomenti:    Nessuno                 				      				  *
-*  Restituisce:  Nessuno                                                      *
-*  Scopo:        Interrupt RX uart                                            *
-\*****************************************************************************/
-CY_ISR(ISR_RX_UART_InterruptHandler)
-{
-    fifo[UART0].rxBuf[fifo[UART0].in++] = UART_GetChar();    /* Get it */
-}
-#endif
-
 void MOD_SysLog_Init(void)
 {
-    // ISR_RX_UART_StartEx(ISR_RX_UART_InterruptHandler);
-    // ISR_TX_UART_StartEx(ISR_TX_UART_InterruptHandler);
     
-/* 
-    logIndex.in = 0;
-    logIndex.out = 0;
-*/
+    // Rx_1_Write(1); // attiva internal PullUp per evitare che la macchina seriale si incarti 
     
-    // Rx_DBG_0_SetDriveMode(GPIO_0_DM_STRONG);  // imposta la porta in uscita
-    
-    // qui settare il pin in |RESISTIVE OPULLUP 
+    // qui settare il pin in |RESISTIVE PULLUP 
     UART_DBG_Start();
-    
-    verbose_Mode = OFF; // interruttore usato per attvare/disattivare il printf
     
     fifo[UART0].checksum = 0xff;
     fifo[UART0].in = 0;
 	fifo[UART0].out = 0;
 	fifo[UART0].rxStatus = PARSE_SOF;
+    DBG_PRINT_TEXT  ("\r\n");
+    DBG_PRINT_TEXT  ("\r\n");    
+    DBG_PRINTF("[%s]\n",__func__);
+    printStarLine();
+    DBG_PRINT_TEXT  ("=            HAMMOND XB2 MIDI KEYBOARD 1.0: \r\n");
+    // DBG_PRINTF      ("=     bootloader version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDR_APP_VERSION,0));
+    // DBG_PRINTF      ("=           Product type: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_ID,0));
+    // DBG_PRINTF      ("=            App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_VERSION,0));   
+    // DBG_PRINTF      ("=     Custom App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_CUST_ID,0));   
+    // DBG_PRINTF      ("=  Compile Date and Time: %s %s    \r\n", __DATE__,__TIME__);
+    printStarLine();
+    DBG_PRINT_TEXT  ("\r\n"); 
 }
 
 void printLine(void)
 {
-    DBG_PRINTF      ("-----------------------------------------------------------------------------------------\r\n");  
+    DBG_PRINTF      ("--------------------------------------------------------------------------------\r\n");  
 }
 
 void printStarLine(void)
 {
-    DBG_PRINT_TEXT  ("*****************************************************************************************\r\n");
+    DBG_PRINT_TEXT  ("********************************************************************************\r\n");
 }
 
 /* [] END OF FILE */

@@ -25,11 +25,11 @@
     
 #define DO_PRAGMA(x) _Pragma (#x)
 #define TODO(x) DO_PRAGMA(message ("TODO - " #x))
-    
+
+#include <project.h>
 #include <stdio.h>
 
-#include "Options.h"
-#include "spif_psoc5.h"
+void MOD_SysLog_Init(void);
     
 #define NUM_SERIALI 2
 #define BUFSIZE 20
@@ -59,27 +59,12 @@ struct _FIFO_ {
     unsigned char    txBuf[BUFSIZE];
     unsigned char    rxBuf[BUFSIZE];
     unsigned char c;
-    uint16_t length;
-	uint16_t checksum;
+    uint16 length;
+	uint16 checksum;
     uint8 timeout;
 };
 
 /******************************/
-#if 0
-#define MAX_LOG 100
-struct syslog_t {
-    char id[8];
-    char str[256];
-};
-#endif
-/*
-
-
-struct logIndex_t {
-    uint8 in;
-    uint8 out;
-};
-*/
 
 extern char string[];
 void sprintfWrite(void);
