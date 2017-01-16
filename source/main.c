@@ -114,6 +114,8 @@ int main()
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
 
+    CyDelay(1000);  // non si sa mai
+    
     while(1u)
     {
         /* Host can send double SET_INTERFACE request */
