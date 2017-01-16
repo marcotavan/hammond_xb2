@@ -294,6 +294,7 @@ void TestPlayButtons(void)
 
 void  TestPlayNote(void)
 {   // usato per mandare fuori una sequenza di note
+    uint8 err;
     
     static uint8 midiMsg[MIDI_MSG_SIZE];
     static uint8 divisore = 0;
@@ -305,13 +306,15 @@ void  TestPlayNote(void)
                 divisore = 0;
             midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
         	midiMsg[MIDI_NOTE_NUMBER] = play_note;
-            USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            if(USB_TRUE == err) DBG_PRINTF("1.Host is not ready to receive this message\n");
             
             play_note += note_direction;
             midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_ON;
         	midiMsg[MIDI_NOTE_NUMBER] = play_note;
             midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_ON;		    
-            USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            if(USB_TRUE == err) DBG_PRINTF("2.Host is not ready to receive this message\n");
             
             switch(play_note) 
             {
@@ -319,8 +322,8 @@ void  TestPlayNote(void)
                 {
                     midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
             	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
-                    USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
-                    // play_note = 10;
+                    err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                    if(USB_TRUE == err) DBG_PRINTF("3.Host is not ready to receive this message\n");
                 
                     note_direction = -1;
                 }
@@ -330,8 +333,8 @@ void  TestPlayNote(void)
                 {
                     midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
             	    midiMsg[MIDI_NOTE_NUMBER] = play_note;
-                    USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
-                    // play_note = 10;
+                    err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+                    if(USB_TRUE == err) DBG_PRINTF("4.Host is not ready to receive this message\n");
                 
                     note_direction = 1;
                 }

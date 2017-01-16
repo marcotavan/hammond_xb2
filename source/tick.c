@@ -43,29 +43,25 @@ CY_ISR(SysTick_ISR)
     
     upCounter++;
 
-    if((upCounter%10) == 0)
-    { 
+    if((upCounter%10) == 0) { 
         // passati 10ms    dall'origine del mondo
         // qui si potrebeb spostare anche la parte dei 10ms del ISR
         now10ms[0] = FLAG_TICK_TIME_SET;
         now10ms[1] = FLAG_TICK_TIME_SET;
     }
     
-    if((upCounter%100) == 0)
-    {
+    if((upCounter%100) == 0) {
         // passati 100ms    dall'origine del mondo
         now100ms[0] = FLAG_TICK_TIME_SET;
         now100ms[1] = FLAG_TICK_TIME_SET;
     }
 
-    if((upCounter%1000) == 0) 
-    {
+    if((upCounter%1000) == 0) {
         // passato 1s       dall'origine del mondo
         now1000ms[0] = FLAG_TICK_TIME_SET;
         now1000ms[1] = FLAG_TICK_TIME_SET;
                 
         upCounter = 0;  // resetta qui dentro dato che non serve piu di un secondo anche se sinceramente questo lo toglierei
-        
     }
 
 } // CY_ISR(SysTick_ISR)
