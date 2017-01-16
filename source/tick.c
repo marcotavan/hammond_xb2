@@ -42,17 +42,20 @@ CY_ISR(SysTick_ISR)
     /* no need to clear interrupt source */
     
     upCounter++;
-        
+
+    if((upCounter%10) == 0)
+    { 
+        // passati 10ms    dall'origine del mondo
+        // qui si potrebeb spostare anche la parte dei 10ms del ISR
+        now10ms[0] = FLAG_TICK_TIME_SET;
+        now10ms[1] = FLAG_TICK_TIME_SET;
+    }
+    
     if((upCounter%100) == 0)
     {
         // passati 100ms    dall'origine del mondo
         now100ms[0] = FLAG_TICK_TIME_SET;
         now100ms[1] = FLAG_TICK_TIME_SET;
-
-        // spif();
-        #ifdef PROD_THERMOSTAT
-            dotBlinkIsr();
-        #endif
     }
 
     if((upCounter%1000) == 0) 
