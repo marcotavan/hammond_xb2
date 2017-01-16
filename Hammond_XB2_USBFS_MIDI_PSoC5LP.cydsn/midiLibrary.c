@@ -13,6 +13,7 @@
 #include <project.h>
 #include "debug.h"
 #include "midiLibrary.h"
+#include "midiEvents.h"
 #include "common.h"
 
 struct midimsg	mMessage;
@@ -36,20 +37,21 @@ byte genstatus(const enum kMIDIType inType,
  
  This is an internal method, use it only if you need to send raw data from your code, at your own risks.
  */
-void send(enum kMIDIType type,
+int8 send(enum kMIDIType type,
 					  byte data1,
 					  byte data2,
 					  byte channel)
 {
-	
+    static uint8 midiMsg[MIDI_MSG_SIZE];
+    uint8 err = 0;
 	// Then test if channel is valid
 	if (channel >= MIDI_CHANNEL_OFF || channel == MIDI_CHANNEL_OMNI || type < NoteOff) {
 		
 #if USE_RUNNING_STATUS	
 		mRunningStatus_TX = InvalidType;
 #endif 
-		
-		return; // Don't send anything
+		DBG_PRINTF("Don't send anything!\n");
+		return 0xFF; // Don't send anything
 	}
 	
 	if (type <= PitchBend) {
@@ -66,41 +68,57 @@ void send(enum kMIDIType type,
 		if (mRunningStatus_TX != statusbyte) {
 			// New message, memorise and send header
 			mRunningStatus_TX = statusbyte;
-			DBG_PRINTF("USE_SERIAL_PORT.write(mRunningStatus_TX);\n");
-            
+			// DBG_PRINTF("USE_SERIAL_PORT.write(mRunningStatus_TX);\n");
+            midiMsg[MIDI_MSG_TYPE] = mRunningStatus_TX;
 		}
 #else
 		// Don't care about running status, send the Control byte.
-		USE_SERIAL_PORT.write(statusbyte);
+		// DBG_PRINTF("USE_SERIAL_PORT.write(statusbyte);\n2);
+        midiMsg[MIDI_MSG_TYPE] = statusbyte;
 #endif
 		
 		// Then send data
-		DBG_PRINTF("USE_SERIAL_PORT.write(data1);\n");
+		// DBG_PRINTF("USE_SERIAL_PORT.write(data1);\n");
+        midiMsg[MIDI_NOTE_NUMBER] = data1;
 		if (type != ProgramChange && type != AfterTouchChannel) {
-			DBG_PRINTF("USE_SERIAL_PORT.write(data2);\n");
+			// DBG_PRINTF("USE_SERIAL_PORT.write(data2);\n");
+            midiMsg[MIDI_NOTE_VELOCITY] = data2;
+            err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 		}
-		return;
+        else {
+            err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+        }
+        
+		return err;
 	}
+    
 	if (type >= TuneRequest && type <= SystemReset) {
 		// System Real-time and 1 byte.
 		sendRealTime(type);
 	}
 	
+    return err;
 }                                
            
+/*  data1 =NoteNumber, data2=Velocity
+    USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 
+    midiMsg[MIDI_MSG_TYPE == 0]         = USB_MIDI_NOTE_ON; 0x9+channel
+    midiMsg[MIDI_NOTE_NUMBER == 1]      = NOTE_69;
+    midiMsg[MIDI_NOTE_VELOCITY == 2]    = VOLUME_ON
+*/
 
 /*! \brief Send a Note On message 
  \param NoteNumber	Pitch value in the MIDI format (0 to 127). Take a look at the values, names and frequencies of notes here: http://www.phys.unsw.edu.au/jw/notes.html\n
  \param Velocity	Note attack velocity (0 to 127). A NoteOn with 0 velocity is considered as a NoteOff.
  \param Channel		The channel on which the message will be sent (1 to 16). 
  */
-void sendNoteOn(byte NoteNumber,
+uint8 sendNoteOn(byte NoteNumber,
 							byte Velocity,
 							byte Channel)
 { 
 	DBG_PRINTF("[%s]\n",__func__);
-	send(NoteOn,NoteNumber,Velocity,Channel);
+	return send(NoteOn,NoteNumber,Velocity,Channel);
 
 }
 
@@ -110,12 +128,12 @@ void sendNoteOn(byte NoteNumber,
  \param Velocity	Release velocity (0 to 127).
  \param Channel		The channel on which the message will be sent (1 to 16).
  */
-void sendNoteOff(byte NoteNumber,
+uint8 sendNoteOff(byte NoteNumber,
 							 byte Velocity,
 							 byte Channel)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	send(NoteOff,NoteNumber,Velocity,Channel);
+	return send(NoteOff,NoteNumber,Velocity,Channel);
 
 }
 
@@ -124,11 +142,11 @@ void sendNoteOff(byte NoteNumber,
  \param ProgramNumber	The Program to select (0 to 127).
  \param Channel			The channel on which the message will be sent (1 to 16).
  */
-void sendProgramChange(byte ProgramNumber,
+uint8 sendProgramChange(byte ProgramNumber,
 								   byte Channel)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	send(ProgramChange,ProgramNumber,0,Channel);
+	return send(ProgramChange,ProgramNumber,0,Channel);
 
 }
 
@@ -138,12 +156,12 @@ void sendProgramChange(byte ProgramNumber,
  \param ControlValue	The value for the specified controller (0 to 127).
  \param Channel			The channel on which the message will be sent (1 to 16). 
  */
-void sendControlChange(byte ControlNumber,
+uint8 sendControlChange(byte ControlNumber,
 								   byte ControlValue,
 								   byte Channel)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	send(ControlChange,ControlNumber,ControlValue,Channel);
+	return send(ControlChange,ControlNumber,ControlValue,Channel);
 
 }
 

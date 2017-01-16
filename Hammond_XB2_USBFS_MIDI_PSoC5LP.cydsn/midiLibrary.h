@@ -18,7 +18,12 @@
 
 #define MIDI_CHANNEL_OMNI		0
 #define MIDI_CHANNEL_OFF		17			// and over
-
+#define MIDI_CHANNEL_1          1
+#define MIDI_CHANNEL_2          2
+#define MIDI_CHANNEL_3          3
+#define MIDI_CHANNEL_4          4
+#define MIDI_CHANNEL_5          5
+    
 #define MIDI_SYSEX_ARRAY_SIZE	255			// Maximum size is 65535 bytes.
 
 #define COMPILE_MIDI_IN         0           // Set this setting to 1 to use the MIDI input.
@@ -98,7 +103,23 @@ struct midimsg {
 	byte			mRunningStatus_TX;
 #endif // USE_RUNNING_STATUS
 
-    
+
+uint8 sendNoteOn(byte NoteNumber,
+							byte Velocity,
+							byte Channel);
+
+uint8 sendNoteOff(byte NoteNumber,
+							 byte Velocity,
+							 byte Channel);
+
+uint8 sendProgramChange(byte ProgramNumber,
+								   byte Channel);
+
+uint8 sendControlChange(byte ControlNumber,
+								   byte ControlValue,
+								   byte Channel);
+
+
 #endif // _MIDI_LIBRARY_H_
 
 /* [] END OF FILE */
