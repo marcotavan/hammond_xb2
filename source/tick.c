@@ -14,7 +14,7 @@
 #include "project.h"
 #include "tick.h"
 #include "common.h"
-
+#include "keyboardScanner.h"
 /*************************************************************************************/
 #define SYSTICK_INTERRUPT_VECTOR_NUMBER  15u /* Cortex-M3 hard vector */
 
@@ -63,7 +63,9 @@ CY_ISR(SysTick_ISR)
                 
         upCounter = 0;  // resetta qui dentro dato che non serve piu di un secondo anche se sinceramente questo lo toglierei
     }
-
+    
+    timeout1ms();
+    
 } // CY_ISR(SysTick_ISR)
 
 
