@@ -66,7 +66,8 @@ void send(enum kMIDIType type,
 		if (mRunningStatus_TX != statusbyte) {
 			// New message, memorise and send header
 			mRunningStatus_TX = statusbyte;
-			// TODO USE_SERIAL_PORT.write(mRunningStatus_TX);
+			DBG_PRINTF("USE_SERIAL_PORT.write(mRunningStatus_TX);\n");
+            
 		}
 #else
 		// Don't care about running status, send the Control byte.
@@ -74,9 +75,9 @@ void send(enum kMIDIType type,
 #endif
 		
 		// Then send data
-		//TODO USE_SERIAL_PORT.write(data1);
+		DBG_PRINTF("USE_SERIAL_PORT.write(data1);\n");
 		if (type != ProgramChange && type != AfterTouchChannel) {
-			//TODO USE_SERIAL_PORT.write(data2);
+			DBG_PRINTF("USE_SERIAL_PORT.write(data2);\n");
 		}
 		return;
 	}
@@ -229,22 +230,22 @@ void sendSysEx(int length,
 	int i;
 	if (ArrayContainsBoundaries == FALSE) {
 		
-		// TODO USE_SERIAL_PORT.write(0xF0);
+		DBG_PRINTF("TODO USE_SERIAL_PORT.write(0xF0);\n");
 		
 		for (i=0;i<length;++i) {
 			
-			// TODO USE_SERIAL_PORT.write(array[i]);
+			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
 			
 		}
 		
-		// TODO USE_SERIAL_PORT.write(0xF7);
+		DBG_PRINTF("USE_SERIAL_PORT.write(0xF7);\n");
 		
 	}
 	else {
 		
 		for (i=0;i<length;++i) {
 			
-			// TODO USE_SERIAL_PORT.write(array[i]);
+			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
 			
 		}
 		
@@ -278,8 +279,8 @@ void sendTuneRequest()
 void sendToSerialTimeCodeQuarterFrame(byte data)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	// TODO USE_SERIAL_PORT.write((byte)TimeCodeQuarterFrame);
-	// TODO USE_SERIAL_PORT.write(data);
+	DBG_PRINTF("USE_SERIAL_PORT.write((byte)TimeCodeQuarterFrame);\n");
+	DBG_PRINTF("USE_SERIAL_PORT.write(data);\n");
 
 #if USE_RUNNING_STATUS
 	mRunningStatus_TX = InvalidType;
@@ -309,9 +310,9 @@ void sendTimeCodeQuarterFrame(byte TypeNibble, byte ValuesNibble)
 void sendSongPosition(unsigned int Beats)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	// TODO USE_SERIAL_PORT.write((byte)SongPosition);
-	// TODO USE_SERIAL_PORT.write(Beats & 0x7F);
-	// TODO USE_SERIAL_PORT.write((Beats >> 7) & 0x7F);
+	DBG_PRINTF("USE_SERIAL_PORT.write((byte)SongPosition);\n");
+	DBG_PRINTF("USE_SERIAL_PORT.write(Beats & 0x7F);\n");
+	DBG_PRINTF("USE_SERIAL_PORT.write((Beats >> 7) & 0x7F);\n");
 
 #if USE_RUNNING_STATUS
 	mRunningStatus_TX = InvalidType;
@@ -324,8 +325,8 @@ void sendSongPosition(unsigned int Beats)
 void sendSongSelect(byte SongNumber)
 {
 	DBG_PRINTF("[%s]\n",__func__);
-	// TODO USE_SERIAL_PORT.write((byte)SongSelect);
-	// TODO USE_SERIAL_PORT.write(SongNumber & 0x7F);
+	DBG_PRINTF("USE_SERIAL_PORT.write((byte)SongSelect);\n");
+	DBG_PRINTF("USE_SERIAL_PORT.write(SongNumber & 0x7F);\n");
 
 #if USE_RUNNING_STATUS
 	mRunningStatus_TX = InvalidType;
@@ -351,7 +352,7 @@ void sendRealTime(enum kMIDIType Type)
 		case Continue:
 		case ActiveSensing:
 		case SystemReset:
-			// TODO USE_SERIAL_PORT.write((byte)Type);
+			DBG_PRINTF("USE_SERIAL_PORT.write((byte)Type);\n");
 			break;
 		default:
 			// Invalid Real Time marker

@@ -23,9 +23,6 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
     
-#define DO_PRAGMA(x) _Pragma (#x)
-#define TODO(x) DO_PRAGMA(message ("TODO - " #x))
-
 #include <project.h>
 #include <stdio.h>
 
