@@ -29,7 +29,7 @@
 #include <project.h>
 #include "tick.h"
 #include "debug.h"
-#include "midi.h"
+#include "midiEvents.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -43,6 +43,20 @@ uint8 csButtStates = 0u;
 uint8 csButtStatesOld = 0u;
 uint8 csButtChange = 0u;
 
+        
+/* Identity Reply message */
+uint8 CYCODE MIDI_IDENTITY_REPLY[] = {
+    0xF0u,                      /* SysEx */
+    0x7Eu,                      /* Non-real time */
+    0x7Fu,                      /* ID of target device (7F - "All Call") */
+    0x06u,                      /* Sub-ID#1 - General Information */
+    0x02u,                      /* Sub-ID#2 - Identity Reply */
+    0x7Du,                      /* Manufacturer's ID: 7D - Educational Use */
+    0xB4u, 0x04u,               /* Family code */
+    0x32u, 0xD2u,               /* Model number */
+    0x01u, 0x00u, 0x00u, 0x00u, /* Version number */
+    /*0xF7         End of SysEx automatically appended */
+};
 
 uint16 play_note = 0;
 int8 note_direction = 1;

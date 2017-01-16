@@ -12,6 +12,7 @@
 
 #include <project.h>
 #include "debug.h"
+#include "midiEvents.h"
 
 uint8 inqFlagsOld = 0u;
 
