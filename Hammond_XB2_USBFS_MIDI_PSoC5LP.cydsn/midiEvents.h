@@ -38,6 +38,6 @@
     /* Need for Identity Reply message */
     extern volatile uint8 USB_MIDI1_InqFlags;
     extern volatile uint8 USB_MIDI2_InqFlags;
-
+ 
 #endif
 /* [] END OF FILE */

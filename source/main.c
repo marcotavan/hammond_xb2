@@ -114,7 +114,7 @@ int main()
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
 
-    CyDelay(10000);  // non si sa mai
+    CyDelay(1000);  // non si sa mai
     
     while(1u)
     {
@@ -141,21 +141,23 @@ int main()
                 SleepTimer_Stop();
             }    
         }        
-        
+  
         /* Service USB MIDI when device is configured */
         if(0u != USB_GetConfiguration())    
         {
-            /* Call this API from UART RX ISR for Auto DMA mode */
+  
+          /* Call this API from UART RX ISR for Auto DMA mode */
             #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
                 USB_MIDI_IN_Service();
             #endif
             /* In Manual EP Memory Management mode OUT_EP_Service() 
             *  may have to be called from main foreground or from OUT EP ISR
             */
+          
             #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
                 USB_MIDI_OUT_Service();
             #endif
-
+    
             /* Sending Identity Reply Universal System Exclusive message 
              * back to computer */
             if(0u != (USB_MIDI1_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
@@ -172,7 +174,7 @@ int main()
                     USB_MIDI2_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
                 }
             #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
-            
+
             TestPlayButtons();
             
             TestPlayNote();
