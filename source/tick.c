@@ -14,6 +14,7 @@
 #include "project.h"
 #include "tick.h"
 #include "common.h"
+#include "debug.h"
 
 /*************************************************************************************/
 #define SYSTICK_INTERRUPT_VECTOR_NUMBER  15u /* Cortex-M3 hard vector */
@@ -36,7 +37,7 @@ volatile uint16 upCounter = 0;
 *  Restituisce:  Nessuno                                                      *
 *  Scopo:                                                                     *
 \*****************************************************************************/
-CY_ISR(SysTick_ISR)
+CY_ISR(TimerTick_InterruptHandler)
 { // CY_ISR(SysTick_ISR)   
     // a 1 ms 
     /* no need to clear interrupt source */
@@ -63,7 +64,14 @@ CY_ISR(SysTick_ISR)
                 
         upCounter = 0;  // resetta qui dentro dato che non serve piu di un secondo anche se sinceramente questo lo toglierei
     }
-
+    
+    /* Read Status register in order to clear the sticky Terminal Count (TC) bit 
+	 * in the status register. Note that the function is not called, but rather 
+	 * the status is read directly.
+	 */
+    Timer_1_STATUS;
+    
+    // DBG_PRINTF("isr\n");
 } // CY_ISR(SysTick_ISR)
 
 
@@ -189,7 +197,7 @@ uint8 tick_1s(uint8 from)
     return FALSE;
 }
 
-
+#if (0)
 /*****************************************************************************\
 *  Funzione:     SysTick_Start()                                              *
 *  Argomenti:    Nessuno                 				      				  *
@@ -211,7 +219,21 @@ void SysTick_Start(void)
     (void)SysTick_Config(CLOCK_FREQ / INTERRUPT_FREQ); 
  
 }
+#endif 
 
-
+/*****************************************************************************\
+*  Funzione:     SysTick_Start()                                              *
+*  Argomenti:    Nessuno                 				      				  *
+*  Restituisce:  Nessuno                                                      *
+*  Scopo:         Abilita il systick interrupt a 1ms                          *
+\*****************************************************************************/
+void TimerTick_Start(void)
+{
+    /* Enable interrupt component connected to interrupt */
+    TimerISR_StartEx(TimerTick_InterruptHandler);
+    
+    Timer_1_Start();
+    
+}
 
 /* [] END OF FILE */

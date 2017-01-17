@@ -108,7 +108,8 @@ int main()
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
 
-    SysTick_Start();  
+    // SysTick_Start();  
+    TimerTick_Start();
     
     MOD_SysLog_Init(); 
     /* Start USBFS device 0 with VDDD operation */

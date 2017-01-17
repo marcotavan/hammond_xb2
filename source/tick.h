@@ -53,8 +53,8 @@
     uint8 tick_100ms(uint8 from);
     uint8 tick_1s(uint8 from);    
         
-    void SysTick_Start(void);
-        
+    // void SysTick_Start(void);
+    void TimerTick_Start(void);
 #endif
 
 /* [] END OF FILE */
