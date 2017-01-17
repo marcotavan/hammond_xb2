@@ -17,7 +17,7 @@
 #include "common.h"
 
 /*****************************************************/
-#define VERBOSE_SEND_MIDI (0)
+#define VERBOSE_SEND_MIDI (1)
 /*****************************************************/
 
 struct midimsg	mMessage;
@@ -103,7 +103,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
         }
         
         #if VERBOSE_SEND_MIDI
-        DBG_PRINTF("[%s] return err %d;\n",__func__,err);
+        // DBG_PRINTF("[%s] return err %d;\n",__func__,err);
         #endif
         
 		return err;

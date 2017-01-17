@@ -114,7 +114,7 @@ int main()
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
 
-    CyDelay(1000);  // non si sa mai
+    CyDelay(10000);  // non si sa mai
     
     while(1u)
     {
@@ -311,8 +311,7 @@ void TestPlayButtons(void)
 
 void  TestPlayNote(void)
 {   // usato per mandare fuori una sequenza di note
-    uint8 err = 0;
-    
+
     // static uint8 midiMsg[MIDI_MSG_SIZE];
     static uint8 divisore = 0;
     // static uint8 var1 = 0;
