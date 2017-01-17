@@ -44,20 +44,20 @@ CY_ISR(TimerTick_InterruptHandler)
     
     upCounter++;
 
-    if((upCounter%10) == 0) { 
+    if((upCounter%100) == 0) { 
         // passati 10ms    dall'origine del mondo
         // qui si potrebeb spostare anche la parte dei 10ms del ISR
         now10ms[0] = FLAG_TICK_TIME_SET;
         now10ms[1] = FLAG_TICK_TIME_SET;
     }
     
-    if((upCounter%100) == 0) {
+    if((upCounter%1000) == 0) {
         // passati 100ms    dall'origine del mondo
         now100ms[0] = FLAG_TICK_TIME_SET;
         now100ms[1] = FLAG_TICK_TIME_SET;
     }
 
-    if((upCounter%1000) == 0) {
+    if((upCounter%10000) == 0) {
         // passato 1s       dall'origine del mondo
         now1000ms[0] = FLAG_TICK_TIME_SET;
         now1000ms[1] = FLAG_TICK_TIME_SET;
