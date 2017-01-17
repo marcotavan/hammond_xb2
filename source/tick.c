@@ -15,8 +15,8 @@
 #include "tick.h"
 #include "common.h"
 #include "debug.h"
+#include "keyboardScanner.h"
 
-/*************************************************************************************/
 #define SYSTICK_INTERRUPT_VECTOR_NUMBER  15u /* Cortex-M3 hard vector */
 
 /* clock and interrupt rates, in Hz */

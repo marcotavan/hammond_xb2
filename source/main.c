@@ -31,6 +31,7 @@
 #include "debug.h"
 #include "midiEvents.h"
 #include "midiLibrary.h"
+#include "keyboardScanner.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -114,7 +115,9 @@ int main()
     MOD_SysLog_Init(); 
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
-
+    
+    KeyScanInit(); 
+    
     CyDelay(1000);  // non si sa mai
     
     while(1u)
@@ -185,6 +188,7 @@ int main()
         
         if(flag_100us_ISR)
         {
+            KeyScan();
             flag_100us_ISR = 0;
         }
     }
