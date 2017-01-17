@@ -311,22 +311,26 @@ void TestPlayButtons(void)
 
 void  TestPlayNote(void)
 {   // usato per mandare fuori una sequenza di note
-    uint8 err;
+    uint8 err = 0;
     
     // static uint8 midiMsg[MIDI_MSG_SIZE];
     static uint8 divisore = 0;
+    // static uint8 var1 = 0;
+    // static uint8 var2 = 0;
+    
     if(tick_10ms(TICK_TEST))
     {
         divisore++;
         if (divisore == 10)
         {
             divisore = 0;
-            // midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
-        	// midiMsg[MIDI_NOTE_NUMBER] = play_note;
-            // err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
-            
-            err = sendNoteOff(play_note,VOLUME_OFF,MIDI_CHANNEL_1);
-            if(USB_TRUE == err) DBG_PRINTF("1.Host is not ready to receive this message\n");
+            //  midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
+        	//  midiMsg[MIDI_NOTE_NUMBER] = play_note;
+            //  err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            //  DBG_PRINTF("var1: %d\n",var1++);
+            if(sendNoteOff(play_note,VOLUME_OFF,MIDI_CHANNEL_1)) {
+                DBG_PRINTF("1.Host is not ready to receive this message\n");
+            }
             
             switch(play_note) 
             {
@@ -360,10 +364,11 @@ void  TestPlayNote(void)
         	// idiMsg[MIDI_NOTE_NUMBER] = play_note;
             // midiMsg[MIDI_NOTE_VELOCITY] = VOLUME_ON;		
             
-            
+            // DBG_PRINTF("var2: %d\n",var2++);
             // err=USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
-            err = sendNoteOn(play_note,VOLUME_ON,MIDI_CHANNEL_1);
-            if(USB_TRUE == err) DBG_PRINTF("2.Host is not ready to receive this message\n");
+            if(sendNoteOn(play_note,VOLUME_ON,MIDI_CHANNEL_1)) {
+                DBG_PRINTF("2.Host is not ready to receive this message\n");
+            }
         }// divisore
     } // tick 10ms
 }

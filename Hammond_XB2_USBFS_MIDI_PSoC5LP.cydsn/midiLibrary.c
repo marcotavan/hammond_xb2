@@ -16,6 +16,10 @@
 #include "midiEvents.h"
 #include "common.h"
 
+/*****************************************************/
+#define VERBOSE_SEND_MIDI (0)
+/*****************************************************/
+
 struct midimsg	mMessage;
 
 byte genstatus(const enum kMIDIType inType,const byte inChannel);
@@ -37,15 +41,20 @@ byte genstatus(const enum kMIDIType inType,
  
  This is an internal method, use it only if you need to send raw data from your code, at your own risks.
  */
-int8 send(enum kMIDIType type,
+uint8 sendMidiMessage(enum kMIDIType type,
 					  byte data1,
 					  byte data2,
 					  byte channel)
 {
+    // static uint8 var3 = 0;
     static uint8 midiMsg[MIDI_MSG_SIZE];
     uint8 err = 0;
+    
+    // DBG_PRINTF("var3: %d\n",var3++);
+    
 	// Then test if channel is valid
-	if (channel >= MIDI_CHANNEL_OFF || channel == MIDI_CHANNEL_OMNI || type < NoteOff) {
+	if (channel >= MIDI_CHANNEL_OFF || channel == MIDI_CHANNEL_OMNI || type < NoteOff) 
+    {
 		
 #if USE_RUNNING_STATUS	
 		mRunningStatus_TX = InvalidType;
@@ -54,7 +63,8 @@ int8 send(enum kMIDIType type,
 		return 0xFF; // Don't send anything
 	}
 	
-	if (type <= PitchBend) {
+	if (type <= PitchBend) 
+    {
 		// Channel messages
 		
 		// Protection: remove MSBs on data
@@ -80,14 +90,21 @@ int8 send(enum kMIDIType type,
 		// Then send data
 		// DBG_PRINTF("USE_SERIAL_PORT.write(data1);\n");
         midiMsg[MIDI_NOTE_NUMBER] = data1;
-		if (type != ProgramChange && type != AfterTouchChannel) {
-			// DBG_PRINTF("USE_SERIAL_PORT.write(data2);\n");
+		if (type != ProgramChange && type != AfterTouchChannel) 
+        {
+			// DBG_PRINTF("USB_3BYTE_COMMON\n");
             midiMsg[MIDI_NOTE_VELOCITY] = data2;
             err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 		}
-        else {
+        else 
+        {
+            // DBG_PRINTF("USB_2BYTE_COMMON\n");
             err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
         }
+        
+        #if VERBOSE_SEND_MIDI
+        DBG_PRINTF("[%s] return err %d;\n",__func__,err);
+        #endif
         
 		return err;
 	}
@@ -117,8 +134,10 @@ uint8 sendNoteOn(byte NoteNumber,
 							byte Velocity,
 							byte Channel)
 { 
-	DBG_PRINTF("[%s]\n",__func__);
-	return send(NoteOn,NoteNumber,Velocity,Channel);
+    #if VERBOSE_SEND_MIDI
+	DBG_PRINTF("[%s]\t %d %d\n",__func__,NoteNumber,Velocity);
+    #endif
+	return sendMidiMessage(NoteOn,NoteNumber,Velocity,Channel);
 
 }
 
@@ -132,8 +151,10 @@ uint8 sendNoteOff(byte NoteNumber,
 							 byte Velocity,
 							 byte Channel)
 {
-	DBG_PRINTF("[%s]\n",__func__);
-	return send(NoteOff,NoteNumber,Velocity,Channel);
+    #if VERBOSE_SEND_MIDI
+	DBG_PRINTF("[%s]\t %d %d\n",__func__,NoteNumber,Velocity);
+    #endif
+	return sendMidiMessage(NoteOff,NoteNumber,Velocity,Channel);
 
 }
 
@@ -145,8 +166,10 @@ uint8 sendNoteOff(byte NoteNumber,
 uint8 sendProgramChange(byte ProgramNumber,
 								   byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
-	return send(ProgramChange,ProgramNumber,0,Channel);
+    #endif
+	return sendMidiMessage(ProgramChange,ProgramNumber,0,Channel);
 
 }
 
@@ -160,8 +183,10 @@ uint8 sendControlChange(byte ControlNumber,
 								   byte ControlValue,
 								   byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
-	return send(ControlChange,ControlNumber,ControlValue,Channel);
+    #endif
+	return sendMidiMessage(ControlChange,ControlNumber,ControlValue,Channel);
 
 }
 
@@ -175,8 +200,10 @@ void sendPolyPressure(byte NoteNumber,
 								  byte Pressure,
 								  byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
-	send(AfterTouchPoly,NoteNumber,Pressure,Channel);
+    #endif
+	sendMidiMessage(AfterTouchPoly,NoteNumber,Pressure,Channel);
 
 }
 
@@ -188,8 +215,10 @@ void sendPolyPressure(byte NoteNumber,
 void sendAfterTouch(byte Pressure,
 								byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
-	send(AfterTouchChannel,Pressure,0,Channel);
+    #endif
+	sendMidiMessage(AfterTouchChannel,Pressure,0,Channel);
 
 }
 
@@ -201,8 +230,10 @@ void sendAfterTouch(byte Pressure,
 void sendPitchBend(unsigned int PitchValue,
 							   byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
-	send(PitchBend,(PitchValue & 0x7F),(PitchValue >> 7) & 0x7F,Channel);
+    #endif
+	sendMidiMessage(PitchBend,(PitchValue & 0x7F),(PitchValue >> 7) & 0x7F,Channel);
 	
 }
 
@@ -213,7 +244,9 @@ void sendPitchBend(unsigned int PitchValue,
 void sendPitchBendInt(int PitchValue,
 							   byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
+    #endif
 	unsigned int bend = PitchValue + 8192;
 	sendPitchBend(bend,Channel);
 	
@@ -226,7 +259,9 @@ void sendPitchBendInt(int PitchValue,
 void sendPitchBendFloat(double PitchValue,
 							   byte Channel)
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
+    #endif
 	unsigned int pitchval = (PitchValue+1.f)*8192;
 	if (pitchval > 16383) pitchval = 16383;		// overflow protection
 	sendPitchBend(pitchval,Channel);
@@ -282,7 +317,9 @@ void sendSysEx(int length,
  */
 void sendTuneRequest()
 {
+    #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);
+    #endif
 	sendRealTime(TuneRequest);
 
 }
