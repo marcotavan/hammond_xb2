@@ -55,6 +55,8 @@
         
     // void SysTick_Start(void);
     void TimerTick_Start(void);
+    
+    extern volatile uint8 flag_100us_ISR;
 #endif
 
 /* [] END OF FILE */

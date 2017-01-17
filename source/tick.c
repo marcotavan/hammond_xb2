@@ -30,7 +30,7 @@ volatile uint32 now100ms[/*MAX_TICK_TIMERS/32*/ 2] = {0,0};
 volatile uint32 now1000ms[/*MAX_TICK_TIMERS/32*/ 2] = {0,0};
 
 volatile uint16 upCounter = 0;
-
+volatile uint8 flag_100us_ISR = 0;
 /*****************************************************************************\
 *  Funzione:     SysTick_ISR                                                  *
 *  Argomenti:    Nessuno                 				      				  *
@@ -71,6 +71,7 @@ CY_ISR(TimerTick_InterruptHandler)
 	 */
     Timer_1_STATUS;
     
+    flag_100us_ISR = 1;
     // DBG_PRINTF("isr\n");
 } // CY_ISR(SysTick_ISR)
 

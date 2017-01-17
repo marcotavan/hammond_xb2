@@ -182,6 +182,11 @@ int main()
         
             Check_if_host_requested_USB_Suspend();
         }
+        
+        if(flag_100us_ISR)
+        {
+            flag_100us_ISR = 0;
+        }
     }
 }
 
