@@ -25,6 +25,23 @@ struct midimsg	mMessage;
 byte genstatus(const enum kMIDIType inType,const byte inChannel);
 void sendRealTime(enum kMIDIType Type);
 
+
+
+const char *noteNamearray[] = {
+            "C",
+            "C#",
+            "D",
+            "D#",
+            "E",
+            "F",
+            "F#",
+            "G",
+            "G#",
+            "A",
+            "A#",
+            "B"
+        };
+
 // Private method for generating a status byte from channel and type
 byte genstatus(const enum kMIDIType inType,
 								 const byte inChannel) {
@@ -46,7 +63,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
 					  byte data2,
 					  byte channel)
 {
-    // static uint8 var3 = 0;
+    static uint16 var3 = 0;
     static uint8 midiMsg[MIDI_MSG_SIZE];
     uint8 err = 0;
     
@@ -103,7 +120,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
         }
         
         #if VERBOSE_SEND_MIDI
-        // DBG_PRINTF("[%s] return err %d;\n",__func__,err);
+        DBG_PRINTF("[%s] return err %d; %d\n",__func__,err,var3++);
         #endif
         
 		return err;
@@ -135,7 +152,7 @@ uint8 sendNoteOn(byte NoteNumber,
 							byte Channel)
 { 
     #if VERBOSE_SEND_MIDI
-	DBG_PRINTF("[%s]\t %d %d\n",__func__,NoteNumber,Velocity);
+	DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
     #endif
 	return sendMidiMessage(NoteOn,NoteNumber,Velocity,Channel);
 
@@ -152,7 +169,7 @@ uint8 sendNoteOff(byte NoteNumber,
 							 byte Channel)
 {
     #if VERBOSE_SEND_MIDI
-	DBG_PRINTF("[%s]\t %d %d\n",__func__,NoteNumber,Velocity);
+	DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
     #endif
 	return sendMidiMessage(NoteOff,NoteNumber,Velocity,Channel);
 
@@ -421,6 +438,5 @@ void sendRealTime(enum kMIDIType Type)
 #endif
 	
 }
-
 
 /* [] END OF FILE */
