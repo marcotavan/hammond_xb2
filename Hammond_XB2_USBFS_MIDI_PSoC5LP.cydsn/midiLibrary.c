@@ -18,6 +18,7 @@
 
 /*****************************************************/
 #define VERBOSE_SEND_MIDI (1)
+#define VERBOSE_SEND_MIDI_MESSAGE (0)
 /*****************************************************/
 
 struct midimsg	mMessage;
@@ -119,7 +120,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
             err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
         }
         
-        #if VERBOSE_SEND_MIDI
+        #if VERBOSE_SEND_MIDI_MESSAGE
         DBG_PRINTF("[%s] return err %d; %d\n",__func__,err,var3++);
         #endif
         
@@ -201,7 +202,7 @@ uint8 sendControlChange(byte ControlNumber,
 								   byte Channel)
 {
     #if VERBOSE_SEND_MIDI
-	DBG_PRINTF("[%s]: %d %d %d \n",__func__,ControlChange,ControlNumber,ControlValue);
+	DBG_PRINTF("[%s]: %2x %d %d \n",__func__,ControlChange,ControlNumber,ControlValue);
     #endif
 	return sendMidiMessage(ControlChange,ControlNumber,ControlValue,Channel);
 

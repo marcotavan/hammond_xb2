@@ -32,6 +32,7 @@
 #include "midiEvents.h"
 #include "midiLibrary.h"
 #include "keyboardScanner.h"
+#include "VB3_midi_map.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -66,7 +67,7 @@ int8 note_direction = 1;
 void Check_if_host_requested_USB_Suspend(void);
 void  TestPlayNote(void);
 void TestPlayButtons(void);
-
+void  TestVB3Drawbars(void);
 /*******************************************************************************
 * Function Name: SleepIsr
 ********************************************************************************
@@ -181,15 +182,17 @@ int main()
 
             TestPlayButtons();
             
-            TestPlayNote();
-        
+            // TestPlayNote();
+            
+            TestVB3Drawbars();
+            
             Check_if_host_requested_USB_Suspend();
         }
         
-        if(flag_100us_ISR)
+        if(flag_500us_ISR)
         {
             KeyScan();
-            flag_100us_ISR = 0;
+            flag_500us_ISR = 0;
         }
     }
 }
@@ -329,7 +332,7 @@ void  TestPlayNote(void)
     // static uint8 var1 = 0;
     // static uint8 var2 = 0;
     
-    if(tick_10ms(TICK_TEST))
+    if(tick_10ms(TICK_TEST_NOTES))
     {
         divisore++;
         if (divisore == 10)
@@ -384,7 +387,84 @@ void  TestPlayNote(void)
     } // tick 10ms
 }
 
-
+void  TestVB3Drawbars(void)
+{
+    static uint8 ControlNumber = UM_SET_A_DRAWBAR_16;
+    static uint8 ControlValue = 0;
+    static int8 direction = 1;
+    static uint8 init = 1;
+    // VB3_midi_map.h
+    
+    static uint8 i=0;
+    
+    if(init)
+    {
+        if(tick_1ms(TICK_TEST_DRAWBARS))
+        {
+            if(i<9)
+            {
+                sendControlChange(UM_SET_A_DRAWBAR_16+i,0,MIDI_CHANNEL_1);
+                // CyDelayUs(100);
+                sendControlChange(UM_SET_B_DRAWBAR_16+i,0,MIDI_CHANNEL_1);
+                // CyDelayUs(100);
+                sendControlChange(LM_SET_A_DRAWBAR_16+i,0,MIDI_CHANNEL_1);
+                // CyDelayUs(100);
+                sendControlChange(LM_SET_B_DRAWBAR_16+i,0,MIDI_CHANNEL_1);
+                // CyDelayUs(100);
+                i++;
+                return;
+            }
+            else
+            {
+                init = 0;
+            }
+        }
+        
+        
+        
+    }
+   
+    
+    if(tick_1ms(TICK_TEST_DRAWBARS))
+    {
+        sendControlChange(ControlNumber,ControlValue,MIDI_CHANNEL_1);
+        sendControlChange(ControlNumber+1,ControlValue,MIDI_CHANNEL_1);
+        ControlValue+=direction;
+        
+        if(ControlValue == 127)
+        {
+            direction = -1;
+        }
+        else if(ControlValue == 0)
+        {
+            direction = 1;
+            ControlNumber++;
+            if(ControlNumber>UM_SET_A_DRAWBAR_1_13) ControlNumber = UM_SET_A_DRAWBAR_16;
+        }            
+    }
+    
+    
+   /*
+    if(tick_10ms(TICK_TEST_DRAWBARS))
+    {
+        if (ControlValue == 127)
+        {   
+            ControlValue = 0;
+            ControlNumber++;
+            if (ControlNumber == UM_SET_A_DRAWBAR_1) 
+            {
+                ControlNumber = UM_SET_A_DRAWBAR_16;
+                direction = ~direction;
+            }
+            
+        }
+        sendControlChange(ControlNumber,ControlValue,MIDI_CHANNEL_1);
+   
+        ControlValue+=direction;
+        
+    }
+    */
+}
 
 void Check_if_host_requested_USB_Suspend(void)
 {

@@ -21,8 +21,9 @@
     #define FLAG_TICK_TIME_SET 0xFFFFFFFF
 
     enum { // MAX 50!
-        TICK_TEST = 1,                      // 1
-        TICK_MENU,                          // 2
+        TICK_TEST_NOTES = 1,                // 1
+        TICK_TEST_DRAWBARS,                 // 2
+        //--------------------------------------
         TICK_LIFE_CLOCK,                    // 3
         TICK_DALCNET,                       // 4
         TICK_POWERCONSUMPTION,              // 5
@@ -49,6 +50,7 @@
         TICK_MAX31865                       // 26
     };
 
+    uint8 tick_1ms(uint8 from);
     uint8 tick_10ms(uint8 from);
     uint8 tick_100ms(uint8 from);
     uint8 tick_1s(uint8 from);    
@@ -56,7 +58,7 @@
     // void SysTick_Start(void);
     void TimerTick_Start(void);
     
-    extern volatile uint8 flag_100us_ISR;
+    extern volatile uint8 flag_500us_ISR;
 #endif
 
 /* [] END OF FILE */

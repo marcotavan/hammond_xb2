@@ -168,6 +168,9 @@ void MIDI2_UART_RXISR_ExitCallback(void)
     LED_InB_Write(0);
 }
 
-
+void MidiPanicButton(void)
+{
+    
+}
 
 /* [] END OF FILE */
