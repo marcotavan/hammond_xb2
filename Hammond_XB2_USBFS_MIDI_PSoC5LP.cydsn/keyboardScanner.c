@@ -51,8 +51,8 @@ struct key_t keys[88];
 #define NUM_BANKS 11
 
 void increment(void);
-void footpedal(void);
-void scan(void);
+void Damper_Pedal(void);
+void MatrixScanner(void);
 
 // For scanning banks
 struct bank_t banks[NUM_BANKS];
@@ -101,9 +101,9 @@ void KeyScanInit(void)
 
 void KeyScan(void) 
 {
-   scan();
+   MatrixScanner();
    increment();
-   footpedal();
+   Damper_Pedal();
 }
 
 void increment() 
@@ -121,10 +121,10 @@ void increment()
     }
 }
 
-void footpedal() {
-  
-  static int prev_val = 1;
-  int val = 0; // PINF & 0b00000001;
+void Damper_Pedal(void) {
+  #define INPUT_PIN_READ 0 // PINF & 0b00000001;
+  static uint8 prev_val = 0;
+  uint8 val = INPUT_PIN_READ; 
   
   if(val != prev_val) {
     sendControlChange(64, (val ? 1 : 64), MIDI_CHANNEL_1);
@@ -133,7 +133,7 @@ void footpedal() {
   
 }
 
-void scan(void) 
+void MatrixScanner(void) 
 {
     uint8 bank,key;
     event_t event;
