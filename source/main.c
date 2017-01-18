@@ -182,7 +182,7 @@ int main()
 
             TestPlayButtons();
             
-            // TestPlayNote();
+            TestPlayNote();
             
             TestVB3Drawbars();
             
