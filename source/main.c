@@ -183,9 +183,9 @@ int main()
 
             // TestPlayButtons();
             
-            TestPlayNote();
+            // TestPlayNote();
             
-            TestVB3Drawbars();
+            // TestVB3Drawbars();
             
             AnalogPoll();
             
