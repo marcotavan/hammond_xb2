@@ -33,6 +33,7 @@
 #include "midiLibrary.h"
 #include "keyboardScanner.h"
 #include "VB3_midi_map.h"
+#include "analog.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -180,11 +181,13 @@ int main()
                 }
             #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
 
-            TestPlayButtons();
+            // TestPlayButtons();
             
             TestPlayNote();
             
-            TestVB3Drawbars();
+            // TestVB3Drawbars();
+            
+            AnalogPoll();
             
             Check_if_host_requested_USB_Suspend();
         }
