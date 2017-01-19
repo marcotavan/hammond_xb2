@@ -13,6 +13,7 @@
 #include "project.h"
 #include "analog.h"
 #include "stdio.h"
+#include "tick.h"
 
 #define MAX_SAMPLE                  8
 
@@ -53,7 +54,7 @@ void AnalogPoll(void)
         init = 1;
     }
     
-    // while(1)
+    if(tick_10ms(TICK_ANALOG))
     {
         /* Read ADC count and convert to milli volts */
         ADC_IsEndConversion(ADC_WAIT_FOR_RESULT);

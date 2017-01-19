@@ -23,8 +23,8 @@
     enum { // MAX 50!
         TICK_TEST_NOTES = 1,                // 1
         TICK_TEST_DRAWBARS,                 // 2
+        TICK_ANALOG,                        // 3
         //--------------------------------------
-        TICK_LIFE_CLOCK,                    // 3
         TICK_DALCNET,                       // 4
         TICK_POWERCONSUMPTION,              // 5
         TICK_HEARTBEAT,                     // 6
