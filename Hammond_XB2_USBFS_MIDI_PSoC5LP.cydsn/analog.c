@@ -40,10 +40,12 @@ void AnalogPoll(void)
     
     static char init = 0;
     
+    static char drawbarChannel = 0;
     
     if (init == 0)
     {
         /* Start ADC and start conversion */
+        AMux_Start();
         ADC_Start();
         ADC_StartConvert();
 
@@ -51,12 +53,14 @@ void AnalogPoll(void)
         LCD_Start();
         LCD_Position(0,1);
         LCD_PrintString("ADC input volt");
+        drawbarChannel = 0;
         init = 1;
     }
     
     if(tick_10ms(TICK_ANALOG))
     {
         /* Read ADC count and convert to milli volts */
+        AMux_FastSelect(drawbarChannel);
         ADC_IsEndConversion(ADC_WAIT_FOR_RESULT);
         voltCount = ADC_GetResult16();
         mVolts = ADC_CountsTo_mVolts(voltCount);
@@ -76,9 +80,13 @@ void AnalogPoll(void)
             /* Convert milli volts to string and display on the LCD. sprintf()
             *  function is standard library function defined in the stdio.h 
             *  header file */
-            sprintf(displayStr,"    %4ld mV",averageVolts);
+            sprintf(displayStr,"%4ld mV - DWB %d",averageVolts,drawbarChannel);
             LCD_Position(1,0);
             LCD_PrintString(displayStr);
+            drawbarChannel++;
+            if (drawbarChannel == 9) {
+                drawbarChannel = 0;
+            }
         }	
     }
 }

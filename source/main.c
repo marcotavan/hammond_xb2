@@ -185,7 +185,7 @@ int main()
             
             TestPlayNote();
             
-            // TestVB3Drawbars();
+            TestVB3Drawbars();
             
             AnalogPoll();
             
@@ -402,7 +402,7 @@ void  TestVB3Drawbars(void)
     
     if(init)
     {
-        if(tick_1ms(TICK_TEST_DRAWBARS))
+        if(tick_100ms(TICK_TEST_DRAWBARS))
         {
             if(i<9)
             {
@@ -428,10 +428,10 @@ void  TestVB3Drawbars(void)
     }
    
     
-    if(tick_1ms(TICK_TEST_DRAWBARS))
+    if(tick_10ms(TICK_TEST_DRAWBARS))
     {
         sendControlChange(ControlNumber,ControlValue,MIDI_CHANNEL_1);
-        sendControlChange(ControlNumber+1,ControlValue,MIDI_CHANNEL_1);
+        // sendControlChange(ControlNumber+1,ControlValue,MIDI_CHANNEL_1);
         ControlValue+=direction;
         
         if(ControlValue == 127)
@@ -442,7 +442,7 @@ void  TestVB3Drawbars(void)
         {
             direction = 1;
             ControlNumber++;
-            if(ControlNumber>UM_SET_A_DRAWBAR_1_13) ControlNumber = UM_SET_A_DRAWBAR_16;
+            if(ControlNumber>UM_SET_A_DRAWBAR_1) ControlNumber = UM_SET_A_DRAWBAR_16;
         }            
     }
     
