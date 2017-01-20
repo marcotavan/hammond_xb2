@@ -288,10 +288,10 @@ void LCD_bootlogo (void)
     LCD_Start();
  
     LCD_Position(0,0);
-    LCD_PrintString("Xb2 Retrofit");
+    LCD_PrintString("Xb2 Retrofit\0");
     
     LCD_Position(1,0);
-    LCD_PrintString("FW ver: 0.1.0");
+    LCD_PrintString("FW ver: 0.1.0\0");
     
     CyDelay(2000);
     LCD_ClearDisplay();
@@ -299,6 +299,7 @@ void LCD_bootlogo (void)
 
 void LCD_Poll(void)
 {
+    // chiamata nel main
     static uint8 isModuleNotInitialized = 1;
     
     if(isModuleNotInitialized)

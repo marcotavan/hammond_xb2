@@ -52,6 +52,7 @@ uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
 
 void AnalogPoll(void)
 {
+    // chiamata nel main 
     /* Variable to count number of samples collected from ADC */
     static uint8 sampleCount = 0;
 	
