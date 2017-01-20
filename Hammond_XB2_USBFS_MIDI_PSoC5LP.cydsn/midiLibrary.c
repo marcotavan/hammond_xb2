@@ -64,7 +64,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
 					  byte data2,
 					  byte channel)
 {
-    static uint16 var3 = 0;
+    // static uint16 var3 = 0;
     static uint8 midiMsg[MIDI_MSG_SIZE];
     uint8 err = 0;
     
@@ -152,9 +152,11 @@ uint8 sendNoteOn(byte NoteNumber,
 							byte Velocity,
 							byte Channel)
 { 
+    Velocity &= 0x7F; // 0-127    
     #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
     #endif
+
 	return sendMidiMessage(NoteOn,NoteNumber,Velocity,Channel);
 
 }
@@ -169,6 +171,7 @@ uint8 sendNoteOff(byte NoteNumber,
 							 byte Velocity,
 							 byte Channel)
 {
+    Velocity &= 0x7F; // 0-127
     #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
     #endif

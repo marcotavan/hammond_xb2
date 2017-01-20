@@ -72,7 +72,7 @@ void AnalogPoll(void)
     if (init)
     {
         /* Start ADC and start conversion */
-        memset(drawbarVal,0,sizeof(drawbarVal));
+        memset(drawbarVal,0xff,sizeof(drawbarVal));
         adcConversionDone = 0;
         AMux_Start();
         ADC_Start();
