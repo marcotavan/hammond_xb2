@@ -15,8 +15,7 @@
     
 #include "project.h"
   
-void KeyScan(void);
-
+void KeyScan_Poll(void);
 void KeyScanInit(void);
 #endif 
 

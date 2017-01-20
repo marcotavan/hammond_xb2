@@ -48,7 +48,7 @@ struct bank_t {
 
 struct key_t keys[88];
 
-#define NUM_BANKS 11
+#define NUM_BANKS 8 // 11 per 88 tasti
 
 void increment(void);
 void Damper_Pedal(void);
@@ -96,11 +96,23 @@ void KeyScanInit(void)
         keys[key].midi_note = 21 + key;
         keys[key].t = 0;
     }
+    
+    
+    keyInputScan_0_Write(0);    // attiva il pulldown
+    keyInputScan_1_Write(0);
+    keyInputScan_2_Write(0);
+    keyInputScan_3_Write(0);
+    keyInputScan_4_Write(0);
+    keyInputScan_5_Write(0);
+    keyInputScan_6_Write(0);
+    keyInputScan_7_Write(0);
+    
 }
 
 
-void KeyScan(void) 
+void KeyScan_Poll(void) 
 {
+    // sul main con flag 500us
    MatrixScanner();
    increment();
    Damper_Pedal();
@@ -143,12 +155,16 @@ void MatrixScanner(void)
         prev_banks[bank] = banks[bank]; // Store previous state so we can look for changes
         
         // PORTD = bank * 2; // Selects bottom row
+        DBG_PRINTF("sel bank %02d ",bank * 2);
         CyDelayUs(10); // Debounce
-        // banks[bank].bottom = PINC;
+        banks[bank].bottom = KeyInputPort_Read();
+        DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].bottom);
         
+        DBG_PRINTF("sel bank %02d ",bank * 2 + 1);
         // PORTD = bank * 2 + 1; // Selects top row
         CyDelayUs(10); // Debounce
-        // banks[bank].top = PINC;
+        banks[bank].top = KeyInputPort_Read();
+        DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].top);
     }
   
     // Process

@@ -196,7 +196,7 @@ int main()
         
         if(flag_500us_ISR)
         {
-            KeyScan();
+            KeyScan_Poll();
             flag_500us_ISR = 0;
         }
     }
