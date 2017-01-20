@@ -22,8 +22,8 @@
 typedef enum {
   KEY_IS_UP,
   KEY_IS_DOWN,
-  KEY_IS_GOING_UP,    // We increment the timer in this state
-  KEY_IS_GOING_DOWN,  // We increment the timer in this state
+  KEY_IS_GOING_UP,    // increment the timer in this state
+  KEY_IS_GOING_DOWN,  // increment the timer in this state
 } state_t;
 
 // Possible events

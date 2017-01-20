@@ -125,6 +125,8 @@ void AnalogPoll(void)
                     LCD_Position(1,0);
                     LCD_PrintString(displayStr);
                     
+                    LCD_DrawVerticalBG(0, drawbarChannel+7, 8,averageSamples>>4);
+                    
                     sendControlChange(UM_SET_A_DRAWBAR_16+drawbarChannel,averageSamples,MIDI_CHANNEL_1);
                     drawbarVal[drawbarChannel] = averageSamples;
                 }
