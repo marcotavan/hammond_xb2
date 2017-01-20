@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "midiLibrary.h"
 #include "VB3_midi_map.h"
+#include "customLcd.h"
 
 #define MAX_SAMPLE  1
 
@@ -69,6 +70,8 @@ void AnalogPoll(void)
     
     static uint8 drawbarVal[9];
     
+    uint8 barGraph = 0;
+    
     if (init)
     {
         /* Start ADC and start conversion */
@@ -82,10 +85,6 @@ void AnalogPoll(void)
         ADC_IRQ_StartEx(ADC_ISR);
         #endif
         
-        /* Start LCD and set position */
-        LCD_Start();
-        LCD_Position(0,1);
-        LCD_PrintString("ADC DRAWBAR ");
         drawbarChannel = 8;
         adcSamples = 0;
         sampleCount = 0;
@@ -125,7 +124,9 @@ void AnalogPoll(void)
                     LCD_Position(1,0);
                     LCD_PrintString(displayStr);
                     
-                    LCD_DrawVerticalBG(0, drawbarChannel+7, 8,averageSamples>>4);
+                    barGraph = ((averageSamples>>4) + 1) & 0x7F;
+                    
+                    LCD_DrawVerticalBG(0, drawbarChannel+7, 8,barGraph);
                     
                     sendControlChange(UM_SET_A_DRAWBAR_16+drawbarChannel,averageSamples,MIDI_CHANNEL_1);
                     drawbarVal[drawbarChannel] = averageSamples;
@@ -139,35 +140,6 @@ void AnalogPoll(void)
             }
             adcConversionDone = 0;   
         }
-        #if 0
-        voltCount = ADC_GetResult16();
-        mVolts = ADC_CountsTo_mVolts(voltCount);
-        
-        DBG_PRINTF("voltCount:%4ld, mVolts:%4ld\n",voltCount,mVolts);
-        /* Add the current ADC reading to the cumulated samples*/
-        voltSamples = voltSamples + mVolts;
-
-        sampleCount++;
-
-        /* If 8 samples have been collected then average the samples and update the display*/
-        if(sampleCount == MAX_SAMPLE)
-        {
-            averageVolts = voltSamples >> 3;
-            voltSamples = 0;
-            sampleCount = 0;
-
-            /* Convert milli volts to string and display on the LCD. sprintf()
-            *  function is standard library function defined in the stdio.h 
-            *  header file */
-            sprintf(displayStr,"%4ld mV - DWB %d",averageVolts,drawbarChannel);
-            LCD_Position(1,0);
-            LCD_PrintString(displayStr);
-            drawbarChannel++;
-            if (drawbarChannel == 9) {
-                drawbarChannel = 0;
-            }
-        }
-        #endif
-    }
+   }
 }
 /* [] END OF FILE */

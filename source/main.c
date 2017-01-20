@@ -34,6 +34,7 @@
 #include "keyboardScanner.h"
 #include "VB3_midi_map.h"
 #include "analog.h"
+#include "customLcd.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -186,6 +187,7 @@ int main()
             // TestPlayNote();
             
             // TestVB3Drawbars();
+            LCD_Poll();
             
             AnalogPoll();
             
