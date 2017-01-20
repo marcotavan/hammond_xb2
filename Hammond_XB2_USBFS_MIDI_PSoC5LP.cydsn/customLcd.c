@@ -286,16 +286,14 @@ void LCD_bootlogo (void)
 {
     /* Start LCD and set position */
     LCD_Start();
-    LCD_Position(0,1);
-    LCD_PrintString("ADC DRAWBAR ");
-    
-    LCD_ClearDisplay();
+ 
     LCD_Position(0,0);
     LCD_PrintString("Xb2 Retrofit");
+    
     LCD_Position(1,0);
     LCD_PrintString("FW ver: 0.1.0");
     
-    CyDelay(3000);
+    CyDelay(2000);
     LCD_ClearDisplay();
 }
 
