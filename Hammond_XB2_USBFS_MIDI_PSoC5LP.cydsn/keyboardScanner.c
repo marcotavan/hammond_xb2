@@ -36,8 +36,8 @@ typedef enum {
 
 struct key_t {
   uint8     midi_note;
-  state_t   state; // Bit fields
-  uint16    counter; // Lines up nicely to 16bits, t overflows at 4096
+  state_t   state; 
+  uint16    counter; 
 };
 
 /*
@@ -189,7 +189,7 @@ void MatrixScanner(void)
                 if (key[numTasto].state == KEY_IS_GOING_DOWN)
                 {
                     // conto poich[ non sono ancora arrivato giu del tutto
-                    if (key[numTasto].counter != 0xff) key[numTasto].counter++;
+                    /*if (key[numTasto].counter != 0xff)*/ key[numTasto].counter++;
                 }
             }
             else
@@ -235,7 +235,7 @@ void MatrixScanner(void)
                 
                 if (key[numTasto].state == KEY_IS_GOING_UP)
                 {
-                    if (key[numTasto].counter != 0xff) key[numTasto].counter++;
+                    /*if (key[numTasto].counter != 0xff)*/ key[numTasto].counter++;
                 }
                 
             }
