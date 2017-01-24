@@ -21,9 +21,9 @@
 // Possible key states
 typedef enum {
   KEY_IS_UP,
+  KEY_IS_GOING_DOWN,  // increment the timer in this state    
   KEY_IS_DOWN,
   KEY_IS_GOING_UP,    // increment the timer in this state
-  KEY_IS_GOING_DOWN,  // increment the timer in this state
 } state_t;
 
 // Possible events
@@ -35,29 +35,32 @@ typedef enum {
 } event_t;
 
 struct key_t {
-  char midi_note:8;
-  state_t       state:4; // Bit fields
-  unsigned int  t    :7; // Lines up nicely to 16bits, t overflows at 4096
+  uint8     midi_note;
+  state_t   state; // Bit fields
+  uint16    counter; // Lines up nicely to 16bits, t overflows at 4096
 };
 
+/*
 struct bank_t {
-  char top;
-  char bottom;
+  uint8 top;
+  uint8 bottom;
 };
+*/
 
+struct key_t key[88];
 
-struct key_t keys[88];
-
-#define NUM_BANKS 8 // 11 per 88 tasti
+// #define NUM_BANKS 8 // 11 per 88 tasti, 8 per 61 tasti
 
 void increment(void);
 void Damper_Pedal(void);
 void MatrixScanner(void);
 
 // For scanning banks
+/*
 struct bank_t banks[NUM_BANKS];
 struct bank_t prev_banks[NUM_BANKS];
-
+*/
+/*
 void KeyScanTrigger(struct key_t *key, event_t event) 
 {
     if(event == KEY_PRESSED) 
@@ -83,22 +86,24 @@ void KeyScanTrigger(struct key_t *key, event_t event)
         key->t = 0;
     } 
 }
-
+*/
 void KeyScanInit(void) 
 {
     // Init array
-    memset(banks, 0xff, sizeof(prev_banks));
-    uint8 key;
+    // memset(banks, 0xff, sizeof(prev_banks));
+    uint8 keyNumber;
 
     // Init keys
-    for (key = 0; key < 88; key++) 
+
+    for (keyNumber = 0; keyNumber < 88; keyNumber++) 
     {
-        keys[key].midi_note = 21 + key;
-        keys[key].t = 0;
+        key[keyNumber].midi_note = 21 + keyNumber;
+        key[keyNumber].counter = 0;
+        key[keyNumber].state = KEY_IS_UP;
     }
+
     
-    
-    keyInputScan_0_Write(0);    // attiva il pulldown
+    keyInputScan_0_Write(0);    // 0: attiva il pulldown
     keyInputScan_1_Write(0);
     keyInputScan_2_Write(0);
     keyInputScan_3_Write(0);
@@ -114,10 +119,11 @@ void KeyScan_Poll(void)
 {
     // sul main con flag 500us
    MatrixScanner();
-   increment();
-   Damper_Pedal();
+   // increment();
+   // Damper_Pedal();
 }
 
+/*
 void increment() 
 {
      // Advance timers
@@ -128,10 +134,11 @@ void increment()
         state_t state = keys[key].state;
         if(state == KEY_IS_GOING_UP || state == KEY_IS_GOING_DOWN) 
         {
-            keys[key].t++;
+            keys[key].timer++;
         }
     }
 }
+*/
 
 void Damper_Pedal(void) {
   #define INPUT_PIN_READ 0 // PINF & 0b00000001;
@@ -147,22 +154,140 @@ void Damper_Pedal(void) {
 
 void MatrixScanner(void) 
 {
+    // va portato nell'interrupt
+    
+    uint8 line = 0;
+    uint8 var = 0;
+    uint8 bank = 0;
+    uint8 numTasto = 0;
+
+    for(line = 0;line < 16;line++)
+    { // seleziona le linee col demultiplexer
+        Control_Reg_Line_Select_Write(line); // Selects row 
+        // DBG_PRINTF("sel line %02d ",line);
+        var = KeyInputPort_Read();
+        
+        // if (line == 0) DBG_PRINTF("var : %02x\n",var);
+        for(bank=0;bank<4;bank++)
+        { // permette di decidere dove mettere il dato letto dalle 8 linee
+            numTasto = bank + (4*line);   
+  //          DBG_PRINTF("tasto %d campionato, %d %d %02x\n",numTasto,bank*2,bank*2+1,var);
+
+            if (bitRead(var, (bank*2))) // TOP
+            {
+                // tasto SxA premuto C1 0:0 1:4 2:8
+                // if (line == 0) {
+                // DBG_PRINTF("tasto %d A premuto \n",numTasto);
+                // }
+                if (key[numTasto].state == KEY_IS_UP)
+                {
+                    // il tasto era fermo ora sta scendendo, inizio a contare
+                    key[numTasto].state = KEY_IS_GOING_DOWN;
+                    DBG_PRINTF(" key[%d].state = KEY_IS_GOING_DOWN;\n",numTasto);
+                }
+                
+                if (key[numTasto].state == KEY_IS_GOING_DOWN)
+                {
+                    // conto poich[ non sono ancora arrivato giu del tutto
+                    if (key[numTasto].counter != 0xff) key[numTasto].counter++;
+                }
+            }
+            else
+            {
+                if (key[numTasto].state == KEY_IS_GOING_UP)
+                {
+                    DBG_PRINTF(" dynamics value RELEASE = %d\n",key[numTasto].counter>>1);
+                    
+                }
+                
+                if (key[numTasto].state != KEY_IS_UP)
+                {
+                    // non sono su quindi resetto
+                    key[numTasto].state = KEY_IS_UP;
+                    key[numTasto].counter = 0;
+                    DBG_PRINTF(" key[%d].state = KEY_IS_UP;\n",numTasto);
+                }
+            }
+
+            if (bitRead(var, ((bank*2) + 1))) // BOTTOM
+            {
+                // tasto SxB premuto C1 0 4 8
+                // if (line == 0) {
+                // DBG_PRINTF("tasto %d B premuto \n",numTasto);
+                // }
+                // sono arrivato giu, 
+                if (key[numTasto].state == KEY_IS_GOING_DOWN)
+                {
+                    key[numTasto].state = KEY_IS_DOWN;
+                    DBG_PRINTF(" key[%d].state = KEY_IS_DOWN; ",numTasto);
+                    DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter>>1);
+                    key[numTasto].counter = 0;
+                }
+                
+            }
+            else
+            {
+                if (key[numTasto].state == KEY_IS_DOWN)
+                {
+                    key[numTasto].state = KEY_IS_GOING_UP;
+                    DBG_PRINTF(" key[%d].state = KEY_IS_GOING_UP; ",numTasto);
+                }
+                
+                if (key[numTasto].state == KEY_IS_GOING_UP)
+                {
+                    if (key[numTasto].counter != 0xff) key[numTasto].counter++;
+                }
+                
+            }
+
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #if 0
     uint8 bank,key;
     event_t event;
     // Scan and store
     for(bank = 0; bank < NUM_BANKS; bank++) 
     {
-        prev_banks[bank] = banks[bank]; // Store previous state so we can look for changes
+        // prev_banks[bank] = banks[bank]; // Store previous state so we can look for changes
         
-        // PORTD = bank * 2; // Selects bottom row
+        Control_Reg_Line_Select_Write(bank * 2); // Selects bottom row 
         DBG_PRINTF("sel bank %02d ",bank * 2);
-        CyDelayUs(10); // Debounce
+        // CyDelayUs(10); // Debounce
         banks[bank].bottom = KeyInputPort_Read();
         DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].bottom);
         
-        DBG_PRINTF("sel bank %02d ",bank * 2 + 1);
-        // PORTD = bank * 2 + 1; // Selects top row
-        CyDelayUs(10); // Debounce
+        DBG_PRINTF("sel bank %02d ",(bank * 2) + 1);
+        Control_Reg_Line_Select_Write((bank * 2) + 1); // Selects top row
+        // CyDelayUs(10); // Debounce
         banks[bank].top = KeyInputPort_Read();
         DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].top);
     }
@@ -200,6 +325,8 @@ void MatrixScanner(void)
             }
         }
     }
+    
+    #endif
 }
 
 

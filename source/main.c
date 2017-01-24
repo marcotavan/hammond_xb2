@@ -132,7 +132,7 @@ int main()
             if(0u != USB_GetConfiguration())   
             {
                 /* Power ON CY8CKIT-044 board */
-                MIDI_PWR_Write(0u); 
+                // MIDI_PWR_Write(0u); 
                 
                 /* Start ISR to determine sleep condition */		
                 Sleep_isr_StartEx(SleepIsr);
@@ -192,13 +192,16 @@ int main()
             AnalogPoll();
             
             Check_if_host_requested_USB_Suspend();
+            
+            if(flag_500us_ISR)
+            {
+                KeyScan_Poll();
+                flag_500us_ISR = 0;
+            }
+            
         }
         
-        if(flag_500us_ISR)
-        {
-            KeyScan_Poll();
-            flag_500us_ISR = 0;
-        }
+       
     }
 }
 
