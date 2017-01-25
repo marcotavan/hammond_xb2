@@ -87,6 +87,12 @@ void KeyScanTrigger(struct key_t *key, event_t event)
     } 
 }
 */
+
+void EventTrigger(uint8 event)
+{
+    DBG_PRINTF("[%s] %d\n",__func__,event);
+}
+
 void KeyScanInit(void) 
 {
     // Init array
@@ -99,7 +105,7 @@ void KeyScanInit(void)
     {
         key[keyNumber].midi_note = 21 + keyNumber;
         key[keyNumber].counter = 0;
-        key[keyNumber].state = KEY_IS_UP;
+        key[keyNumber].state = KEY_IS_UP; // COSI SI RESETTA
     }
 
     
@@ -184,27 +190,43 @@ void MatrixScanner(void)
                     // il tasto era fermo ora sta scendendo, inizio a contare
                     key[numTasto].state = KEY_IS_GOING_DOWN;
                     DBG_PRINTF(" key[%d].state = KEY_IS_GOING_DOWN;\n",numTasto);
+                    key[numTasto].counter = 0; // parti a contare
                 }
                 
                 if (key[numTasto].state == KEY_IS_GOING_DOWN)
                 {
                     // conto poich[ non sono ancora arrivato giu del tutto
-                    /*if (key[numTasto].counter != 0xff)*/ key[numTasto].counter++;
+                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
                 }
+                
+                
             }
             else
             {
                 if (key[numTasto].state == KEY_IS_GOING_UP)
                 {
-                    DBG_PRINTF(" dynamics value RELEASE = %d\n",key[numTasto].counter>>1);
-                    
+                    // sto risalendo e ho rilasciato tutto
+                    DBG_PRINTF(" key[%d].state = KEY_IS_UP; ",numTasto);                    
+                    DBG_PRINTF(" dynamics value RELEASE = %d\n",key[numTasto].counter);
+                    EventTrigger(2);
+                    key[numTasto].state = KEY_IS_UP;
+                    key[numTasto].counter = 0; // resetta
+
                 }
                 
-                if (key[numTasto].state != KEY_IS_UP)
-                {
+                if (key[numTasto].state == KEY_IS_GOING_DOWN)
+                { // non sono ancora arrivato giu e rilascio -> errore non fa niente
                     // non sono su quindi resetto
                     key[numTasto].state = KEY_IS_UP;
-                    key[numTasto].counter = 0;
+                    key[numTasto].counter = 0; // resetta
+                    DBG_PRINTF(" key[%d].state = KEY_IS_UP;\n",numTasto);
+                }
+                
+                if (key[numTasto].state == KEY_IS_DOWN)
+                { // ero giu ma rilasco prima il primo del secondo
+                    EventTrigger(3);
+                    key[numTasto].state = KEY_IS_UP;
+                    key[numTasto].counter = 0; // resetta
                     DBG_PRINTF(" key[%d].state = KEY_IS_UP;\n",numTasto);
                 }
             }
@@ -220,8 +242,20 @@ void MatrixScanner(void)
                 {
                     key[numTasto].state = KEY_IS_DOWN;
                     DBG_PRINTF(" key[%d].state = KEY_IS_DOWN; ",numTasto);
-                    DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter>>1);
-                    key[numTasto].counter = 0;
+                    DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter);
+                    EventTrigger(1);
+                    key[numTasto].counter = 0; // resetta
+                }
+                
+                // questo caso non so se va gestito
+                if (key[numTasto].state == KEY_IS_GOING_UP)
+                {
+                    // stavo cercando di risalire ma non ho fatto in tempo e mi hanno ripremuto
+                    key[numTasto].state = KEY_IS_DOWN;
+                    DBG_PRINTF(" key[%d].state = KEY_IS_DOWN; ",numTasto);
+                    DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter);
+                    EventTrigger(4);
+                    key[numTasto].counter = 0; // resetta
                 }
                 
             }
@@ -230,12 +264,13 @@ void MatrixScanner(void)
                 if (key[numTasto].state == KEY_IS_DOWN)
                 {
                     key[numTasto].state = KEY_IS_GOING_UP;
-                    DBG_PRINTF(" key[%d].state = KEY_IS_GOING_UP; ",numTasto);
+                    DBG_PRINTF(" key[%d].state = KEY_IS_GOING_UP;\n ",numTasto);
+                    key[numTasto].counter = 0; // parti a contare
                 }
                 
                 if (key[numTasto].state == KEY_IS_GOING_UP)
                 {
-                    /*if (key[numTasto].counter != 0xff)*/ key[numTasto].counter++;
+                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
                 }
                 
             }
