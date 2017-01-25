@@ -108,7 +108,7 @@ CY_ISR(SleepIsr)
 *******************************************************************************/
 int main()
 {
-    play_note = MIDI_FIRST_NOTE;
+    play_note = MIDI_FIRST_NOTE_61;
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
 
@@ -367,7 +367,7 @@ void  TestPlayNote(void)
                 }
                 break;
                 
-                case MIDI_FIRST_NOTE: // first note available
+                case MIDI_FIRST_NOTE_61: // first note available
                 {
                     // midiMsg[MIDI_MSG_TYPE] = USB_MIDI_NOTE_OFF;
             	    // midiMsg[MIDI_NOTE_NUMBER] = play_note;

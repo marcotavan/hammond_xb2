@@ -28,7 +28,8 @@
     #define NOTE_72                 (72u)
     #define NOTE_76                 (76u)
     #define NOTE_79                 (79u)
-    #define MIDI_FIRST_NOTE         (36u)
+    #define MIDI_FIRST_NOTE_88      (21u)
+    #define MIDI_FIRST_NOTE_61      (36u)
     #define MIDI_LAST_NOTE          (96u)
 
     /* MIDI Notes Velocity*/
