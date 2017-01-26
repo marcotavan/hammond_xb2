@@ -94,25 +94,31 @@ uint8 LinearVelocity(uint16 counter)
 
 void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
 {
-    Pin_SPIF_Write(1);
-    uint8 linearVelocity = LinearVelocity(counter);  // 1uS
-    Pin_SPIF_Write(0);
-    
-    Pin_SPIF_Write(1);
-    uint8 logVelocity = LogVelocity(counter);       // 100uS
-    Pin_SPIF_Write(0);
+    uint8 logVelocity = 0;
+    uint8 linearVelocity = 0; 
     
     uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
 
     switch (event)
     {
         case KEY_PRESSED:
-        sendNoteOn(play_note,logVelocity,MIDI_CHANNEL_1);
+        {    
+            Pin_SPIF_Write(1);
+            logVelocity = LogVelocity(counter);       // 100uS
+            Pin_SPIF_Write(0);
+            
+            sendNoteOn(play_note,logVelocity,MIDI_CHANNEL_1);
+        }
         break;
         
         case KEY_RELEASED:
         case KEY_ERROR_1:
-        sendNoteOff(play_note,linearVelocity,MIDI_CHANNEL_1);
+        {
+            Pin_SPIF_Write(1);
+            linearVelocity = LinearVelocity(counter);  // 1uS
+            Pin_SPIF_Write(0);
+            sendNoteOff(play_note,linearVelocity,MIDI_CHANNEL_1);
+        }
         break;
     }
     
