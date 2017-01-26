@@ -18,7 +18,6 @@
 #include "debug.h"
 #include "midiEvents.h"
 #include "math.h"  
-#include "icsi_log.h"
 
 typedef enum key_states {
   KEY_IS_UP,
@@ -61,9 +60,9 @@ uint8 LogVelocity(uint16 counter)
     
     //  excel velocity.xls     => 127 - (127 + ((LOG10(A2/$F$1)/LOG10(2))*20))
     
-    // velocity = 127 - (127 + ((log(counter/shortestInterval)/LOG_2) * velocityAttenuation));
+    velocity = 127 - (127 + ((log(counter/shortestInterval)/LOG_2) * velocityAttenuation));
     
-    velocity = 127 - (127 + ((icsi_log((counter/shortestInterval),lookup_table, 8)/LOG_2) * velocityAttenuation));
+    // velocity = 127 - (127 + ((icsi_log((counter/shortestInterval),lookup_table, 8)/LOG_2) * velocityAttenuation));
     
     
     
