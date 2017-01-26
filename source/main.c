@@ -35,6 +35,7 @@
 #include "VB3_midi_map.h"
 #include "analog.h"
 #include "customLcd.h"
+#include "icsi_log.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -120,6 +121,7 @@ int main()
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
     
     KeyScanInit(); 
+    fill_icsi_log_table(8, lookup_table);
     
     CyDelay(1000);  // non si sa mai
     
