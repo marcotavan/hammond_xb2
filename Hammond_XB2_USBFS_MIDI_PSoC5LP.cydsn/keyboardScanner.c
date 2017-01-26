@@ -17,20 +17,19 @@
 #include "common.h"
 #include "debug.h"
 #include "midiEvents.h"
-  
-// Possible key states
-typedef enum {
+#include "math.h"  
+
+typedef enum key_states {
   KEY_IS_UP,
-  KEY_IS_GOING_DOWN,  // increment the timer in this state    
+  KEY_IS_GOING_DOWN,  // increment the timer 
   KEY_IS_DOWN,
-  KEY_IS_GOING_UP,    // increment the timer in this state
+  KEY_IS_GOING_UP,    // increment the timer 
 } state_t;
 
-// Possible events
-typedef enum {
+typedef enum events {
   KEY_PRESSED,    // Key is pressed
   KEY_RELEASED,   // Key was released
-  KEY_ERROR_1,         //
+  KEY_ERROR_1,    //
   KEY_ERROR_2,
 } event_t;
 
@@ -40,75 +39,77 @@ struct key_t {
   uint16    counter; 
 };
 
-/*
-struct bank_t {
-  uint8 top;
-  uint8 bottom;
-};
-*/
+struct key_t key[MAX_KEYS];
 
-struct key_t key[88];
-
-// #define NUM_BANKS 8 // 11 per 88 tasti, 8 per 61 tasti
-
-// void increment(void);
 // void Damper_Pedal(void);
 void MatrixScanner(void);
 
-// For scanning banks
-/*
-struct bank_t banks[NUM_BANKS];
-struct bank_t prev_banks[NUM_BANKS];
-*/
-/*
-void KeyScanTrigger(struct key_t *key, event_t event) 
+uint8 LogVelocity(uint16 counter)
 {
-    if(event == KEY_PRESSED) 
-    {
-        key->state = KEY_IS_GOING_DOWN;
-    } 
-    else if (event == KEY_DOWN) 
-    {
-        key->state = KEY_IS_DOWN;
-        DBG_PRINTF("%s KEY_IS_DOWN, sendNoteOn: %d\n",__func__,127- key->t);
-        sendNoteOn(key->midi_note, 127- key->t, 1);
-        key->t = 0;
-    } 
-    else if (event == KEY_RELEASED) 
-    {
-        key->state = KEY_IS_GOING_UP;
-    } 
-    else if (event == KEY_UP) 
-    {
-        key->state = KEY_IS_UP;
-        DBG_PRINTF("%s KEY_IS_UP, sendNoteOff: %d\n",__func__,127- key->t);
-        sendNoteOff(key->midi_note,  127 - key->t, 1);
-        key->t = 0;
-    } 
-}
-*/
+    // The interval between the first and second switch while hitting keys with the
+    // highest velocity.
+    static const float shortestInterval = MAX_SLOW_VELOCITY_COUNTER;
 
-void EventTrigger(uint8 event, uint8 numTasto)
+    // Every time the interval between the first and second switch doubles, lower
+    // the midi velocity by this much:
+    static const int velocityAttenuation = 20;
+
+    int velocity;
+    
+    //  excel velocity.xls     => 127 - (127 + ((LOG10(A2/$F$1)/LOG10(2))*20))
+    
+    velocity = 127 - (127 + ((log(counter/shortestInterval)/log(2)) * velocityAttenuation));
+    
+    if (velocity < 1) {
+        velocity = 1;
+    } 
+    else if (velocity > 127) {
+        velocity = 127;
+    }
+    
+    return velocity;
+}
+
+uint8 LinearVelocity(uint16 counter)
 {
     uint16 velocity;
-    uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
+        
+    velocity = (((MAX_SLOW_VELOCITY_COUNTER+1) - (counter)) / 10);
     
-    velocity = (((MAX_SLOW_VELOCITY_COUNTER+1) - (key[numTasto].counter)) / 10) &0x7F;
-    if (velocity == 0)velocity = 1;
+    if (velocity < 1) {
+        velocity = 1;
+    } 
+    else if (velocity > 127) {
+        velocity = 127;
+    }
+    
+    return velocity; // troncato
+}
+
+void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
+{
+    Pin_SPIF_Write(1);
+    uint8 linearVelocity = LinearVelocity(counter);
+    Pin_SPIF_Write(0);
+    Pin_SPIF_Write(1);
+    uint8 logVelocity = LogVelocity(counter);
+    Pin_SPIF_Write(0);
+    
+    uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
 
     switch (event)
     {
         case KEY_PRESSED:
-        sendNoteOn(play_note,velocity,MIDI_CHANNEL_1);
+        sendNoteOn(play_note,logVelocity,MIDI_CHANNEL_1);
         break;
         
         case KEY_RELEASED:
         case KEY_ERROR_1:
-        sendNoteOff(play_note,velocity,MIDI_CHANNEL_1);
+        sendNoteOff(play_note,linearVelocity,MIDI_CHANNEL_1);
         break;
     }
     
-    DBG_PRINTF("[%s] %3d %3d %4d %3d\n",__func__,event,numTasto,key[numTasto].counter,velocity);
+    DBG_PRINTF("[%s] %3d %3d %4d %3d %3d\n",__func__,event,numTasto,key[numTasto].counter,linearVelocity,logVelocity);
 }
 
 void KeyScanInit(void) 
@@ -121,7 +122,7 @@ void KeyScanInit(void)
 
     for (keyNumber = 0; keyNumber < 88; keyNumber++) 
     {
-        key[keyNumber].midi_note = 21 + keyNumber;
+        // key[keyNumber].midi_note = 21 + keyNumber;
         key[keyNumber].counter = 0;
         key[keyNumber].state = KEY_IS_UP; // COSI SI RESETTA
     }
@@ -141,26 +142,9 @@ void KeyScan_Poll(void)
 {
    // sul main con flag 500us
    MatrixScanner();
-   // increment();
    // Damper_Pedal();
 }
 
-/*
-void increment() 
-{
-     // Advance timers
-    uint8 key;
-    
-    for(key = 0; key < 88; key++) 
-    {
-        state_t state = keys[key].state;
-        if(state == KEY_IS_GOING_UP || state == KEY_IS_GOING_DOWN) 
-        {
-            keys[key].timer++;
-        }
-    }
-}
-*/
 
 void Damper_Pedal(void) {
   #define INPUT_PIN_READ 0 // PINF & 0b00000001;
@@ -184,10 +168,10 @@ void MatrixScanner(void)
     uint8 numTasto = 0;
 
     for(line = 0;line < 16;line++)
-    { // seleziona le linee col demultiplexer
+    { // seleziona le linee dei banchi una alla volta col demultiplexer
         Control_Reg_Line_Select_Write(line); // Selects row 
         // DBG_PRINTF("sel line %02d ",line);
-        var = KeyInputPort_Read();
+        var = KeyInputPort_Read(); // leggi lo stato dei tasti 8 per volta
         
         // if (line == 0) DBG_PRINTF("var : %02x\n",var);
         for(bank=0;bank<4;bank++)
@@ -195,7 +179,7 @@ void MatrixScanner(void)
             numTasto = bank + (4*line);   
   //          DBG_PRINTF("tasto %d campionato, %d %d %02x\n",numTasto,bank*2,bank*2+1,var);
 
-            if (bitRead(var, (bank*2))) // TOP
+            if (bitRead(var, (bank*2))) // TOP test sui bit pari
             {
                 // tasto SxA premuto C1 0:0 1:4 2:8
                 // if (line == 0) {
@@ -214,8 +198,6 @@ void MatrixScanner(void)
                     // conto poich[ non sono ancora arrivato giu del tutto
                     if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
                 }
-                
-                
             }
             else
             {
@@ -224,7 +206,7 @@ void MatrixScanner(void)
                     // sto risalendo e ho rilasciato tutto
                     // DBG_PRINTF(" key[%d].state = KEY_IS_UP; ",numTasto);                    
                     // DBG_PRINTF(" dynamics value RELEASE = %d\n",key[numTasto].counter);
-                    EventTrigger(KEY_RELEASED,numTasto);
+                    EventTrigger(KEY_RELEASED,numTasto,key[numTasto].counter);
                     key[numTasto].state = KEY_IS_UP;
                     key[numTasto].counter = 0; // resetta
 
@@ -240,14 +222,14 @@ void MatrixScanner(void)
                 
                 if (key[numTasto].state == KEY_IS_DOWN)
                 { // ero giu ma rilasco prima il primo del secondo
-                    EventTrigger(KEY_ERROR_1,numTasto);
+                    EventTrigger(KEY_ERROR_1,numTasto,key[numTasto].counter);
                     key[numTasto].state = KEY_IS_UP;
                     key[numTasto].counter = 0; // resetta
                     // DBG_PRINTF(" key[%d].state = KEY_IS_UP;\n",numTasto);
                 }
             }
 
-            if (bitRead(var, ((bank*2) + 1))) // BOTTOM
+            if (bitRead(var, ((bank*2) + 1))) // BOTTOM test sui bit dispari
             {
                 // tasto SxB premuto C1 0 4 8
                 // if (line == 0) {
@@ -259,7 +241,7 @@ void MatrixScanner(void)
                     key[numTasto].state = KEY_IS_DOWN;
                     // DBG_PRINTF(" key[%d].state = KEY_IS_DOWN; ",numTasto);
                     // DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter);
-                    EventTrigger(KEY_PRESSED,numTasto);
+                    EventTrigger(KEY_PRESSED,numTasto,key[numTasto].counter);
                     key[numTasto].counter = 0; // resetta
                 }
                 
@@ -270,7 +252,7 @@ void MatrixScanner(void)
                     key[numTasto].state = KEY_IS_DOWN;
                     // DBG_PRINTF(" key[%d].state = KEY_IS_DOWN; ",numTasto);
                     // DBG_PRINTF(" dynamics value PRESS = %d\n",key[numTasto].counter);
-                    EventTrigger(KEY_ERROR_2,numTasto);
+                    EventTrigger(KEY_ERROR_2,numTasto,key[numTasto].counter);
                     key[numTasto].counter = 0; // resetta
                 }
                 
@@ -289,9 +271,6 @@ void MatrixScanner(void)
                 {
                     if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
                 }
-                
-                
-                
             }
 
         }

@@ -16,6 +16,7 @@
 #include "project.h"
   
 #define MAX_SLOW_VELOCITY_COUNTER 1260
+#define MAX_KEYS 88
     
 void KeyScan_Poll(void);
 void KeyScanInit(void);
