@@ -30,6 +30,10 @@
 #include "LCD.h"
 #include "customLcd.h"
 
+
+uint8 str_bargraph[MAX_CHARS]; // contiene le barre
+
+
 uint8 const CYCODE LCD_InvertedVerticalBar[] = \
 {
     /* Character LCD_CUSTOM_0   */
@@ -304,6 +308,7 @@ void LCD_Poll(void)
     
     if(isModuleNotInitialized)
     {
+        memset(str_bargraph,0,sizeof(str_bargraph));
         LCD_bootlogo();
         isModuleNotInitialized = 0;
     }

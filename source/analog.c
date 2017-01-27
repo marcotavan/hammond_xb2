@@ -49,6 +49,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
+    uint8 i;
     
     switch(event)
     {
@@ -56,12 +57,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
             sendControlChange(UM_SET_A_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
             
-            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            // LCD_Position(1,0);
-            // LCD_PrintString(displayStr);
             lcdColPosition = channel+7;
             barGraph = ((data>>4) + 1) & 0x7F;
-            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            str_bargraph[lcdColPosition] =  barGraph;
             
             LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
@@ -74,13 +72,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
-            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            // LCD_Position(1,0);
-            // LCD_PrintString(displayStr);
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            str_bargraph[lcdColPosition] =  barGraph;
             
             LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
@@ -99,16 +94,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             {
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
                 {
-                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,127,MIDI_CHANNEL_1);
-                    
-                    // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-                    // LCD_Position(1,0);
-                    // LCD_PrintString(displayStr);
+                    data = 127;
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,data,MIDI_CHANNEL_1);
                     
                     lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-                    data = 127;
-                    barGraph = ((data>>4) + 1) & 0x7F; // + 1 mi serve per visualizzare le barre
-                    LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+                    barGraph = ((data>>4) + 1) & 0x7F;
+                    str_bargraph[lcdColPosition] =  barGraph;
                     
                     LCD_Position(1,lcdColPosition);
                     if (data >= 126) offset = 0;
@@ -120,18 +111,15 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             {
                 if (rotaryWheelStatus == ROTARY_FAST_SPEED)
                 {
-                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
-                    
-                    // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-                    // LCD_Position(1,0);
-                    // LCD_PrintString(displayStr);
+                    data = 0;
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,data,MIDI_CHANNEL_1);
                     
                     lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-                    data = 0;
                     barGraph = ((data>>4) + 1) & 0x7F;
-                    LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+                    str_bargraph[lcdColPosition] =  barGraph;
+                    
                     LCD_Position(1,lcdColPosition);
-                    if (data >= 126) offset = 0;
+                    if (data >= 126) offset = 0; // serve per scrivere 8
                     LCD_PutChar('0'+barGraph-offset);
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
@@ -144,13 +132,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Expression_Pedal,data,MIDI_CHANNEL_1);
             
-            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            // LCD_Position(1,0);
-            // LCD_PrintString(displayStr);
-            
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            str_bargraph[lcdColPosition] =  barGraph;
+
             LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
             LCD_PutChar('0'+barGraph-offset);
@@ -163,13 +148,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
             
-            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            // LCD_Position(1,0);
-            // LCD_PrintString(displayStr);
-            
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            str_bargraph[lcdColPosition] =  barGraph;
             
             LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
@@ -188,7 +169,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            str_bargraph[lcdColPosition] =  barGraph;
+
             
             LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
@@ -198,6 +180,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         default:
         break;
+    }
+    
+    // DBG_PRINTF("riscrivo barre\n");
+    for (i=0;i<MAX_CHARS;i++)
+    {
+        LCD_DrawVerticalBG(0, i, 8,str_bargraph[i]);
     }
 }
 

@@ -17,5 +17,7 @@
 void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value);
 void LCD_Poll(void);
 
+#define MAX_CHARS 16
+extern uint8 str_bargraph[];
 #endif
 /* [] END OF FILE */
