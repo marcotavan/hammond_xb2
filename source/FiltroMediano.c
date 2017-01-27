@@ -25,8 +25,8 @@ come si usa:
 
 static uint32 filt_temp;
 static uint8 indice_campioni,i,j;
-static int32 Array_FILTERED[MAX_DRAWBAR_CHANNELS][ORDINE_FILTRO];
-static int32 Array_RAW[MAX_DRAWBAR_CHANNELS][ORDINE_FILTRO];
+static int32 Array_FILTERED[MAX_ANALOG_CHANNELS][ORDINE_FILTRO];
+static int32 Array_RAW[MAX_ANALOG_CHANNELS][ORDINE_FILTRO];
 static uint8 isMedianFilterInitialized = FALSE;
 
 /* inizializza il filtro la prima volta */
@@ -35,8 +35,8 @@ static void FiltroMedianoInit(void)
     indice_campioni = 0;
     
     // memset(array, 0, sizeof(array[0][0]) * m * n);
-    memset(Array_FILTERED,0,sizeof(Array_FILTERED[0][0])*ORDINE_FILTRO*MAX_DRAWBAR_CHANNELS);
-    memset(Array_RAW,0,sizeof(Array_RAW[0][0])*ORDINE_FILTRO*MAX_DRAWBAR_CHANNELS);
+    memset(Array_FILTERED,0,sizeof(Array_FILTERED[0][0])*ORDINE_FILTRO*MAX_ANALOG_CHANNELS);
+    memset(Array_RAW,0,sizeof(Array_RAW[0][0])*ORDINE_FILTRO*MAX_ANALOG_CHANNELS);
 }
 
 /* gestisce il FiltroMediano */

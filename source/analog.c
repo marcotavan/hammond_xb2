@@ -26,6 +26,15 @@
 volatile uint8 adcConversionDone = 0;
 static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
 
+enum rotarySpeed
+{
+    ROTARY_STOP_SPEED,   
+    ROTARY_SLOW_SPEED,
+    ROTARY_FAST_SPEED
+};
+
+uint8 rotaryWheelStatus = ROTARY_SLOW_SPEED;
+
 #if ADC_ISR_ENABLE
 CY_ISR( ADC_ISR )
 {
@@ -34,32 +43,130 @@ CY_ISR( ADC_ISR )
 }
 #endif
 
-enum {
-    EVENT_NONE,
-    EVENT_DRAWBAR,
-    EVENT_MODULATION_WHEEL,
-    EVENT_PITCH_WHEEL
-};
-
 void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
     static char displayStr[15] = {'\0'};
     uint8 barGraph = 0;
+    uint8 lcdColPosition = 0;
     
     switch(event)
     {
-        case EVENT_DRAWBAR:
+        case EVENT_DRAWBAR_GENERIC:
         {
             sendControlChange(UM_SET_A_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
             
-            sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            LCD_Position(1,0);
-            LCD_PrintString(displayStr);
-            
+            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            // LCD_Position(1,0);
+            // LCD_PrintString(displayStr);
+            lcdColPosition = channel+7;
             barGraph = ((data>>4) + 1) & 0x7F;
+            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
-            LCD_DrawVerticalBG(0, channel+7, 8,barGraph);
+            LCD_Position(1,lcdColPosition);
+            LCD_PrintInt8(barGraph);
         } 
+        break;
+        
+        case MOD_WHEEL_ANALOG_INPUT:
+        {
+            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
+            
+            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            // LCD_Position(1,0);
+            // LCD_PrintString(displayStr);
+            
+            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+            barGraph = ((data>>4) + 1) & 0x7F;
+            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+        }
+        break;
+        
+        
+        case PITCH_WHEEL_ANALOG_INPUT:
+        {
+            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            if(data > 88)
+            {
+                if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
+                {
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,1,MIDI_CHANNEL_1);
+                    
+                    // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+                    // LCD_Position(1,0);
+                    // LCD_PrintString(displayStr);
+                    
+                    lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+                    data = 127;
+                    barGraph = ((data>>4) + 1) & 0x7F;
+                    LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+                    rotaryWheelStatus = ROTARY_FAST_SPEED;
+                }
+            }
+            else if(data < 40)
+            {
+                if (rotaryWheelStatus == ROTARY_FAST_SPEED)
+                {
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
+                    
+                    // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+                    // LCD_Position(1,0);
+                    // LCD_PrintString(displayStr);
+                    
+                    lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+                    data = 0;
+                    barGraph = ((data>>4) + 1) & 0x7F;
+                    LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+                    
+                    rotaryWheelStatus = ROTARY_SLOW_SPEED;
+                }
+            }
+        }
+        break;
+        
+        case EXPRESSION_ANALOG_INPUT:
+        {
+            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            sendControlChange(CC_Expression_Pedal,data,MIDI_CHANNEL_1);
+            
+            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            // LCD_Position(1,0);
+            // LCD_PrintString(displayStr);
+            
+            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+            barGraph = ((data>>4) + 1) & 0x7F;
+            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+        }
+        break;
+        
+        case REVERB_ANALOG_INPUT:
+        {
+           // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
+            
+            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            // LCD_Position(1,0);
+            // LCD_PrintString(displayStr);
+            
+            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+            barGraph = ((data>>4) + 1) & 0x7F;
+            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+        }
+        break;
+        
+        case VOLUME_ANALOG_INPUT:
+        {
+            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
+            
+            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            // LCD_Position(1,0);
+            // LCD_PrintString(displayStr);
+            
+            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+            barGraph = ((data>>4) + 1) & 0x7F;
+            LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+        }
         break;
         
         default:
@@ -99,16 +206,16 @@ void AnalogPoll(void)
 	
     static uint8 isAnalogPollNotInitialized = 1;
     
-    static uint8 drawbarChannel = 0;
+    static uint8 analogChannel = 0;
     
-    static uint8 drawbarVal[MAX_DRAWBAR_CHANNELS];
+    static uint8 analogVal[MAX_ANALOG_CHANNELS];
     
     static uint16 validData=0;
     
     if (isAnalogPollNotInitialized)
     {
         /* Start ADC and start conversion */
-        memset(drawbarVal,0xff,sizeof(drawbarVal));
+        memset(analogVal,0xff,sizeof(analogVal));
         adcConversionDone = 0;
         AMux_Start();
         ADC_Start();
@@ -118,11 +225,11 @@ void AnalogPoll(void)
         ADC_IRQ_StartEx(ADC_ISR);
         #endif
         
-        drawbarChannel = 0; // start from 1st
+        analogChannel = 0; // start from 1st
         adcSamples = 0;
         sampleCount = 0;
         isAnalogPollNotInitialized = 0;
-        AMux_FastSelect(drawbarChannel);
+        AMux_FastSelect(analogChannel);
         
         ADC_StartConvert();
     }
@@ -150,20 +257,41 @@ void AnalogPoll(void)
                 adcSamples = 0;
                 sampleCount = 0;
                 
-                validData = FiltroMediano(drawbarChannel,averageSamples);    //
-                if(isValidDifference(drawbarVal[drawbarChannel],validData,2))
+                validData = FiltroMediano(analogChannel,averageSamples);    //
+                
+                switch (analogChannel)
                 {
-                    // c'è una valida differenza con il campione precedente?
-                    AnalogEventTrigger(EVENT_DRAWBAR,drawbarChannel, validData);
-                    drawbarVal[drawbarChannel] = validData;
+                    case MOD_WHEEL_ANALOG_INPUT:
+                    case PITCH_WHEEL_ANALOG_INPUT:
+                    case EXPRESSION_ANALOG_INPUT:
+                    { // analogInputs
+                        if(isValidDifference(analogVal[analogChannel],validData,1))
+                        {
+                            // c'è una valida differenza con il campione precedente?
+                            AnalogEventTrigger(analogChannel,analogChannel, validData);
+                            analogVal[analogChannel] = validData;
+                        }
+                    }
+                    break;
+                    
+                    default: 
+                    { // drawbars
+                        if(isValidDifference(analogVal[analogChannel],validData,2))
+                        {
+                            // c'è una valida differenza con il campione precedente?
+                            AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);
+                            analogVal[analogChannel] = validData;
+                        }
+                    }
+                    break;
                 }
                 
-                drawbarChannel++;
-                if (drawbarChannel == MAX_DRAWBAR_CHANNELS) {
-                    drawbarChannel = 0;
+                analogChannel++;
+                if (analogChannel == MAX_ANALOG_CHANNELS) {
+                    analogChannel = 0;
                 }
                 
-                AMux_FastSelect(drawbarChannel);
+                AMux_FastSelect(analogChannel);
             }
             adcConversionDone = 0;   
         }
