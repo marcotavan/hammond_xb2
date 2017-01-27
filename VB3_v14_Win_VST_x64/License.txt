@@ -1,0 +1,21 @@
+VB3 version 1.4, copyright Guido Scognamiglio - GSi - June 2010
+
+LICENSE TERMS FOR GSi SOFTWARE
+
+This is a license agreement between "GSi" (hereinafter referred to as "the software supplier") and You (hereinafter referred to as "the user").
+
+The software is provided to the user "as is". The software supplier makes no warranties, either express or implied, with respect to the software and associated materials provided to the user, including but not limited to any warranty of fitness for a particular purpose. The software supplier does not warrant that the functions contained in the software will meet your requirements, or that the operation of the software will be uninterrupted or error-free, or that defects in the software will be corrected.
+
+The software supplier does not warrant or make any representations regarding the use or the results of the use of the software or any documentation provided therewith in terms of their correctness, accuracy, reliability, or otherwise. No information or advice given by the software supplier shall create a warranty or in any way increase the scope of this warranty.
+
+The software supplier is not liable for any claims or damages whatsoever, including property damage, personal injury, intellectual property infringement, loss of profits, or interruption of business, or for any special, consequential or incidental damages, however caused.
+
+The user is not allowed to distribute the program. Further, the user may not modify, the user may not decompile and the user may not debug the software. The user may use the program on any computer he or she personally own.
+
+This product is a shareware. You may use the unregistered version at no charge for an evaluation period of 30 days only. To continue to use the software beyond the 30-day evaluation period, you must register it.
+
+GSi doesn't allow license transfers. The user is not allowed to sell, lend, lease, rent this software to nobody for any reason.
+
+The user is allowed to install this sofware on any computer he/she personally owns, provided that he/she is the only owner and authorized user to access the mentioned computer/s.
+
+By using this software, you agree the above statements. 

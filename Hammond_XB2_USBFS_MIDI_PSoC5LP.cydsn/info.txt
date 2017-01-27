@@ -1,0 +1,49 @@
+A: You can run a free application that tests your computer and checks if it's powerful and stable enough for running real-time audio application, it's called Latency Monitor and can be downloaded from this URL:
+
+http://www.resplendence.com/latencymon
+
+Or you can use DPC Latency Checker, which is also compatible with Windows XP:
+
+http://www.thesycon.de/deu/latency_check.shtml
+
+
+I'm new to the world of virtual instruments, how do I get started?
+And the extended question is: what do I need to play virtual instruments like a pro?
+
+Well, first of all you need some spare time and patience, which is the basic requirement for every new thing we try to approach in life, so don't start discouraged and don't be hurry. You'll learn many things from time to time and most of the experience is based on a trial-and-error criteria.
+
+Now, speaking dollars, you need a good computer. Perhaps you already have one, and it is maybe enough good for music applications, so don't think you need something better if you still don't know its real power. If you don't have one, or if you feel you need a better one, there's plenty to choose from. Mac or PC? No, please... it's a matter of personal habits, tastes, nothing really technical that makes you prefer one over another, they're basically the same thing and both good and bad.
+
+Now you need a sound card. If you have a laptop, you surely need an external sound card with Firewire or USB connection, check what kind of connections you computer has. Don't start high, there are several affordable sound cards that are very stable and sound really good and clean despite being "cheap". Have a look at the ESI, E-MU, Yamaha, Edirol, Tascam, etc. Check with your local dealer and ask his advice, but make sure it supports LOW LATENCY ASIO or CORE AUDIO drivers.
+
+Now you need a USB/MIDI Keyboard, or if you already have a MIDI Keyboard, you just need a USB-MIDI interface. Plenty to choose from here, average price is about 30 dollars, they all look and work the same, but prefer the branded ones.
+
+Now you need the most important part: the HOST program. There are hosts that work for both Mac and Windows and other that are platform specific, so be careful when choosing one. Also, there are hosts that are specifically made for live playing and others that offer a full DAW (Digital Audio Workstation) set-up, with a AUDIO/MIDI Sequencer, editor, notator, etc.
+
+A few names just to get you started:
+- Steinberg Cubase (Win and Mac)
+- Apple Logic (Mac)
+- Apple Garageband (Mac, likely preinstalled on your Mac)
+- Cakewalk Sonar (Windows)
+- Cockos Reaper (Win and Mac)
+- Acoustica Mixcraft (Windows)
+- Sagantech Metro (Win and Mac)
+- Energy-XT (Win and Mac)
+
+As for the live performace hosts:
+- Apple MainStage (part of the Logic package)
+- SteinBerg V-Stack (Win and Mac)
+- Audiofile Engineering RAX (Mac)
+- Topten Software Cantabile (Windows)
+- Xlutop Chainer (Windows)
+- Brainspawn Forte (Windows)
+
+
+And for Windows you have two great opportunities for freeware hosts:
+- VST Host
+- SAVIhost
+
+
+Set your soundcard at an acceptable sampling rate and buffer size (typically 44100 Hz and 256 buffers will give you approximately 7 milliseconds of latency) and don't forget a very important thing: read the manuals! The best way to get things to work properly is always refer to the manuals, so everything you buy, a software, a hardware, always read the manuals!
+
+Now you're ready to go! Have fun!

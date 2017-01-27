@@ -1,0 +1,84 @@
+GSi VB3 - Release notes
+www.GenuineSoundware.com
+
+
+April, 2014
+- This is version 1.4 recompiled to be x64 VST for Windows. There's no difference with the 32 bit version except 
+that the support files (VB3.ini, VB3.lic, VB3.fxp) are now stored in the System User's path.
+This is to be intended as a temporary release until the next version is ready to be released to the public.
+Only the VST instrument version is available. The FX variant is not available in VST x64.
+Mac users please be patient, unfortunately programming on Mac requires more time.
+
+
+
+June 21, 2010
+- Version 1.4 released
+- Added new Rotary Speaker simulation derived from the code for the upcoming VB3 version 2!
+- Added option to choose the destination of MIDI CC# 64 (sustain, rotary switch or assignable)
+- Added new item in the DAT (ini) file for the CC# of rotary brake for the "2 controllers" option
+- When the organ preset octave isn't active, keys below the first C and above the last C play folded-back octaves
+- When switching between organ presets something made the switching get slower over and over. Fixed.
+- When switching between organ presets while playing, an audible crackle was produced. Fixed.
+- Now the "Midi Learn" takes the correct Channel even when the Split is active.
+- Now the Split function leaves the pedalboard available on its own separate channel
+- The pedalboard tapering is now correct (sub-harmonics were missing on some notes)
+- When the host saved a project, VB3 muted its sound and caused an audible click. Fixed. *
+- * Now programs and banks are saved as "custom chunks"
+- * Reorganized the .DAT file and renamed it to .INI and moved the .FXP .INI and .LIC file locations on Mac to the User Library
+
+* These changes may cause an incompatibility with the data saved by the previous versions. Before updating, take note of your
+previous setting and consider re-making your own presets if you ever made any. Also, Mac users might have to re-authorize the 
+plugin after installing this update.
+
+March 15, 2010
+- Version 1.3 released
+- fixed incompatibility with MOTU Digital Performer (Mac)
+- fixed bug with percussion trigger
+- fixed Mac installation problem on some Macs
+- fixed Midi Learn menu bug
+- fixed bug with drawbar set display
+- added "Advanced Midi Learn" function
+- added support for the sustain pedal
+- many minor bug fixes and overall code optimization
+
+October 20, 2008
+- Version 1.2.2. released
+- VB3 is now available for MAC* OSX in VST and AU format
+- New Spring Reverb algorithm derived from GSi Type4
+- The code has been enormously optimized and the CPU load is amost halved
+- Fixed bugs with some hosts (Sonar, Tracktion3, Receptor) that caused a crash when loading VB3
+- Added option "Output Level" with 5 different levels. Use this to prevent VB3 from generating audio clips at high dynamics
+- Rotary speaker simualtor: improved control over rotors speeds; improved algorithm "Jazz 122";
+- Keyclick: improved and optimized
+- Percussion: added the missing high-pass filter that gives it more punch and enforces the attack
+- Organ sound: the leakage factor, the whole balance between lows and highs and the background noise have been noticeably improved
+- Functionality: no more need to recompute the internal wavetables when the plugin is set in standby by the host; improved the stereo widening algorithm
+- Many other things have changed internally that can't be explained in few words, but your fine ears will be able to notice the difference with previous versions.
+
+June 28, 2008
+- Version 1.2.1 released
+- All Rotary Speaker simulations have been revised, with special new algorithms for Rock 147, Rock 122 and Jazz 122
+- Added a Tone Cabinet simulation (stationary speaker)
+- Added one more organ model: Type B
+- Added one more Wind Noise level
+- Added one more Background Hum level
+- Improved the keyclick: the attack is now more defined and the click noise is properly scaled
+- Modeled waveforms are now 8x longer, resulting in more precise loop points and more defined tone
+- Organ Type A was too low on volume: fixed
+- Drawbar Set A 16' was not working properly: fixed
+
+April 24, 2008
+- Version 1.2 released
+- Many changes and new features - please see Docs
+
+October 29, 2007
+- Version 1.1 released
+- Many changes and new features - please see Docs
+
+June 22, 2007
+- Fixed problems with stuck notes in some sequencers
+- Fixed problem with automation of Rotary speeds knobs 
+	(may have compromised presets compatibility with previous version)
+
+June 10, 2007
+- First public release
