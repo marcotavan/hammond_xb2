@@ -79,6 +79,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            
+            LCD_Position(1,lcdColPosition);
+            LCD_PrintInt8(barGraph);
         }
         break;
         
@@ -100,6 +103,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     data = 127;
                     barGraph = ((data>>4) + 1) & 0x7F;
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+                    
+                    LCD_Position(1,lcdColPosition);
+                    LCD_PrintInt8(barGraph);
                     rotaryWheelStatus = ROTARY_FAST_SPEED;
                 }
             }
@@ -117,7 +123,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     data = 0;
                     barGraph = ((data>>4) + 1) & 0x7F;
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
-                    
+                    LCD_Position(1,lcdColPosition);
+                    LCD_PrintInt8(barGraph);
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
             }
@@ -136,6 +143,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            LCD_Position(1,lcdColPosition);
+            LCD_PrintInt8(barGraph);
+            
         }
         break;
         
@@ -151,6 +161,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            
+            LCD_Position(1,lcdColPosition);
+            LCD_PrintInt8(barGraph);
         }
         break;
         
@@ -166,6 +179,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
+            
+            LCD_Position(1,lcdColPosition);
+            LCD_PrintInt8(barGraph);
         }
         break;
         
