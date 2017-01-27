@@ -24,8 +24,8 @@
         TICK_TEST_NOTES = 1,                // 1
         TICK_TEST_DRAWBARS,                 // 2
         TICK_ANALOG,                        // 3
+        TICK_LCD,                           // 4
         //--------------------------------------
-        TICK_DALCNET,                       // 4
         TICK_POWERCONSUMPTION,              // 5
         TICK_HEARTBEAT,                     // 6
         TICK_SCRITTURA_RITARDATA,           // 7

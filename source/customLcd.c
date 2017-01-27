@@ -29,10 +29,11 @@
 
 #include "LCD.h"
 #include "customLcd.h"
+#include "tick.h"
+#include "debug.h"
 
-
-uint8 str_bargraph[MAX_CHARS]; // contiene le barre
-
+char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
+uint8 alternateTextCounter = 0;
 
 uint8 const CYCODE LCD_InvertedVerticalBar[] = \
 {
@@ -286,19 +287,36 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 
 #endif /* LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG */
 
-void LCD_bootlogo (void)
+void LCD_bootlogo (uint8 time)
 {
     /* Start LCD and set position */
+    alternateTextCounter = time;    
     LCD_Start();
- 
+    LCD_ClearDisplay();
+    
     LCD_Position(0,0);
     LCD_PrintString("Xb2 Retrofit\0");
     
     LCD_Position(1,0);
     LCD_PrintString("FW ver: 0.1.0\0");
+    // LCD_ClearDisplay();
+}
+
+void Write_BarGraphs(void)
+{
+    uint8 i;
     
-    CyDelay(2000);
-    LCD_ClearDisplay();
+    if (alternateTextCounter) return;  // non scrive niente
+    
+    // DBG_PRINTF("riscrivo barre\n");
+    for (i=0;i<MAX_CHARS;i++)
+    {
+        LCD_DrawVerticalBG(0, i, 8,str_bargraph[ROW_0][i]);
+    }
+    
+    // sposta il cursore sotto
+    LCD_Position(1,0);
+    LCD_PrintString(&str_bargraph[ROW_1][0]);
 }
 
 void LCD_Poll(void)
@@ -308,10 +326,27 @@ void LCD_Poll(void)
     
     if(isModuleNotInitialized)
     {
-        memset(str_bargraph,0,sizeof(str_bargraph));
-        LCD_bootlogo();
+        memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
+        LCD_bootlogo(50);
+        
         isModuleNotInitialized = 0;
     }
+    
+    if (tick_100ms(TICK_LCD))
+    {
+        if(alternateTextCounter)
+        {
+            alternateTextCounter--;
+            if(alternateTextCounter == 0)
+            {
+                // swappa LCD
+                Write_BarGraphs();
+            }
+        }
+        
+    }
 }
+
+
 /* [] END OF FILE */
 

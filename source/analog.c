@@ -49,7 +49,6 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
-    uint8 i;
     
     switch(event)
     {
@@ -59,11 +58,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             lcdColPosition = channel+7;
             barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[lcdColPosition] =  barGraph;
+            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
-            LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
-            LCD_PutChar('0'+barGraph-offset);
+            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
             
         } 
         break;
@@ -75,11 +73,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[lcdColPosition] =  barGraph;
+            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
-            LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
-            LCD_PutChar('0'+barGraph-offset);
+            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
         }
         break;
         
@@ -99,11 +96,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     
                     lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
                     barGraph = ((data>>4) + 1) & 0x7F;
-                    str_bargraph[lcdColPosition] =  barGraph;
+                    str_bargraph[ROW_0][lcdColPosition] =  barGraph;
                     
-                    LCD_Position(1,lcdColPosition);
                     if (data >= 126) offset = 0;
-                    LCD_PutChar('0'+barGraph-offset);
+                    str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+                    
                     rotaryWheelStatus = ROTARY_FAST_SPEED;
                 }
             }
@@ -116,11 +113,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     
                     lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
                     barGraph = ((data>>4) + 1) & 0x7F;
-                    str_bargraph[lcdColPosition] =  barGraph;
+                    str_bargraph[ROW_0][lcdColPosition] =  barGraph;
                     
-                    LCD_Position(1,lcdColPosition);
-                    if (data >= 126) offset = 0; // serve per scrivere 8
-                    LCD_PutChar('0'+barGraph-offset);
+                    if (data >= 126) offset = 0;
+                    str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+                    
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
             }
@@ -134,11 +131,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[lcdColPosition] =  barGraph;
+            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
-            LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
-            LCD_PutChar('0'+barGraph-offset);
+            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
             
         }
         break;
@@ -150,11 +146,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[lcdColPosition] =  barGraph;
+            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
-            LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
-            LCD_PutChar('0'+barGraph-offset);
+            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
         }
         break;
         
@@ -163,18 +158,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
             
-            // sprintf(displayStr,"%4d - DWB %2d",data,channel);
-            // LCD_Position(1,0);
-            // LCD_PrintString(displayStr);
-            
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
             barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[lcdColPosition] =  barGraph;
+            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
-            
-            LCD_Position(1,lcdColPosition);
             if (data >= 126) offset = 0;
-            LCD_PutChar('0'+barGraph-offset);
+            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
         }
         break;
         
@@ -182,11 +171,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         break;
     }
     
-    // DBG_PRINTF("riscrivo barre\n");
-    for (i=0;i<MAX_CHARS;i++)
-    {
-        LCD_DrawVerticalBG(0, i, 8,str_bargraph[i]);
-    }
+    Write_BarGraphs();
 }
 
 uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
