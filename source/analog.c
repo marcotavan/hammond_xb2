@@ -48,6 +48,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     static char displayStr[15] = {'\0'};
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
+    uint8 offset = 1;
     
     switch(event)
     {
@@ -63,7 +64,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PutChar('0'+barGraph);
+            if (data >= 126) offset = 0;
+            LCD_PutChar('0'+barGraph-offset);
             
         } 
         break;
@@ -82,7 +84,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PutChar('0'+barGraph);
+            if (data >= 126) offset = 0;
+            LCD_PutChar('0'+barGraph-offset);
         }
         break;
         
@@ -102,11 +105,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     
                     lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
                     data = 127;
-                    barGraph = ((data>>4) + 1) & 0x7F;
+                    barGraph = ((data>>4) + 1) & 0x7F; // + 1 mi serve per visualizzare le barre
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
                     
                     LCD_Position(1,lcdColPosition);
-                    LCD_PutChar('0'+barGraph);
+                    if (data >= 126) offset = 0;
+                    LCD_PutChar('0'+barGraph-offset);
                     rotaryWheelStatus = ROTARY_FAST_SPEED;
                 }
             }
@@ -125,7 +129,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     barGraph = ((data>>4) + 1) & 0x7F;
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
                     LCD_Position(1,lcdColPosition);
-                    LCD_PutChar('0'+barGraph);
+                    if (data >= 126) offset = 0;
+                    LCD_PutChar('0'+barGraph-offset);
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
             }
@@ -145,7 +150,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             LCD_Position(1,lcdColPosition);
-            LCD_PutChar('0'+barGraph);
+            if (data >= 126) offset = 0;
+            LCD_PutChar('0'+barGraph-offset);
             
         }
         break;
@@ -164,7 +170,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PutChar('0'+barGraph);
+            if (data >= 126) offset = 0;
+            LCD_PutChar('0'+barGraph-offset);
         }
         break;
         
@@ -182,7 +189,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PutChar('0'+barGraph);
+            if (data >= 126) offset = 0;
+            LCD_PutChar('0'+barGraph-offset);
         }
         break;
         
