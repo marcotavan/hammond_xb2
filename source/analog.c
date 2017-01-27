@@ -23,6 +23,7 @@
 #define MAX_SAMPLE  1
 
 volatile uint8 adcConversionDone = 0;
+static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
 
 #if ADC_ISR_ENABLE
 CY_ISR( ADC_ISR )
@@ -31,6 +32,39 @@ CY_ISR( ADC_ISR )
     adcConversionDone = 1;
 }
 #endif
+
+enum {
+    EVENT_NONE,
+    EVENT_DRAWBAR,
+    EVENT_MODULATION_WHEEL,
+    EVENT_PITCH_WHEEL
+};
+
+void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
+{
+    static char displayStr[15] = {'\0'};
+    uint8 barGraph = 0;
+    
+    switch(event)
+    {
+        case EVENT_DRAWBAR:
+        {
+            sendControlChange(UM_SET_A_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
+            
+            sprintf(displayStr,"%4d - DWB %2d",data,channel);
+            LCD_Position(1,0);
+            LCD_PrintString(displayStr);
+            
+            barGraph = ((data>>4) + 1) & 0x7F;
+            
+            LCD_DrawVerticalBG(0, channel+7, 8,barGraph);
+        } 
+        break;
+        
+        default:
+        break;
+    }
+}
 
 uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
 {
@@ -62,18 +96,13 @@ void AnalogPoll(void)
     /* Variable to hold the average volts for 8 samples */
     static uint16 averageSamples = 0;
 	
-    /* Character array to hold the micro volts*/
-    static char displayStr[15] = {'\0'};
-    
-    static uint8 init = 1;
+    static uint8 isAnalogPollNotInitialized = 1;
     
     static uint8 drawbarChannel = 0;
     
-    static uint8 drawbarVal[9];
+    static uint8 drawbarVal[MAX_DRAWBAR_CHANNELS];
     
-    uint8 barGraph = 0;
-    
-    if (init)
+    if (isAnalogPollNotInitialized)
     {
         /* Start ADC and start conversion */
         memset(drawbarVal,0xff,sizeof(drawbarVal));
@@ -86,10 +115,10 @@ void AnalogPoll(void)
         ADC_IRQ_StartEx(ADC_ISR);
         #endif
         
-        drawbarChannel = 8;
+        drawbarChannel = 0; // start from 1st
         adcSamples = 0;
         sampleCount = 0;
-        init = 0;
+        isAnalogPollNotInitialized = 0;
         AMux_FastSelect(drawbarChannel);
         
         ADC_StartConvert();
@@ -97,14 +126,13 @@ void AnalogPoll(void)
     
     if(tick_10ms(TICK_ANALOG))
     {
-        /* Read ADC count and convert to milli volts */
         
 #if ADC_ISR_ENABLE
         ADC_IsEndConversion(ADC_WAIT_FOR_RESULT)
         // DBG_PRINTF("%d \n",ADC_GetResult16());
         if(adcConversionDone)
 #else
-        if(ADC_IsEndConversion(ADC_RETURN_STATUS))
+        if(ADC_IsEndConversion(ADC_RETURN_STATUS)) // continua solo se la precedente conversione e' andata a buon fine
 #endif
         {
             adcSamples = adcSamples + ADC_GetResult16();
@@ -121,22 +149,16 @@ void AnalogPoll(void)
 
                 if(isValidDifference(drawbarVal[drawbarChannel],averageSamples,2))
                 {
-                    sprintf(displayStr,"%4d - DWB %2d",averageSamples,drawbarChannel);
-                    LCD_Position(1,0);
-                    LCD_PrintString(displayStr);
-                    
-                    barGraph = ((averageSamples>>4) + 1) & 0x7F;
-                    
-                    LCD_DrawVerticalBG(0, drawbarChannel+7, 8,barGraph);
-                    
-                    sendControlChange(UM_SET_A_DRAWBAR_16+drawbarChannel,averageSamples,MIDI_CHANNEL_1);
+                    // c'è una valida differenza con il campione precedente?
+                    AnalogEventTrigger(EVENT_DRAWBAR,drawbarChannel, averageSamples);
                     drawbarVal[drawbarChannel] = averageSamples;
                 }
                 
                 drawbarChannel++;
-                if (drawbarChannel == 9) {
+                if (drawbarChannel == MAX_DRAWBAR_CHANNELS) {
                     drawbarChannel = 0;
                 }
+                
                 AMux_FastSelect(drawbarChannel);
             }
             adcConversionDone = 0;   

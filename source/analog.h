@@ -13,8 +13,8 @@
 #ifndef _ANALOG_H_
 #define _ANALOG_H_
 
-    
-    void AnalogPoll(void);
-    
+#define MAX_DRAWBAR_CHANNELS 9
+void AnalogPoll(void);
+   
 #endif
 /* [] END OF FILE */
