@@ -47,3 +47,5 @@ And for Windows you have two great opportunities for freeware hosts:
 Set your soundcard at an acceptable sampling rate and buffer size (typically 44100 Hz and 256 buffers will give you approximately 7 milliseconds of latency) and don't forget a very important thing: read the manuals! The best way to get things to work properly is always refer to the manuals, so everything you buy, a software, a hardware, always read the manuals!
 
 Now you're ready to go! Have fun!
+
+

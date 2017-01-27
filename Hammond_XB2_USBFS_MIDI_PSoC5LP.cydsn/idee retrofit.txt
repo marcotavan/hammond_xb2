@@ -1,0 +1,71 @@
+
+
+Idee:
+- Drawbars are routed automatically to manual played (when split is ON or external keyboard connected on MIDI channel 2). 
+    You may further select drawbar routing by ORGAN SOLO button (LED lit up = upper keyboard to drawbars). 
+
+- SOLO button toggles between upper and lower manual. If lit up, upper manual is selected; otherwise, drawbars and vibrato button affect lower manual .
+
+- SOLO button toggles between upper and lower manual for drawbars and vibrato tabs as well as presets. An arrow in display shows manual selected by SOLO button.
+- PERCUSSION SECOND and THIRD activate percussion; only one may be active the same time.
+- VIBRATO ON activates scanner vibrato of HX3. Power-on default is chorus-vibrato C3. Use EDIT mode function buttons to access other vibrato/chorus depths.
+- LESLIE FAST toggles between slow and fast Leslie speed (external if present as well as internal simulation).
+
+HX3 retrofit kit features a genuine priority logic for the single set of drawbars: If upper manual is played or was played, 
+drawbars and vibrato control upper manual. If lower manual is played or was played lastly, drawbars and vibrato button control lower manual 
+(fed by MIDI or section below split point). Note: This feature may not present on certain firmware versions.
+
+Both Pitchbend and Modulation Wheel will send appropriate MIDI data, but will not affect HX3 sound generation due to exactness of its physical model 
+(you won't have pitchwheel on a B3, either; we confess, shaking the XB-2 will not wow the notes generated as the real B3 does). 
+
+Buttons below XB-2 keybed got new functions:
+
+    RECORD toggles Leslie between RUN and STOP
+    EDIT toggles EDIT mode on and off. LED indicates EDIT mode active
+    CANCEL sets presets off (i.e. "Preset 0") and selects "live" mode
+    PRESETS select one of 8 presets. HX3 Retrofit Kit yields 8 presets plus "live" setting (CANCEL) for each manual. If SOLO button is lit, preset buttons select upper manual, otherwise lower manual presets. 
+
+Press and hold any preset button for 2 seconds to save the new or changed registration on this preset. A message appears on the display indicating the saved target number. You may even save vibrato/percussion registration on "live" preset CANCEL (except drawbar setting). All presets may be changed "on the fly" by using drawbars and vibrato/percussion/function buttons.
+Edit Mode
+
+In EDIT mode (button LED lit up) cancel and preset buttons act as additional registration tabs:
+
+    CANCEL (MIDI CHANNEL) (D) steps through MIDI base channel 1..10 for upper manual. Lower manual is on base channel +1, pedals on base channel +2.
+    PRESET 1 (MIDI CC SET) (D) selects one of five different MIDI-CC interpreters
+    PRESET 2 (SOFT/NRM) (P) toggles percussion SOFT or NORMAL
+    PRESET 3 (SLOW/FAST) (P) toggles percussion SLOW or FAST
+    PRESET 4 (VIBRATO) (P) steps through vibrato setting V1 to C3
+    PRESET 5 (EXTERN LESLIE) (D) toggles internal Leslie speaker simulation. Switch to ON if you use an external Leslie or an external rotary simulator. In ON position, internal rotary simulation is disabled and output is a plain organ signal.
+    PRESET 6 (KEY SPLIT) (D) activates or suspends manual split (lower to upper) to note "#F". Split setting will remain even after switching off and switching on the split function without holding a key, but only until power-off. Only valid for HX3 with ScanCores from Rev. #21 and up: Keyboard split can now be done with a selectable split point and octave shift for lower manual:
+        Press the button of the desired split point on the lower manual (connected via MIDI), hold while turning Split on: Pedal to lower manual below note pressed. Or:
+        Press the button of the desired split point on upper manual, hold while turning Split on: Lower to upper manual below note pressed. Lower manual is now turned off. Or:
+        Press two buttons side by side on upper manual, hold while turning Split on: Pedal to upper manual below notes pressed. Pedal is now off.
+        Press three adjacent buttons on upper manual, hold while turning Split on: Lower +1 octave to upper manual below highest note pressed.
+        Press four adjacent buttons on upper manual, hold while turning Split on: Lower +2 octave to upper manual below highest note pressed.
+
+    PRESET 7 (REVERB 0-3) (D) steps through reverb 0 (off), 1, 2 and 3
+    PRESET 8 (LEAKAGE 0-3) (D) steps through generator leakage 0 (brand new organ) to 3 (sleazy organ)
+
+Selected function will be shown in display. Those marked with (D) will be saved to power-on defaults if it's function button is pressed for more than 2 seconds. To save split point and split mode, set desired mode as described above and then press PRESET 6 for 2 seconds when in Edit mode. Those parameters marked (P) will be saved to current preset when preset is saved.
+Potentiometers
+
+Left pot ("Reverb") below keybed becomes the Rotary Amp simulation volume control. It also affects the external Leslie volume on 11-pin socket as the Leslie output signal is derived inernally from 122 tube amp simulation. Right pot controls overall output volume for audio jacks as well as headphone.
+Output Jacks
+
+Since guts of XB-2 have been discarded, some of the output and control jacks differ from original XB-2. From left to right, seen from back:
+
+    HEADPHONE output carries stereo Leslie simulation (default) or plain organ signal, depending on EXTERN LESLIE setting. Adjust volume by "Main Volume" pot.
+    RIGHT output carries right channel of stereo Leslie simulation (default) or bass pedal signal, depending on EXTERN LESLIE setting.
+    LEFT output carries left channel of stereo Leslie simulation (default) or plain organ signal from 122 Amp simulation, depending on EXTERN LESLIE setting.
+    SWELL FC-7 connects to swell pedal. Use expression pedal compatible to Yamaha FC-7. If no expression pedal connected, full volume is achieved. Connection of old Hammond swell pedal is not possible!
+    DUAL FOOT SW connects to dual foot switch (preferred) for Leslie RUN/STOP and FAST/SLOW. If single foot switch connected, it only controls FAST/SLOW.
+
+Please note: Old MIDI THRU and FOOT SWITCH jacks have no function, do not connect. CONTRAST pot acts as before for display adjustment.
+
+Audio output jack board is now equipped with treble/bass control which works like original XB-2. Pots are on same position as before. An external 11-pin Leslie® may be connected to 11-pin jack. It receives bass and rotary signals on separate channels. As Leslie® output gets its signal from internal 122 Amp simulation, even transistorized rotary cabinets yield perfect results with overdrive capability. External Leslie volume may be adjusted by internal trim pots on output jack board (see installation manual) if volume is too low.
+
+On factory default, internal Leslie® simulation is enabled. Unpleasant results will occur when the modulated signal is fed to an external rotary cabinat or Leslie simulator. For use with external Leslies®, push "Edit Function" button and then "External Leslie" button. Push again to select external Leslie® ON. Configuration will be saved to internal non-volatile (D)efault memory if button is pressed again for 1sec. With external Leslie enabled, audio jacks carry plain organ signal on LEFT and bass pedal signal on RIGHT jack. All outputs are mono. Both are routed through the internal Amp122 overdrive, controlled by the Amp 122 gain pot. This is ideal for connecting transistor Leslies to get a warm tube distortion. Function of Amp122 pot is same as volume pot on Leslie tube amp chassis.
+
+We recommend a volume swell/expression pedal like Yamaha FC-7 or similar. Sorry, you may not use your Hammond swell pedal anymore. Dual footswitches or halfmoon switches with STOP position should use the new FOOTSW connector next to swell pedal jack. 
+
+
