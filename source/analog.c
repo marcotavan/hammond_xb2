@@ -63,7 +63,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PrintInt8(barGraph);
+            LCD_PutChar('0'+barGraph);
+            
         } 
         break;
         
@@ -81,7 +82,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PrintInt8(barGraph);
+            LCD_PutChar('0'+barGraph);
         }
         break;
         
@@ -105,7 +106,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
                     
                     LCD_Position(1,lcdColPosition);
-                    LCD_PrintInt8(barGraph);
+                    LCD_PutChar('0'+barGraph);
                     rotaryWheelStatus = ROTARY_FAST_SPEED;
                 }
             }
@@ -124,7 +125,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     barGraph = ((data>>4) + 1) & 0x7F;
                     LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
                     LCD_Position(1,lcdColPosition);
-                    LCD_PrintInt8(barGraph);
+                    LCD_PutChar('0'+barGraph);
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
             }
@@ -144,7 +145,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             barGraph = ((data>>4) + 1) & 0x7F;
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             LCD_Position(1,lcdColPosition);
-            LCD_PrintInt8(barGraph);
+            LCD_PutChar('0'+barGraph);
             
         }
         break;
@@ -163,7 +164,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PrintInt8(barGraph);
+            LCD_PutChar('0'+barGraph);
         }
         break;
         
@@ -181,7 +182,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             LCD_DrawVerticalBG(0, lcdColPosition, 8,barGraph);
             
             LCD_Position(1,lcdColPosition);
-            LCD_PrintInt8(barGraph);
+            LCD_PutChar('0'+barGraph);
         }
         break;
         
@@ -194,12 +195,12 @@ uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
 {
     // se la differenza tra i valori è sufficientemente alta allora invia.
     if(a>b) {
-        if((a-b) > diff) {
+        if((a-b) >= diff) {
             return 1;
         }
     } 
     else if (b>a) {
-        if((b-a) > diff) {
+        if((b-a) >= diff) {
             return 1;
         }
     }
@@ -281,7 +282,7 @@ void AnalogPoll(void)
                     case PITCH_WHEEL_ANALOG_INPUT:
                     case EXPRESSION_ANALOG_INPUT:
                     { // analogInputs
-                        if(isValidDifference(analogVal[analogChannel],validData,1))
+                        if(isValidDifference(analogVal[analogChannel],validData,1)) // granularita del dato in uscita: 1 la differenza è 1 55 56 57 58 
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);
@@ -292,7 +293,7 @@ void AnalogPoll(void)
                     
                     default: 
                     { // drawbars
-                        if(isValidDifference(analogVal[analogChannel],validData,2))
+                        if(isValidDifference(analogVal[analogChannel],validData,2)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);
