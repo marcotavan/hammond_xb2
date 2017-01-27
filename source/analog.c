@@ -19,6 +19,7 @@
 #include "midiLibrary.h"
 #include "VB3_midi_map.h"
 #include "customLcd.h"
+#include "FiltroMediano.h"
 
 #define MAX_SAMPLE  1
 
@@ -102,6 +103,8 @@ void AnalogPoll(void)
     
     static uint8 drawbarVal[MAX_DRAWBAR_CHANNELS];
     
+    static uint16 validData=0;
+    
     if (isAnalogPollNotInitialized)
     {
         /* Start ADC and start conversion */
@@ -124,7 +127,7 @@ void AnalogPoll(void)
         ADC_StartConvert();
     }
     
-    if(tick_10ms(TICK_ANALOG))
+    if(tick_1ms(TICK_ANALOG))
     {
         
 #if ADC_ISR_ENABLE
@@ -146,12 +149,13 @@ void AnalogPoll(void)
                 
                 adcSamples = 0;
                 sampleCount = 0;
-
-                if(isValidDifference(drawbarVal[drawbarChannel],averageSamples,2))
+                
+                validData = FiltroMediano(drawbarChannel,averageSamples);    //
+                if(isValidDifference(drawbarVal[drawbarChannel],validData,2))
                 {
                     // c'è una valida differenza con il campione precedente?
-                    AnalogEventTrigger(EVENT_DRAWBAR,drawbarChannel, averageSamples);
-                    drawbarVal[drawbarChannel] = averageSamples;
+                    AnalogEventTrigger(EVENT_DRAWBAR,drawbarChannel, validData);
+                    drawbarVal[drawbarChannel] = validData;
                 }
                 
                 drawbarChannel++;

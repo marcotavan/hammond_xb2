@@ -205,6 +205,7 @@ uint8 sendControlChange(byte ControlNumber,
 								   byte Channel)
 {
     #if VERBOSE_SEND_MIDI
+        if(ControlNumber == 48)
 	DBG_PRINTF("[%s]: %2x %d %d \n",__func__,ControlChange,ControlNumber,ControlValue);
     #endif
 	return sendMidiMessage(ControlChange,ControlNumber,ControlValue,Channel);
