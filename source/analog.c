@@ -74,7 +74,6 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
-            
             // sprintf(displayStr,"%4d - DWB %2d",data,channel);
             // LCD_Position(1,0);
             // LCD_PrintString(displayStr);
@@ -93,11 +92,14 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         case PITCH_WHEEL_ANALOG_INPUT:
         {
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+            // 0:31 SLOW.
+            // 32:65 STOP
+            // 96:127 FAST
             if(data > 88)
             {
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
                 {
-                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,1,MIDI_CHANNEL_1);
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,127,MIDI_CHANNEL_1);
                     
                     // sprintf(displayStr,"%4d - DWB %2d",data,channel);
                     // LCD_Position(1,0);
