@@ -45,7 +45,7 @@ CY_ISR( ADC_ISR )
 
 void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
-    static char displayStr[15] = {'\0'};
+    // static char displayStr[15] = {'\0'};
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
