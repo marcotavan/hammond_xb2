@@ -184,7 +184,7 @@ void MatrixScanner(void)
 
     for(line = 0;line < 16;line++)
     { // seleziona le linee dei banchi una alla volta col demultiplexer
-        Control_Reg_Line_Select_Write(line); // Selects row 
+        Control_Reg_Keyboard_Line_Select_Write(line); // Selects row 
         // DBG_PRINTF("sel line %02d ",line);
         var = KeyInputPort_Read(); // leggi lo stato dei tasti 8 per volta
         
@@ -271,7 +271,7 @@ void MatrixScanner(void)
                     key[numTasto].counter = 0; // resetta
                 }
                 
-            }
+            } // 
             else
             {
                 if (key[numTasto].state == KEY_IS_DOWN)
@@ -287,95 +287,9 @@ void MatrixScanner(void)
                     if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
                 }
             }
-
-        }
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    #if 0
-    uint8 bank,key;
-    event_t event;
-    // Scan and store
-    for(bank = 0; bank < NUM_BANKS; bank++) 
-    {
-        // prev_banks[bank] = banks[bank]; // Store previous state so we can look for changes
-        
-        Control_Reg_Line_Select_Write(bank * 2); // Selects bottom row 
-        DBG_PRINTF("sel bank %02d ",bank * 2);
-        // CyDelayUs(10); // Debounce
-        banks[bank].bottom = KeyInputPort_Read();
-        DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].bottom);
-        
-        DBG_PRINTF("sel bank %02d ",(bank * 2) + 1);
-        Control_Reg_Line_Select_Write((bank * 2) + 1); // Selects top row
-        // CyDelayUs(10); // Debounce
-        banks[bank].top = KeyInputPort_Read();
-        DBG_PRINTF("\tread Port 0x%02X\n",banks[bank].top);
-    }
-  
-    // Process
-    for(bank = 0; bank < NUM_BANKS; bank++) 
-    {
-        byte diff;
-        
-        // Check top switches and fire events
-        diff = banks[bank].top ^ prev_banks[bank].top;
-        if(diff) 
-        {
-            for(key = 0; key < 8; key++) 
-            {
-                if(bitRead(diff, key)) 
-                { 
-                    event = bitRead(banks[bank].top, key) ? KEY_UP : KEY_PRESSED;
-                    KeyScanTrigger(&keys[bank * 8 + key], event);
-                }
-            }
-        }
-    
-        // Check bottom switches and fire events
-        diff = banks[bank].bottom ^ prev_banks[bank].bottom;
-        if(diff) 
-        {
-            for(key = 0; key < 8; key++) 
-            {
-                if(bitRead(diff, key)) 
-                { 
-                    event = bitRead(banks[bank].bottom, key) ? KEY_RELEASED : KEY_DOWN;           
-                    KeyScanTrigger(&keys[bank * 8 + key], event);
-                }
-            }
-        }
-    }
-    
-    #endif
-}
+        } // for(bank=0;bank<4;bank++)
+    } // for(line = 0;line < 16;line++)
+} // MatrixScanner
 
 
 /* [] END OF FILE */
