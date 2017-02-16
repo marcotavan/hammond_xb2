@@ -11,7 +11,8 @@
 */
 #ifndef _BUTTON_SCANNER_
 #define _BUTTON_SCANNER_
-   
-    
+
+void ButtonScannerPoll(void);
+
 #endif    
 /* [] END OF FILE */

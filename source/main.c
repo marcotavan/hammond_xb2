@@ -35,6 +35,7 @@
 #include "VB3_midi_map.h"
 #include "analog.h"
 #include "customLcd.h"
+#include "ButtonScanner.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -200,6 +201,9 @@ int main()
                 flag_500us_ISR = 0;
             }
             
+            if (tick_10ms(TICK_BUTTONSCANNER)) {
+                ButtonScannerPoll();
+            }        
         }
         
        

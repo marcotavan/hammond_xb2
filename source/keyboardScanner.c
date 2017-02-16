@@ -162,6 +162,7 @@ void KeyScan_Poll(void)
 
 
 void Damper_Pedal(void) {
+    // questo va ancora fatto
   #define INPUT_PIN_READ 0 // PINF & 0b00000001;
   static uint8 prev_val = 0;
   uint8 val = INPUT_PIN_READ; 
