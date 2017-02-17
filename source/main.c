@@ -201,7 +201,7 @@ int main()
                 flag_500us_ISR = 0;
             }
             
-            if (tick_10ms(TICK_BUTTONSCANNER)) {
+            if (tick_1ms(TICK_BUTTONSCANNER)) {
                 ButtonScannerPoll();
             }        
         }

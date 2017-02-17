@@ -140,6 +140,16 @@ void KeyScanInit(void)
         key[keyNumber].state = KEY_IS_UP; // COSI SI RESETTA
     }
 
+    // MyPin_SetDriveMode(MyPin_DM_RES_DWN);
+    keyInputScan_0_SetDriveMode(keyInputScan_0_DM_RES_DWN);
+    keyInputScan_1_SetDriveMode(keyInputScan_1_DM_RES_DWN);
+    keyInputScan_2_SetDriveMode(keyInputScan_2_DM_RES_DWN);
+    keyInputScan_3_SetDriveMode(keyInputScan_3_DM_RES_DWN);
+    keyInputScan_4_SetDriveMode(keyInputScan_4_DM_RES_DWN);
+    keyInputScan_5_SetDriveMode(keyInputScan_5_DM_RES_DWN);
+    keyInputScan_6_SetDriveMode(keyInputScan_6_DM_RES_DWN);
+    keyInputScan_7_SetDriveMode(keyInputScan_7_DM_RES_DWN);
+    
     keyInputScan_0_Write(0);    // 0: attiva il pulldown
     keyInputScan_1_Write(0);
     keyInputScan_2_Write(0);
@@ -186,6 +196,8 @@ void MatrixScanner(void)
     for(line = 0;line < 16;line++)
     { // seleziona le linee dei banchi una alla volta col demultiplexer
         Control_Reg_Keyboard_Line_Select_Write(line); // Selects row 
+        // qui ci vorrebbe un minimo delay
+        CyDelayUs(10); // 16*10us sta qui dentro
         // DBG_PRINTF("sel line %02d ",line);
         var = KeyInputPort_Read(); // leggi lo stato dei tasti 8 per volta
         
