@@ -8,6 +8,14 @@
  * WHICH IS THE PROPERTY OF your company.
  *
  * ========================================
+
+Implementazione:
+Leslie: toggle slow verde/Fast rosso. tenedo premuto va a stop giallo lampeggiante, ripremendo parte in fast. Parametro per ripartire in fast o slow
+-> scrivere nel display torna utile
+
+vibrato: toggle on/off upper, long press toggle on off lower. default c3, edit per cambiare
+
+
 */
 
 
@@ -22,7 +30,7 @@
 #include "VB3_midi_map.h"
 
 #define MIN_DEBOUNCE 9      // * 8ms
-#define MAX_DEBOUNCE 110     // * 8ms  
+#define MAX_DEBOUNCE 120     // * 8ms  
 #define MAX_PULSANTI 16
 
 enum _num_button_
@@ -56,15 +64,15 @@ enum _button_states_
 
 enum _rotary_switch_
 {
-    ROTARY_SLOW,
-    ROTARY_FAST,
-    ROTARY_STOP
+    ROTARY_SLOW = 0x00,
+    ROTARY_STOP = 0x3F,
+    ROTARY_FAST = 0x7F
 };
 
 enum _switch_
 {
-    SWITCH_OFF,
-    SWITCH_ON,
+    SWITCH_OFF = 0x00,
+    SWITCH_ON = 0x7F
 };
 
 enum _chorus_type_
@@ -79,20 +87,20 @@ enum _chorus_type_
 
 enum _perc_level_
 {
-    PERC_SOFT,
-    PERC_NORM
+    PERC_SOFT = 0x00,
+    PERC_NORM = 0x7F
 };
 
 enum _perc_decay_
 {
-    PERC_FAST,
-    PERC_SLOW
+    PERC_FAST = 0x00,
+    PERC_SLOW = 0x7F
 };
 
 enum _perc_type_
 {
-    PERC_2ND,
-    PERC_3RD
+    PERC_2ND = 0x00,
+    PERC_3RD = 0x7F
 };
 
 enum _preset_
@@ -111,10 +119,10 @@ struct {
 struct {
     uint8 marker;
     uint8 rotarySpeaker_HalfMoon;
-    uint8 rotarySpeaker_Switch;
-    uint8 overdrive_Switch;
-    uint8 chorusUp_Switch;
-    uint8 chorusDown_Switch;
+    uint8 rotarySpeaker_bypass;
+    uint8 Tube_Overdrive_Switch;
+    uint8 Vibrato_Lower_Switch;
+    uint8 Vibrato_Upper_Switch;
     uint8 chorus_Knob;
     uint8 percussion_Switch;
     uint8 percussionLevel_Switch;
@@ -133,11 +141,11 @@ void InitSwitchButtons(void)
         // prendi da default else carica da eeprom
         switchType.marker = MARKER_EEPROM_DEFAULT_BUTTON;
 
-        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-        switchType.rotarySpeaker_Switch = SWITCH_ON;
-        switchType.overdrive_Switch = SWITCH_OFF;
-        switchType.chorusUp_Switch = SWITCH_OFF;
-        switchType.chorusDown_Switch = SWITCH_OFF;
+        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
+        switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
+        switchType.Tube_Overdrive_Switch = SWITCH_OFF;
+        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
         switchType.chorus_Knob = CHORUS_C1;
         switchType.percussion_Switch = SWITCH_ON;
         switchType.percussionLevel_Switch = PERC_SOFT;
@@ -146,6 +154,53 @@ void InitSwitchButtons(void)
         switchType.upperManualPreset_Switch = PRESET_B;
         switchType.lowerManualPreset_Switch = PRESET_B;
     }
+    else
+    {
+        // carica da eeprom   
+    }
+    
+    // invia via midi la configurazione di default
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,    switchType.rotarySpeaker_HalfMoon,      MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Rotary_Speaker_Bypass,             switchType.rotarySpeaker_bypass,        MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Tube_Overdrive_Switch,             switchType.Tube_Overdrive_Switch,       MIDI_CHANNEL_1);
+    CyDelay(10);
+
+    sendControlChange(CC_Vibrato_Lower,                     switchType.Vibrato_Lower_Switch,        MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Vibrato_Upper,                     switchType.Vibrato_Upper_Switch,        MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Percussion_On_Off,                 switchType.percussion_Switch,           MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Percussion_Volume,                 switchType.percussionLevel_Switch,      MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Percussion_Decay,                  switchType.percussionDecay_Switch,      MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Percussion_Harmonic,               switchType.percussionHarmonics_Switch,  MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    sendControlChange(CC_Vibrato_Type,                      switchType.chorus_Knob,                 MIDI_CHANNEL_1);
+    CyDelay(10);
+    
+    /*
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+    CyDelay(10);
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+    CyDelay(10);
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+    CyDelay(10);
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+    CyDelay(10);
+    */
+    
  }
 
 void ButtonCommand(uint8 numTasto,uint8 status)
@@ -158,7 +213,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     
     switch(numTasto)
     {
-        case BUTTON_8:
+        case BUTTON_0:
         {
             switch (status) 
             {
@@ -167,15 +222,15 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                 {
                     if(switchType.rotarySpeaker_HalfMoon == ROTARY_SLOW) {
                         switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_FAST,MIDI_CHANNEL_1);
                     }
                     else if(switchType.rotarySpeaker_HalfMoon == ROTARY_FAST) {
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_SLOW,MIDI_CHANNEL_1);
                     }
                     else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
                         switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_FAST,MIDI_CHANNEL_1);
                     }
                 }
                 break;
@@ -184,11 +239,11 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                 {
                     if(switchType.rotarySpeaker_HalfMoon != ROTARY_STOP) {
                         switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x3F,MIDI_CHANNEL_1);
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_STOP,MIDI_CHANNEL_1);
                     }
                     else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_SLOW,MIDI_CHANNEL_1);
                     }
                 }
                 break;
@@ -197,8 +252,48 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         }
         break;
 
-        case 9:
+        case BUTTON_8:
+        {
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:
+                case BUTTON_SHORT_PRESS:
+                {
+                    
+                }
+                break;
+                
+                // case BUTTON_LONG_PRESS
+                case BUTTON_ON_HOLD:
+                {
+                    
+                }
+                break;
+                
+            }   
+        }
+        break;
         
+        case 9:
+        {
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:
+                case BUTTON_SHORT_PRESS:
+                {
+
+                }
+                break;
+                
+                // case BUTTON_LONG_PRESS
+                case BUTTON_ON_HOLD:
+                {
+
+                }
+                break;
+                
+            }   
+        }
         break;
         
         case 13:

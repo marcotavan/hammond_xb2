@@ -197,7 +197,7 @@ void MatrixScanner(void)
     { // seleziona le linee dei banchi una alla volta col demultiplexer
         Control_Reg_Keyboard_Line_Select_Write(line); // Selects row 
         // qui ci vorrebbe un minimo delay
-        CyDelayUs(10); // 16*10us sta qui dentro
+        CyDelayUs(1); // 16*10us sta qui dentro. con tiziano abbiamo visto che va bene 1uS
         // DBG_PRINTF("sel line %02d ",line);
         var = KeyInputPort_Read(); // leggi lo stato dei tasti 8 per volta
         

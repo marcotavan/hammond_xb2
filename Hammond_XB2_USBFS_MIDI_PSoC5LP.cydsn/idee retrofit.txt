@@ -1,3 +1,8 @@
+Implementazione:
+Leslie: toggle slow verde/Fast rosso. tenedo premuto va a stop giallo lampeggiante, ripremendo parte in fast. Parametro per ripartire in fast o slow
+-> scrivere nel display torna utile
+
+vibrato: toggle on/off upper, long press toggle on off lower. default c3, edit per cambiare
 
 
 Idee:
