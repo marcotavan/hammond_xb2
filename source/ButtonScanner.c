@@ -25,6 +25,26 @@
 #define MAX_DEBOUNCE 110     // * 8ms  
 #define MAX_PULSANTI 16
 
+enum _num_button_
+{
+    BUTTON_0,
+    BUTTON_1,
+    BUTTON_2,
+    BUTTON_3,
+    BUTTON_4,
+    BUTTON_5,
+    BUTTON_6,
+    BUTTON_7,
+    BUTTON_8,
+    BUTTON_9,
+    BUTTON_10,
+    BUTTON_11,
+    BUTTON_12,
+    BUTTON_13,
+    BUTTON_14,
+    BUTTON_15    
+};
+
 enum _button_states_
 {
     BUTTON_RELEASED,
@@ -138,7 +158,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     
     switch(numTasto)
     {
-        case 8:
+        case BUTTON_8:
         {
             switch (status) 
             {
