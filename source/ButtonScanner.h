@@ -12,6 +12,8 @@
 #ifndef _BUTTON_SCANNER_
 #define _BUTTON_SCANNER_
 
+#define MARKER_EEPROM_DEFAULT_BUTTON 0xA5
+    
 void ButtonScannerPoll(void);
 
 #endif    

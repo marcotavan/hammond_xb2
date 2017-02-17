@@ -20,7 +20,7 @@ Percussion Volume                       70
 Percussion Decay                        71 
 Percussion Harmonic                     72 
 
-Keyclick Level                          75 rotary
+Keyclick Level                          75 rotaryknob
 
 Tube Overdrive Switch                   67 
 Tube Overdrive Drive                    76 

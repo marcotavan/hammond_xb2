@@ -17,14 +17,16 @@
 #include "ButtonScanner.h"
 #include "common.h"
 #include "debug.h"
-
 #include "tick.h"
+#include "midiLibrary.h"
+#include "VB3_midi_map.h"
 
 #define MIN_DEBOUNCE 9      // * 8ms
 #define MAX_DEBOUNCE 110     // * 8ms  
 #define MAX_PULSANTI 16
 
-enum {
+enum _button_states_
+{
     BUTTON_RELEASED,
     BUTTON_PRESSED,
     BUTTON_ON_HOLD,
@@ -32,11 +34,164 @@ enum {
     BUTTON_LONG_PRESS
 };
 
+enum _rotary_switch_
+{
+    ROTARY_SLOW,
+    ROTARY_FAST,
+    ROTARY_STOP
+};
+
+enum _switch_
+{
+    SWITCH_OFF,
+    SWITCH_ON,
+};
+
+enum _chorus_type_
+{
+    CHORUS_C1,
+    CHORUS_V2,
+    CHORUS_C2,
+    CHORUS_V3,
+    CHORUS_C3,
+    CHORUS_V1
+};
+
+enum _perc_level_
+{
+    PERC_SOFT,
+    PERC_NORM
+};
+
+enum _perc_decay_
+{
+    PERC_FAST,
+    PERC_SLOW
+};
+
+enum _perc_type_
+{
+    PERC_2ND,
+    PERC_3RD
+};
+
+enum _preset_
+{
+    PRESET_A,
+    PRESET_B  
+};
+
 struct {
     uint8 debounce;
     uint8 status;
     uint8 oneShot;
 } button[MAX_PULSANTI];
+
+// potrebbe andare in eeprom
+struct {
+    uint8 marker;
+    uint8 rotarySpeaker_HalfMoon;
+    uint8 rotarySpeaker_Switch;
+    uint8 overdrive_Switch;
+    uint8 chorusUp_Switch;
+    uint8 chorusDown_Switch;
+    uint8 chorus_Knob;
+    uint8 percussion_Switch;
+    uint8 percussionLevel_Switch;
+    uint8 percussionDecay_Switch;
+    uint8 percussionHarmonics_Switch;
+    uint8 upperManualPreset_Switch;
+    uint8 lowerManualPreset_Switch;
+} switchType;
+
+
+void InitSwitchButtons(void)
+{
+    // ricarica da eerpom se c'è il marker else prendi da default i pulsanti.
+    if (switchType.marker != MARKER_EEPROM_DEFAULT_BUTTON)
+    {
+        // prendi da default else carica da eeprom
+        switchType.marker = MARKER_EEPROM_DEFAULT_BUTTON;
+
+        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+        switchType.rotarySpeaker_Switch = SWITCH_ON;
+        switchType.overdrive_Switch = SWITCH_OFF;
+        switchType.chorusUp_Switch = SWITCH_OFF;
+        switchType.chorusDown_Switch = SWITCH_OFF;
+        switchType.chorus_Knob = CHORUS_C1;
+        switchType.percussion_Switch = SWITCH_ON;
+        switchType.percussionLevel_Switch = PERC_SOFT;
+        switchType.percussionDecay_Switch = PERC_FAST;
+        switchType.percussionHarmonics_Switch = PERC_2ND;
+        switchType.upperManualPreset_Switch = PRESET_B;
+        switchType.lowerManualPreset_Switch = PRESET_B;
+    }
+ }
+
+void ButtonCommand(uint8 numTasto,uint8 status)
+{
+    DBG_PRINTF("[%s] tasto %d status %d\n",__func__,numTasto,status);
+    // status torna: 1 pressione immediata, 
+    // 3 rilascio veloce, 
+    // 2 pressione prlungata, 
+    // 4 riolascio da pressione prolungata
+    
+    switch(numTasto)
+    {
+        case 8:
+        {
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:
+                case BUTTON_SHORT_PRESS:
+                {
+                    if(switchType.rotarySpeaker_HalfMoon == ROTARY_SLOW) {
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+                    }
+                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_FAST) {
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
+                    }
+                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
+                    }
+                }
+                break;
+                
+                case BUTTON_ON_HOLD:
+                {
+                    if(switchType.rotarySpeaker_HalfMoon != ROTARY_STOP) {
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x3F,MIDI_CHANNEL_1);
+                    }
+                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0,MIDI_CHANNEL_1);
+                    }
+                }
+                break;
+                
+            }
+        }
+        break;
+
+        case 9:
+        
+        break;
+        
+        case 13:
+        
+        break;
+
+        default:
+        break;
+    }
+    
+    
+}
+
 
 void ButtonManager(void)
 {
@@ -49,7 +204,8 @@ void ButtonManager(void)
             {
                 if (bitRead(button[numTasto].oneShot,0) == 0) {   
                     // esegui una sola volta
-                    DBG_PRINTF("tasto %d appena premuto valido, con dito ancora sopra il pulsante\n",numTasto);
+                    // DBG_PRINTF("tasto %d appena premuto valido, con dito ancora sopra il pulsante\n",numTasto);
+                    ButtonCommand(numTasto,button[numTasto].status);
                     bitSet(button[numTasto].oneShot,0);
                 }
             } break;
@@ -58,21 +214,24 @@ void ButtonManager(void)
             {
                 if (bitRead(button[numTasto].oneShot,1) == 0) {
                     // esegui una sola volta
-                    DBG_PRINTF("tasto %d tenuto premuto, con dito ancora sopra il pulsante\n",numTasto);
+                    // DBG_PRINTF("tasto %d tenuto premuto, con dito ancora sopra il pulsante\n",numTasto);
+                    ButtonCommand(numTasto,button[numTasto].status);
                     bitSet(button[numTasto].oneShot,1);
                 }
             } break;
             
             case BUTTON_SHORT_PRESS:
             {
-                DBG_PRINTF("tasto %d rilasciato da pressione breve\n",numTasto);
+                // DBG_PRINTF("tasto %d rilasciato da pressione breve\n",numTasto);
+                ButtonCommand(numTasto,button[numTasto].status);
                 button[numTasto].status = BUTTON_RELEASED;
                 button[numTasto].oneShot = 0; // resetta il singolo sparo
             } break;
             
             case BUTTON_LONG_PRESS:
             {
-                DBG_PRINTF("tasto %d rilasciato da pressione prolungata\n",numTasto);
+                // DBG_PRINTF("tasto %d rilasciato da pressione prolungata\n",numTasto);
+                ButtonCommand(numTasto,button[numTasto].status);
                 button[numTasto].status = BUTTON_RELEASED;
                 button[numTasto].oneShot = 0; // resetta il singolo sparo
             } break;
@@ -187,6 +346,8 @@ void ButtonScannerInit(void)
         button[i].status = BUTTON_RELEASED;
         button[i].oneShot = 0;
     }
+    
+    InitSwitchButtons();
 }
 
 void ButtonScannerPoll(void)
