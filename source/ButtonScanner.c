@@ -17,9 +17,10 @@ Implementazione:
 3. percussion on off / level, normal/soft
 4. percussion 2nd/ 3rd, decay fast/slow
 
-serve un tasto EDIT o SHIFT tenuto premuto agisce sui singoli comandi.
+serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
+2 permette di toggglare tra i vari vibrato scanner
 
-
+5 tasto SOLO incrementa il volume per fare un solo? potrebbe essere! da un BOOST
 */
 
 
@@ -33,6 +34,7 @@ serve un tasto EDIT o SHIFT tenuto premuto agisce sui singoli comandi.
 #include "midiLibrary.h"
 #include "VB3_midi_map.h"
 #include "customLcd.h"
+#include "EepromManager.h"
 
 #define MIN_DEBOUNCE 9      // * 8ms
 #define MAX_DEBOUNCE 120     // * 8ms  
@@ -231,6 +233,7 @@ uint8 SHIFT_Button_on_Hold(void)
 
 void ButtonCommand(uint8 numTasto,uint8 status)
 {
+    // funzione chiamata ad ogni pressione di un pulsante
     DBG_PRINTF("[%s] tasto %d status %d\n",__func__,numTasto,status);
     // status torna: 1 pressione immediata, 
     // 3 rilascio veloce, 
@@ -533,6 +536,34 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         }
         break;
         
+        case BUTTON_5:
+        {
+            // solo button
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:     // valido immediatamente
+                case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+                {
+
+                }
+                break;
+                
+                // case BUTTON_LONG_PRESS   // valido al rilascio lungo
+                case BUTTON_ON_HOLD:        // valido al mantenimento
+                {
+
+                }
+                break;
+                
+                case BUTTON_RELEASED:       // tasto rilasciato
+                {
+                    
+                }
+                break;
+            }   
+        }
+        break;
+        
         case BUTTON_15:
         {
             switch (status) 
@@ -562,10 +593,12 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         
         default:
         break;
-    }
+    } // switch(numTasto)
     
+    // chiamare una scrittura in eeprom
+    WriteDataToEeprom(EEPROM_BUTTON);
     
-}
+} // ButtonCommand
 
 void ButtonManager(void)
 {
