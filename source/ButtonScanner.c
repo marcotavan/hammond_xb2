@@ -10,10 +10,10 @@
  * ========================================
 
 Implementazione:
-Leslie: toggle slow verde/Fast rosso. tenedo premuto va a stop giallo lampeggiante, ripremendo parte in fast. Parametro per ripartire in fast o slow
+1. Leslie: toggle slow verde/Fast rosso. tenedo premuto va a stop giallo lampeggiante, ripremendo parte in fast. Parametro per ripartire in fast o slow
 -> scrivere nel display torna utile
 
-vibrato: toggle on/off upper, long press toggle on off lower. default c3, edit per cambiare
+2. vibrato: toggle on/off upper, long press toggle on off lower. default c3, edit per cambiare
 
 
 */
@@ -174,6 +174,9 @@ void InitSwitchButtons(void)
     
     sendControlChange(CC_Vibrato_Upper,                     switchType.Vibrato_Upper_Switch,        MIDI_CHANNEL_1);
     CyDelay(10);
+
+    sendControlChange(CC_Vibrato_Type,                      switchType.chorus_Knob,                 MIDI_CHANNEL_1);
+    CyDelay(10);
     
     sendControlChange(CC_Percussion_On_Off,                 switchType.percussion_Switch,           MIDI_CHANNEL_1);
     CyDelay(10);
@@ -186,20 +189,6 @@ void InitSwitchButtons(void)
     
     sendControlChange(CC_Percussion_Harmonic,               switchType.percussionHarmonics_Switch,  MIDI_CHANNEL_1);
     CyDelay(10);
-    
-    sendControlChange(CC_Vibrato_Type,                      switchType.chorus_Knob,                 MIDI_CHANNEL_1);
-    CyDelay(10);
-    
-    /*
-    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
-    CyDelay(10);
-    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
-    CyDelay(10);
-    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
-    CyDelay(10);
-    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,0x7F,MIDI_CHANNEL_1);
-    CyDelay(10);
-    */
     
  }
 
@@ -214,59 +203,208 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     switch(numTasto)
     {
         case BUTTON_0:
-        {
+        { // Leslie
             switch (status) 
             {
                 // case BUTTON_PRESSED:
                 case BUTTON_SHORT_PRESS:
                 {
-                    if(switchType.rotarySpeaker_HalfMoon == ROTARY_SLOW) {
+                    switch(switchType.rotarySpeaker_HalfMoon) 
+                    {
+                        case ROTARY_SLOW:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_FAST,MIDI_CHANNEL_1);
-                    }
-                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_FAST) {
+                        break;
+                        
+                        case ROTARY_FAST: 
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_SLOW,MIDI_CHANNEL_1);
-                    }
-                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
+                        break;
+                        
+                        case ROTARY_STOP:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_FAST,MIDI_CHANNEL_1);
+                        break;
+                        
+                        default:
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                        break;
                     }
+                                   
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,    switchType.rotarySpeaker_HalfMoon,  MIDI_CHANNEL_1);    
                 }
                 break;
                 
                 case BUTTON_ON_HOLD:
                 {
-                    if(switchType.rotarySpeaker_HalfMoon != ROTARY_STOP) {
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_STOP,MIDI_CHANNEL_1);
-                    }
-                    else if(switchType.rotarySpeaker_HalfMoon == ROTARY_STOP) {
+                    switch(switchType.rotarySpeaker_HalfMoon) 
+                    {
+                        case ROTARY_STOP:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,ROTARY_SLOW,MIDI_CHANNEL_1);
+                        break;
+                        
+                        default:
+                        switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
+                        break;
                     }
+                    
+                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,    switchType.rotarySpeaker_HalfMoon,   MIDI_CHANNEL_1);                    
                 }
                 break;
                 
+                default:
+                break;
             }
         }
         break;
 
-        case BUTTON_8:
-        {
+        case BUTTON_1:
+        { // vibrato
             switch (status) 
             {
                 // case BUTTON_PRESSED:
                 case BUTTON_SHORT_PRESS:
                 {
+                    switch(switchType.Vibrato_Upper_Switch) 
+                    {
+                        case SWITCH_OFF:
+                        switchType.Vibrato_Upper_Switch = SWITCH_ON;
+                        break;
                     
+                        case SWITCH_ON: 
+                        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+                        break;
+                        
+                        default:
+                        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+                        break;
+                    }
+                    
+                    sendControlChange(CC_Vibrato_Upper,                     switchType.Vibrato_Upper_Switch,        MIDI_CHANNEL_1);
+
                 }
                 break;
                 
                 // case BUTTON_LONG_PRESS
                 case BUTTON_ON_HOLD:
                 {
+                    switch (switchType.Vibrato_Lower_Switch) 
+                    {
+                        case SWITCH_OFF:
+                        switchType.Vibrato_Lower_Switch = SWITCH_ON;
+                        break;
+                        
+                        case SWITCH_ON:
+                        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+                        break;
+                        
+                        default:
+                        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+                        break;
+                    }
                     
+                    sendControlChange(CC_Vibrato_Lower,                     switchType.Vibrato_Lower_Switch,        MIDI_CHANNEL_1);
+                }
+                break;
+                
+            }   
+        }
+        break;
+        
+        case BUTTON_2:
+        { // percussion on/off, level soft normal
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:
+                case BUTTON_SHORT_PRESS:
+                {
+                    switch(switchType.percussion_Switch) 
+                    {
+                        case SWITCH_OFF:
+                        switchType.percussion_Switch = SWITCH_ON;
+                        break;
+                    
+                        case SWITCH_ON: 
+                        switchType.percussion_Switch = SWITCH_OFF;
+                        break;
+                        
+                        default:
+                        switchType.percussion_Switch = SWITCH_OFF;
+                        break;
+                    }
+                    
+                    sendControlChange(CC_Percussion_On_Off,                     switchType.percussion_Switch,        MIDI_CHANNEL_1);
+                }
+                break;
+                
+                // case BUTTON_LONG_PRESS
+                case BUTTON_ON_HOLD:
+                {
+                    switch(switchType.percussionLevel_Switch) 
+                    {
+                        case PERC_SOFT:
+                        switchType.percussionLevel_Switch = PERC_NORM;
+                        break;
+                    
+                        case PERC_NORM: 
+                        switchType.percussionLevel_Switch = PERC_SOFT;
+                        break;
+                        
+                        default:
+                        switchType.percussionLevel_Switch = PERC_SOFT;
+                        break;
+                    }
+                    
+                    sendControlChange(CC_Percussion_Volume,                     switchType.percussionLevel_Switch,        MIDI_CHANNEL_1);
+                }
+                break;
+                
+            }   
+        }
+        break;
+
+        case BUTTON_3:
+        { // percussion 3rd 2nd / fast slow
+            switch (status) 
+            {
+                // case BUTTON_PRESSED:
+                case BUTTON_SHORT_PRESS:
+                {
+                    switch(switchType.percussionHarmonics_Switch) 
+                    {
+                        case PERC_2ND:
+                        switchType.percussionHarmonics_Switch = PERC_3RD;
+                        break;
+                    
+                        case PERC_3RD: 
+                        switchType.percussionHarmonics_Switch = PERC_2ND;
+                        break;
+                        
+                        default:
+                        switchType.percussionHarmonics_Switch = PERC_2ND;
+                        break;
+                    }
+                    
+                    sendControlChange(CC_Percussion_Harmonic,                     switchType.percussionHarmonics_Switch,        MIDI_CHANNEL_1);
+                }
+                break;
+                
+                // case BUTTON_LONG_PRESS
+                case BUTTON_ON_HOLD:
+                {
+                    switch(switchType.percussionDecay_Switch) 
+                    {
+                        case PERC_FAST:
+                        switchType.percussionDecay_Switch = PERC_SLOW;
+                        break;
+                    
+                        case PERC_SLOW: 
+                        switchType.percussionDecay_Switch = PERC_FAST;
+                        break;
+                        
+                        default:
+                        switchType.percussionDecay_Switch = PERC_FAST;
+                        break;
+                    }
+                    
+                    sendControlChange(CC_Percussion_Decay,                     switchType.percussionDecay_Switch,        MIDI_CHANNEL_1);
                 }
                 break;
                 
