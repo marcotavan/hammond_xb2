@@ -347,6 +347,14 @@ void LCD_Poll(void)
     }
 }
 
+void Display_Write_Text(uint8 where, char *what)
+{
+    where = where;
+    what = what;
+    
+    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,what);
+    // nop
+}
 
 /* [] END OF FILE */
 

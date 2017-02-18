@@ -28,6 +28,7 @@ Implementazione:
 #include "tick.h"
 #include "midiLibrary.h"
 #include "VB3_midi_map.h"
+#include "customLcd.h"
 
 #define MIN_DEBOUNCE 9      // * 8ms
 #define MAX_DEBOUNCE 120     // * 8ms  
@@ -190,6 +191,7 @@ void InitSwitchButtons(void)
     sendControlChange(CC_Percussion_Harmonic,               switchType.percussionHarmonics_Switch,  MIDI_CHANNEL_1);
     CyDelay(10);
     
+    Display_Write_Text(ROW_1,"InitSwitchButtons");
  }
 
 void ButtonCommand(uint8 numTasto,uint8 status)
@@ -212,19 +214,19 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     switch(switchType.rotarySpeaker_HalfMoon) 
                     {
                         case ROTARY_SLOW:
+                        case ROTARY_STOP:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                        Display_Write_Text(ROW_1,"ROTARY_FAST");
                         break;
                         
                         case ROTARY_FAST: 
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        break;
-                        
-                        case ROTARY_STOP:
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                        Display_Write_Text(ROW_1,"ROTARY_SLOW");
                         break;
                         
                         default:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                        Display_Write_Text(ROW_1,"ROTARY_SLOW");
                         break;
                     }
                                    
@@ -238,10 +240,12 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     {
                         case ROTARY_STOP:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                        Display_Write_Text(ROW_1,"RESTART ROTARY_SLOW");
                         break;
                         
                         default:
                         switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
+                        Display_Write_Text(ROW_1,"ROTARY_STOP");
                         break;
                     }
                     
@@ -319,14 +323,17 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     {
                         case SWITCH_OFF:
                         switchType.percussion_Switch = SWITCH_ON;
+                        Display_Write_Text(ROW_1,"Percussion_On");
                         break;
                     
                         case SWITCH_ON: 
                         switchType.percussion_Switch = SWITCH_OFF;
+                        Display_Write_Text(ROW_1,"Percussion_Off");
                         break;
                         
                         default:
                         switchType.percussion_Switch = SWITCH_OFF;
+                        Display_Write_Text(ROW_1,"Percussion_Off");
                         break;
                     }
                     
@@ -341,14 +348,17 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     {
                         case PERC_SOFT:
                         switchType.percussionLevel_Switch = PERC_NORM;
+                        Display_Write_Text(ROW_1,"Percussion_NORM");
                         break;
                     
                         case PERC_NORM: 
                         switchType.percussionLevel_Switch = PERC_SOFT;
+                        Display_Write_Text(ROW_1,"Percussion_SOFT");
                         break;
                         
                         default:
                         switchType.percussionLevel_Switch = PERC_SOFT;
+                        Display_Write_Text(ROW_1,"Percussion_SOFT");
                         break;
                     }
                     
@@ -371,14 +381,17 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     {
                         case PERC_2ND:
                         switchType.percussionHarmonics_Switch = PERC_3RD;
+                        Display_Write_Text(ROW_1,"Percussion_3RD");
                         break;
                     
                         case PERC_3RD: 
                         switchType.percussionHarmonics_Switch = PERC_2ND;
+                        Display_Write_Text(ROW_1,"Percussion_2ND");
                         break;
                         
                         default:
                         switchType.percussionHarmonics_Switch = PERC_2ND;
+                        Display_Write_Text(ROW_1,"Percussion_2ND");
                         break;
                     }
                     
@@ -393,14 +406,17 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                     {
                         case PERC_FAST:
                         switchType.percussionDecay_Switch = PERC_SLOW;
+                        Display_Write_Text(ROW_1,"Percussion_SLOW");
                         break;
                     
                         case PERC_SLOW: 
                         switchType.percussionDecay_Switch = PERC_FAST;
+                        Display_Write_Text(ROW_1,"Percussion_FAST");
                         break;
                         
                         default:
                         switchType.percussionDecay_Switch = PERC_FAST;
+                        Display_Write_Text(ROW_1,"Percussion_FAST");
                         break;
                     }
                     

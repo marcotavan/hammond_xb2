@@ -18,6 +18,8 @@ void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 valu
 void LCD_Poll(void);
 void Write_BarGraphs(void);
 
+void Display_Write_Text(uint8 where, char *what);
+
 #define MAX_CHARS   16
 #define MAX_ROWS    2
 #define ROW_0       0
