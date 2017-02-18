@@ -26,8 +26,8 @@
         TICK_ANALOG,                        // 3
         TICK_LCD,                           // 4
         TICK_BUTTONSCANNER,                 // 5
+        TICK_EEPROM,                        // 6
         //--------------------------------------
-        TICK_HEARTBEAT,                     // 6
         TICK_SCRITTURA_RITARDATA,           // 7
         TICK_CODA_PWM,                      // 8
         TICK_GESTIONE_RELE,                 // 9

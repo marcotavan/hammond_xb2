@@ -767,7 +767,9 @@ void ButtonScannerPoll(void)
         isButtonScannerInitialized = TRUE;
     }
     
-    ButtonScanner();
-    ButtonManager();
+    if (tick_1ms(TICK_BUTTONSCANNER)) {
+        ButtonScanner();
+        ButtonManager();
+    }
 }
 /* [] END OF FILE */

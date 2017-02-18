@@ -36,10 +36,10 @@
 #include "analog.h"
 #include "customLcd.h"
 #include "ButtonScanner.h"
+#include "EepromManager.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
-
 
 #define USB_SUSPEND_TIMEOUT     (2u)
 
@@ -196,14 +196,14 @@ int main()
             Check_if_host_requested_USB_Suspend();
             
             if(flag_500us_ISR)
-            {
+            { // probabilmente questo deve essere inserito nell'ISR
                 KeyScan_Poll();
                 flag_500us_ISR = 0;
             }
             
-            if (tick_1ms(TICK_BUTTONSCANNER)) {
-                ButtonScannerPoll();
-            }        
+            ButtonScannerPoll();
+            
+            EepromPoll();
         }
         
        
