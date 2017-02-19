@@ -44,6 +44,7 @@ static uint8 shiftOnHold = FALSE;
 
 char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
+
 enum _num_button_
 {
     BUTTON_0,
@@ -126,31 +127,18 @@ struct {
     uint8 oneShot;
 } button[MAX_PULSANTI];
 
-// potrebbe andare in eeprom
-struct {
-    uint8 marker;
-    uint8 rotarySpeaker_HalfMoon;
-    uint8 rotarySpeaker_bypass;
-    uint8 Tube_Overdrive_Switch;
-    uint8 Vibrato_Lower_Switch;
-    uint8 Vibrato_Upper_Switch;
-    uint8 chorus_Knob;
-    uint8 percussion_Switch;
-    uint8 percussionLevel_Switch;
-    uint8 percussionDecay_Switch;
-    uint8 percussionHarmonics_Switch;
-    uint8 upperManualPreset_Switch;
-    uint8 lowerManualPreset_Switch;
-} switchType;
-
-
 void InitSwitchButtons(void)
 {
-    // ricarica da eerpom se c'è il marker else prendi da default i pulsanti.
-    if (switchType.marker != MARKER_EEPROM_DEFAULT_BUTTON)
+    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
+    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
+        
+    // punto all-inizio della struttura
+    memcpy((uint8 *) &switchType,(uint8 *) internal_eeprom.RegPointer,sizeof(switchType));    
+
+    if (switchType.marker != MARKER_EEPROM_DEFAULT)
     {
         // prendi da default else carica da eeprom
-        switchType.marker = MARKER_EEPROM_DEFAULT_BUTTON;
+        switchType.marker = MARKER_EEPROM_DEFAULT;
 
         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
         switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
@@ -164,10 +152,9 @@ void InitSwitchButtons(void)
         switchType.percussionHarmonics_Switch = PERC_2ND;
         switchType.upperManualPreset_Switch = PRESET_B;
         switchType.lowerManualPreset_Switch = PRESET_B;
-    }
-    else
-    {
-        // carica da eeprom   
+        
+        // write in eeprom
+        EEPROM_Write((uint8 *) &switchType, EEPROM_ROW_BUTTONS);
     }
     
     // invia via midi la configurazione di default
@@ -221,7 +208,7 @@ void InitSwitchButtons(void)
         MIDI_CHANNEL_1);
     CyDelay(10);
     
-    Display_Write_Text(ROW_1,"InitSwitchButtons");
+    Display_Write_Text(ROW_1,"InitSwitchButtons Done");
  }
 
 

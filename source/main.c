@@ -120,6 +120,8 @@ int main()
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
     
+    eeprom_init();
+    
     KeyScanInit(); 
     // fill_icsi_log_table(8, lookup_table);
     

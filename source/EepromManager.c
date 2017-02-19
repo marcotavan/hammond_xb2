@@ -7,6 +7,7 @@
 #include "common.h"
 #include "EepromManager.h"
 #include "tick.h"
+#include "ButtonScanner.h"
 
 // da rifare , meglio prendere aria
 uint16 eeprom_timeout[5] = {0,0,0,0,0};
@@ -18,52 +19,82 @@ uint8 WriteDataToEeprom(uint8 type)
     return TRUE;
 }
 
-/*
-cystatus EEPROM_StartWrite(const uint8 *rowData, uint8 rowNumber)
-Description: Starts the write of a row (16 bytes) of data to the EEPROM. This function does not block. The
-function returns once the SPC has begun writing the data. This function must be used in
-combination with EEPROM_Query(). EEPROM_Query() must be called until it returns a
-status other than CYRET_STARTED. That indicates the write has completed. Until
-EEPROM_Query() detects that the write is complete the SPC is marked as locked to prevent
-another SPC operation from being performed. For reliable write procedure to occur you
-should call EEPROM_UpdateTemperature() API if the temperature of the silicon has
-changed for more than 10°C since component was started.
-Parameters: rowData: Address of the data to write to the EEPROM
-rowNumber: Row number to write
-Return Value: Value Description
-CYRET_SUCCESS Successful completion.
-CYRET_BAD_PARAM Row number or byte number out.
-CYRET_LOCKED SPC locked by another operation.
-CYRET_UNKNOWN Other error from the SPC.
-Side Effects: After calling this API, the device should not be powered down, reset, or switched to low
-power mode until the EEPROM operation is complete. Not following this recommendation
-may lead to data corruption or silicon unexpected behavior.
+uint8 scriviInEeprom(uint8 type)
+{
+    // la memoria [ disponibile?
+    uint8 *ps;
+    uint8 row;
+    
+    if (EEPROM_Query() == CYRET_STARTED) {
+        // Checks the status of an earlier call to EEPROM_StartWrite()
+        DBG_PRINTF("riprova la eeprom non e' disponibile\n");
+        return 5; 
+    }
+    
+    if (EEPROM_Query() == CYRET_SUCCESS) {
+        // scrivi in eeprom
+        
+        // EEPROM_UpdateTemperature();
 
-cystatus EEPROM_Query(void)
-Description: Checks the status of an earlier call to EEPROM_StartWrite() or EEPROM_StartErase(). This
-function must be called until it returns a value other than CYRET_STARTED. Once that
-occurs the write has been completed and the SPC is unlocked.
-Parameters: None
-Return Value: Value Description
-CYRET_SUCCESS The operation completed successfully.
-CYRET_STARTED The SPC command is still being executed.
-CYRET_UNKNOWN Other error from the SPC.
+        switch(type)
+        {
+            case EEPROM_BUTTON:
+            row = EEPROM_ROW_BUTTONS;
+            ps = (uint8 *) &switchType;
+            EEPROM_StartWrite(ps, row);
+            break;
+            
+            case EEPROM_DRAWBARS:
+            row = 2;
+            ps = (uint8 *) &switchType;
+            EEPROM_StartWrite(ps, row);
+            break;
+            
+            case EEPROM_PRESET:
+            row = 3;
+            ps = (uint8 *) &switchType;
+            EEPROM_StartWrite(ps, row);
+            break;
+            
+            case EEPROM_MIDI:
+            row = 4;
+            ps = (uint8 *) &switchType;
+            EEPROM_StartWrite(ps, row);
+            break;
+        }
+    }
 
-*/
+    return 0;
+}
+
+void eeprom_init(void)
+{
+    EEPROM_Enable();
+    
+    // fai partire un timeout di 10 minuti che fa una UpdateTemperature
+    /*
+        // punto alla riga della eeprom da caricare
+        internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEP_ROW_CLOCK_DATA));  
+            
+        // punto all-inizio della struttura
+        ps = (uint8 *) &clock; 
+            
+        // questo è la stessa cosa: faccio fare a lui
+        memcpy(ps,(uint8 *) internal_eeprom.RegPointer,sizeof(clock));
+    */
+    
+    if (EEPROM_ReadByte(0) != MARKER_EEPROM_DEFAULT)
+    {
+        EEPROM_EraseSector(0);
+        EEPROM_EraseSector(1);
+        
+        EEPROM_WriteByte(MARKER_EEPROM_DEFAULT,0);
+    }
+}    
+
 
 void EepromPoll(void)
 {
-    static uint8 isEepromInitialized = FALSE;
-    
-    if(isEepromInitialized == FALSE)
-    {
-        EEPROM_Enable();
-        
-        // if marker not present
-        // EEPROM_EraseSector
-        isEepromInitialized = TRUE;
-    }
-    
     if(tick_100ms(TICK_EEPROM))
     {
         // fai qualcosa qua
@@ -73,6 +104,7 @@ void EepromPoll(void)
             if (eeprom_timeout[EEPROM_BUTTON] == 0)
             {
                 DBG_PRINTF("scrivi EEPROM_BUTTON\n");
+                eeprom_timeout[EEPROM_BUTTON] = scriviInEeprom(EEPROM_BUTTON);
             }
         }
         else if(eeprom_timeout[EEPROM_DRAWBARS])

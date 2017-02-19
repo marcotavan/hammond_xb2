@@ -4,7 +4,7 @@
     
 #include "project.h"
 
-#define MARKER_EEPROM_DEFAULT_BUTTON 0xA5
+#define MARKER_EEPROM_DEFAULT 0xA5
 
 enum {
     EEPROM_BUTTON,
@@ -13,9 +13,19 @@ enum {
     EEPROM_MIDI
 };
 
+#define EEPROM_ROW_BUTTONS 1
+
+//variabili eeprom
+struct _internal_eeprom_
+{
+    reg8 * RegPointer;
+    cystatus eraseStatus;
+    cystatus writeStatus;
+    uint8 FL_EE_ERROR;
+} internal_eeprom;
 
 uint8 WriteDataToEeprom(uint8 type);
 void EepromPoll(void);
-
+void eeprom_init(void);
 #endif
 // EOF
