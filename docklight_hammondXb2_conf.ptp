@@ -45,111 +45,118 @@ Erase all memory
 
 SEND
 4
+InitSwitchButton
+01 04 C0 C1 B1 01 EE
+0
+5
+
+SEND
+5
 ----------------------------------
 00
 0
 5
 
 SEND
-5
+6
 send Control change C0 CC + val -> Vibrato Type
 01 05 C0 C1 C0 49 21 EE
 0
 5
 
 SEND
-6
+7
 send Control change C0 CC + val -> rotary fast
 01 05 C0 C1 C0 01 7F EE
 0
 5
 
 SEND
-7
+8
 send Control change C0 CC + val -> rotary slow
 01 05 C0 C1 C0 01 00 EE
 0
 5
 
 SEND
-8
+9
 ----------------------------------
 00
 0
 5
 
 SEND
-9
+10
 SHIFT KIP ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 04 02 EE
 0
 5
 
 SEND
-10
+11
 SHIFT REL ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 04 00 EE
 0
 5
 
 SEND
-11
+12
 Rotary PB0 SP ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 00 03 EE
 0
 5
 
 SEND
-12
+13
 Rotary PB0 OH ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 00 02 EE
 0
 5
 
 SEND
-13
+14
 SP PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 03 EE
 0
 5
 
 SEND
-14
+15
 OH PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 02 EE
 0
 5
 
 SEND
-15
+16
 PR PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 01 EE
 0
 5
 
 SEND
-16
+17
 SP PB2 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 02 03 EE
 0
 5
 
 SEND
-17
+18
 OH PB2 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 02 02 EE
 0
 5
 
 SEND
-18
+19
 SP PB3 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 03 03 EE
 0
 5
 
 SEND
-19
+20
 OH PB3 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 03 02 EE
 0
