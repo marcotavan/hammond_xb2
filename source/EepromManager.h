@@ -27,5 +27,7 @@ struct _internal_eeprom_
 uint8 WriteDataToEeprom(uint8 type);
 void EepromPoll(void);
 void eeprom_init(void);
+
+void internal_eeprom_inspector(uint16 start_row, uint16 last_row);
 #endif
 // EOF

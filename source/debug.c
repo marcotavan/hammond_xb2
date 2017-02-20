@@ -5,6 +5,7 @@
 #include <project.h>
 #include "cytypes.h"
 #include "debug.h"
+#include "EepromManager.h"
 
 char string[256];
 // sprintf(str, "uart_zw_buffer_size:%d ", uart_zw_buffer_size);

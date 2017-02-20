@@ -115,7 +115,7 @@ void sprintfWrite(void);
 /*******************************************************************************/
  struct _FIFO_ fifo[NUM_SERIALI];
  void MOD_SysLog_Init(void);
- void UART0_PARSER_Task(void);
+void UART_DEBUG_PARSER_Task( void );
  uint8 verbose_Mode; // interruttore usato per attvare/disattivare il printf
  void printLine(void);
 void printStarLine(void);

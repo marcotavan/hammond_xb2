@@ -136,7 +136,7 @@ void EepromPoll(void)
 
 
 
-#if (0)
+#if (1)
 /*****************************************************************************\
 *  Funzione:     internal_eeprom_inspector(uint16 start_row, uint16 last_row) *
 *  Argomenti:    start_row,       last_row 				      				  *
@@ -157,18 +157,18 @@ void internal_eeprom_inspector(uint16 start_row, uint16 last_row)
     for(row = start_row; row<last_row; row++)
     {
         internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * row));     //punta all'inizio della eeprom
-    
+ #if (1)   
         switch (row)
         {
-            case EEPROM_POSITION_0:
-            case EEP_ROW_BUTTON_DATA:
-            case EEP_ROW_CLOCK_DATA:
-            case EEP_ROW_BUTTON_DATA+MAX_CANALI:
-            case EEP_ROW_DIMMER_DATA+MAX_CANALI:
-            case EEP_ROW_DIMMER_DALCNET:
-            case EEP_ROW_SCENE:
-            case EEP_ROW_SCENE_SATELLITE:
-            case EEP_ROW_FREE:
+            case EEPROM_ROW_BUTTONS:
+//            case EEP_ROW_BUTTON_DATA:
+//            case EEP_ROW_CLOCK_DATA:
+//            case EEP_ROW_BUTTON_DATA+MAX_CANALI:
+//            case EEP_ROW_DIMMER_DATA+MAX_CANALI:
+//            case EEP_ROW_DIMMER_DALCNET:
+//            case EEP_ROW_SCENE:
+//            case EEP_ROW_SCENE_SATELLITE:
+//            case EEP_ROW_FREE:
             {
                 DBG_PRINTF("-------------------------------------------------------\n");
             }
@@ -177,7 +177,7 @@ void internal_eeprom_inspector(uint16 start_row, uint16 last_row)
             default:
             break;
         }
-        
+ #endif // (0)          
         // testo in TEsta alle righe
         DBG_PRINTF("ROW>%02X| ", row);
 
@@ -189,9 +189,10 @@ void internal_eeprom_inspector(uint16 start_row, uint16 last_row)
             DBG_PRINTF("%02X ", internal_eeprom.RegPointer[col]);
 
         }
-        
         // testo in coda alle righe
-        if (row == EEPROM_POSITION_0)                   {DBG_PRINTF("< MARKER");} 
+        if (row == EEPROM_ROW_BUTTONS)                   {DBG_PRINTF("< switchType");} 
+ #if (0)           
+        
         if (row == EEP_ROW_STATUS_DATA)                 {DBG_PRINTF("< STATUS");} 
         if (row == EEP_ROW_COUNTER_RESTART)             {DBG_PRINTF("< RESTART CNT");} 
         
@@ -236,8 +237,9 @@ void internal_eeprom_inspector(uint16 start_row, uint16 last_row)
         // DBG_PRINTF("%2X ", internal_eeprom.RegPointer[address]);
         
                                                         DBG_PRINTF("\n");
+    #endif // (0)    
     }    
-    
+
     DBG_PRINTF("*******************************************************\n");    
 
 }

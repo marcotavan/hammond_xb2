@@ -89,12 +89,12 @@ enum _switch_
 
 enum _chorus_type_
 {
-    CHORUS_C1,      // 0
-    CHORUS_V2,      // 1
-    CHORUS_C2,      // 2
-    CHORUS_V3,      // 3
-    CHORUS_C3,      // 4
-    CHORUS_V1       // 5    
+    CHORUS_V1,      // 0
+    CHORUS_C1,      // 1
+    CHORUS_V2,      // 2
+    CHORUS_C2,      // 3
+    CHORUS_V3,      // 4
+    CHORUS_C3       // 5    
 };
 
 enum _perc_level_

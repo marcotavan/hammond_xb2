@@ -206,6 +206,8 @@ int main()
             ButtonScannerPoll();
             
             EepromPoll();
+            
+            UART_DEBUG_PARSER_Task();
         }
         
        
