@@ -19,6 +19,8 @@
 #include "midiEvents.h"
 #include "math.h"  
 
+#define VERBOSE_MODE 1
+
 typedef enum key_states {
   KEY_IS_UP,
   KEY_IS_GOING_DOWN,  // increment the timer 
@@ -122,7 +124,9 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
         break;
     }
     
+    #if VERBOSE_MODE 
     DBG_PRINTF("[%s] %3d %3d %4d %3d %3d\n",__func__,event,numTasto,key[numTasto].counter,linearVelocity,logVelocity);
+    #endif
 }
 
 void KeyScanInit(void) 
