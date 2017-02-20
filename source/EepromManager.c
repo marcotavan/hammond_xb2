@@ -32,35 +32,35 @@ uint8 scriviInEeprom(uint8 type)
     }
     
     if (EEPROM_Query() == CYRET_SUCCESS) {
-        // scrivi in eeprom
+        DBG_PRINTF("scrivi in eeprom\n");
         
         // EEPROM_UpdateTemperature();
 
         switch(type)
         {
-            case EEPROM_BUTTON:
-            row = EEPROM_ROW_BUTTONS;
-            ps = (uint8 *) &switchType;
-            EEPROM_StartWrite(ps, row);
-            break;
+            case EEPROM_BUTTON: {
+                row = EEPROM_ROW_BUTTONS;
+                ps = (uint8 *) &switchType;
+                EEPROM_StartWrite(ps, row);
+            } break;
             
-            case EEPROM_DRAWBARS:
-            row = 2;
-            ps = (uint8 *) &switchType;
-            EEPROM_StartWrite(ps, row);
-            break;
+            case EEPROM_DRAWBARS: {
+                row = 2;
+                ps = (uint8 *) &switchType;
+                EEPROM_StartWrite(ps, row);
+            } break;
             
-            case EEPROM_PRESET:
-            row = 3;
-            ps = (uint8 *) &switchType;
-            EEPROM_StartWrite(ps, row);
-            break;
+            case EEPROM_PRESET: {
+                row = 3;
+                ps = (uint8 *) &switchType;
+                EEPROM_StartWrite(ps, row);
+            } break;
             
-            case EEPROM_MIDI:
-            row = 4;
-            ps = (uint8 *) &switchType;
-            EEPROM_StartWrite(ps, row);
-            break;
+            case EEPROM_MIDI: {
+                row = 4;
+                ps = (uint8 *) &switchType;
+                EEPROM_StartWrite(ps, row);
+            } break;
         }
     }
 

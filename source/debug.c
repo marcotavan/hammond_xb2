@@ -197,6 +197,16 @@ void CommandParser(uint8 *data, uint8 len)
         // button test
             ButtonCommand(parameter[0],parameter[1]);
         } break;
+        
+        case 0xB1: {
+        // button test
+            switch (parameter[0]) {
+                case 1: {
+                    InitSwitchButtons();
+                }
+                break;
+            }
+        } break;
             
         default:
             break;

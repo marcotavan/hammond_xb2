@@ -16,6 +16,7 @@
     
 void ButtonScannerPoll(void);
 void ButtonCommand(uint8 numTasto,uint8 status);
+void InitSwitchButtons(void);
 
 // potrebbe andare in eeprom
 struct _switchType_ {
@@ -23,8 +24,8 @@ struct _switchType_ {
     uint8 rotarySpeaker_HalfMoon;
     uint8 rotarySpeaker_bypass;
     uint8 Tube_Overdrive_Switch;
-    uint8 Vibrato_Lower_Switch;
     uint8 Vibrato_Upper_Switch;
+    uint8 Vibrato_Lower_Switch;
     uint8 chorus_Knob;
     uint8 percussion_Switch;
     uint8 percussionLevel_Switch;

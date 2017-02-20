@@ -184,7 +184,7 @@ void InitSwitchButtons(void)
     CyDelay(10);
 
     sendControlChange(CC_Vibrato_Type,          
-        switchType.chorus_Knob,              
+        vibratoScannerMidiValue[switchType.chorus_Knob],
         MIDI_CHANNEL_1);
     CyDelay(10);
     
@@ -508,6 +508,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                 case BUTTON_ON_HOLD:        
                 {
                     shiftOnHold = TRUE;
+                    // servirà un timeout?
                     DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
                 }
                 break;
