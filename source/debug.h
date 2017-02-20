@@ -95,7 +95,7 @@ void sprintfWrite(void);
                                             \
                                             for(i = 0u; i < (len); i++)\
                                             {\
-                                                sprintf(string,"%02X ", *(a+i));\
+                                                sprintf(string,"%02X ", a[i]);\
                                             }\
                                         } while (0);\
                                         sprintfWrite()

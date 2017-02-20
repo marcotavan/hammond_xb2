@@ -144,6 +144,27 @@ void sprintfWrite(void)
     }
 }
 
+void CommandParser(uint8 *data, uint8 len)
+{
+    uint8 command = data[0];
+    len--;
+    
+    uint8 parameter[len];
+    memcpy(parameter,&data[1],len);
+    
+    DBG_PRINTF("%s: len:%d\n",__func__,len);
+    
+    switch(command)    {
+        case 0xFF:
+            switch (parameter[0]) {
+                case 1:
+                CySoftwareReset();
+                break;
+            }
+            break;
+    }
+}
+
 /*****************************************************************************\
 *  Funzione:     UART0_PARSER_Task(void)                                      *
 *  Argomenti:    				      				                          *
@@ -152,7 +173,7 @@ void sprintfWrite(void)
 \*****************************************************************************/
 void UART_DEBUG_PARSER_Task( void )
 {
-    // uint8 index;
+    uint8 i;
     // uint8 *ps;
     // ps = (uint8 *) &clock;
     
@@ -294,7 +315,13 @@ void UART_DEBUG_PARSER_Task( void )
                 else
 				{	// il pacchetto [ finito
                     DBG_PRINTF("Scrivo l'array ricevuto per CONFIGURATION: ");
-                    DBG_PRINT_ARRAY(cc_configuration_data,cc_configuration_data_index);
+                    // DBG_PRINT_ARRAY(cc_configuration_data,cc_configuration_data_index);
+                    
+                    for(i=0;i<cc_configuration_data_index;i++)
+                    {
+                        DBG_PRINTF("%02X ",cc_configuration_data[i]);
+                    }
+                    
                     DBG_PRINTF("\n");
 					fifo[UART0].rxStatus = PARSE_CHM;
 				}
@@ -343,6 +370,8 @@ void UART_DEBUG_PARSER_Task( void )
 				{
 					// ok
 					// DBG_PRINTF("checkusum torna\n");
+                    // esegui
+                    
 				}
 				else
 				{
@@ -350,6 +379,7 @@ void UART_DEBUG_PARSER_Task( void )
 				}
 
 				// fai lo stesso quello che ti si [ detto
+                CommandParser(cc_configuration_data,cc_configuration_data_index);
 
                 fifo[UART0].timeout = 0;
 				fifo[UART0].rxStatus = PARSE_IDLE;
