@@ -15,6 +15,7 @@
 #include "project.h"
     
 void ButtonScannerPoll(void);
+void ButtonCommand(uint8 numTasto,uint8 status);
 
 // potrebbe andare in eeprom
 struct _switchType_ {

@@ -6,6 +6,9 @@
 #include "cytypes.h"
 #include "debug.h"
 #include "EepromManager.h"
+#include "midiLibrary.h"
+#include "VB3_midi_map.h"
+#include "ButtonScanner.h"
 
 char string[256];
 // sprintf(str, "uart_zw_buffer_size:%d ", uart_zw_buffer_size);
@@ -155,12 +158,47 @@ void CommandParser(uint8 *data, uint8 len)
     DBG_PRINTF("%s: len:%d\n",__func__,len);
     
     switch(command)    {
-        case 0xFF:
+        case 0xFF: {
+            // erboot, erase all, ecc
             switch (parameter[0]) {
-                case 1:
-                CySoftwareReset();
+                case 1: {
+                    CySoftwareReset();
+                } break;
+                
+                case 0xA5: {
+                    DBG_PRINTF("EEPROM_EraseSector 0 ...");
+                    EEPROM_EraseSector(0);
+                    DBG_PRINTF("done\n");
+                } break;
+            }
+        } break;
+            
+        case 0xF0: {
+            // relativi alla memoria
+            switch (parameter[0]) {
+                case 1: {
+                    internal_eeprom_inspector(0,80);
+                }
                 break;
             }
+        } break;
+            
+        case 0xF1: {
+            // relativi all amemoria
+            internal_eeprom_inspector(0,parameter[0]);
+        } break;
+                
+        case 0xC0: {
+            // send control change
+            sendControlChange(parameter[0],parameter[1],MIDI_CHANNEL_1);
+        } break;
+        
+        case 0xB0: {
+        // button test
+            ButtonCommand(parameter[0],parameter[1]);
+        } break;
+            
+        default:
             break;
     }
 }

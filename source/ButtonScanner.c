@@ -44,7 +44,7 @@ static uint8 shiftOnHold = FALSE;
 
 char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
-
+const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
 enum _num_button_
 {
     BUTTON_0,
@@ -71,7 +71,7 @@ enum _button_states_
     BUTTON_PRESSED,
     BUTTON_ON_HOLD,
     BUTTON_SHORT_PRESS,
-    BUTTON_LONG_PRESS
+    BUTTON_LONG_RELEASE
 };
 
 enum _rotary_switch_
@@ -355,7 +355,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
                         switchType.chorus_Knob %= 6;    // gira su 6 elementi
                             
                         sendControlChange(CC_Vibrato_Type,          
-                            switchType.chorus_Knob,              
+                            vibratoScannerMidiValue[switchType.chorus_Knob],              
                             MIDI_CHANNEL_1);
                         
                         // questo serve per scrivere C1 V1 C2,V2 C3, V3
@@ -622,7 +622,7 @@ void ButtonManager(void)
                 button[numTasto].oneShot = 0; // resetta il singolo sparo
             } break;
             
-            case BUTTON_LONG_PRESS:
+            case BUTTON_LONG_RELEASE:
             {
                 // DBG_PRINTF("tasto %d rilasciato da pressione prolungata\n",numTasto);
                 ButtonCommand(numTasto,button[numTasto].status);
@@ -698,7 +698,7 @@ void ButtonScanner(void)
                         break;
                         
                         case BUTTON_ON_HOLD:
-                            button[numTasto].status = BUTTON_LONG_PRESS;
+                            button[numTasto].status = BUTTON_LONG_RELEASE;
                         break;
                     }
                         

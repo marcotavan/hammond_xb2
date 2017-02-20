@@ -235,9 +235,9 @@ void internal_eeprom_inspector(uint16 start_row, uint16 last_row)
         if (row == (EEP_ROW_FREE))                      {DBG_PRINTF("< free");}    
 
         // DBG_PRINTF("%2X ", internal_eeprom.RegPointer[address]);
-        
+    #endif // (0)            
                                                         DBG_PRINTF("\n");
-    #endif // (0)    
+
     }    
 
     DBG_PRINTF("*******************************************************\n");    
