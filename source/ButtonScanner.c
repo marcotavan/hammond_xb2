@@ -42,11 +42,11 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 
 static uint8 shiftOnHold = FALSE;
 
-char str[20];
+static char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
 const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
-enum _num_button_
-{
+
+enum _num_button_ {
     BUTTON_0,
     BUTTON_1,
     BUTTON_2,
@@ -65,8 +65,7 @@ enum _num_button_
     BUTTON_15    
 };
 
-enum _button_states_
-{
+enum _button_states_ {
     BUTTON_RELEASED,
     BUTTON_PRESSED,
     BUTTON_ON_HOLD,
@@ -74,21 +73,18 @@ enum _button_states_
     BUTTON_LONG_RELEASE
 };
 
-enum _rotary_switch_
-{
+enum _rotary_switch_ {
     ROTARY_SLOW = 0x00,
     ROTARY_STOP = 0x3F,
     ROTARY_FAST = 0x7F
 };
 
-enum _switch_
-{
+enum _switch_ {
     SWITCH_OFF = 0x00,
     SWITCH_ON = 0x7F
 };
 
-enum _chorus_type_
-{
+enum _chorus_type_ { 
     CHORUS_V1,      // 0
     CHORUS_C1,      // 1
     CHORUS_V2,      // 2
@@ -97,28 +93,29 @@ enum _chorus_type_
     CHORUS_C3       // 5    
 };
 
-enum _perc_level_
-{
+enum _perc_level_ {
     PERC_SOFT = 0x00,
     PERC_NORM = 0x7F
 };
 
-enum _perc_decay_
-{
+enum _perc_decay_ {
     PERC_FAST = 0x00,
     PERC_SLOW = 0x7F
 };
 
-enum _perc_type_
-{
+enum _perc_type_ {
     PERC_2ND = 0x00,
     PERC_3RD = 0x7F
 };
 
-enum _preset_
-{
+enum _preset_ {
     PRESET_A,
     PRESET_B  
+};
+
+enum _ButtonScanner_ {
+    ButtonScanner_SELECT,
+    ButtonScanner_READ
 };
 
 struct {
@@ -127,6 +124,9 @@ struct {
     uint8 oneShot;
 } button[MAX_PULSANTI];
 
+/*****************************************************************************\
+*  
+\*****************************************************************************/
 void InitSwitchButtons(void)
 {
     // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
@@ -211,13 +211,380 @@ void InitSwitchButtons(void)
     Display_Write_Text(ROW_1,"InitSwitchButtons Done");
  }
 
-
+/*****************************************************************************\
+*  restituisce se il tasto shift e' premuto
+\*****************************************************************************/
 uint8 SHIFT_Button_on_Hold(void)
 {
     return shiftOnHold; 
 }
 
+/*****************************************************************************\
+*  gestisce la funzione Rotary Speaker
+\*****************************************************************************/
+void ManageButton_Leslie (uint8 status)
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:
+        case BUTTON_SHORT_PRESS:
+        {
+            switch(switchType.rotarySpeaker_HalfMoon) 
+            {
+                case ROTARY_SLOW:
+                case ROTARY_STOP:
+                switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                Display_Write_Text(ROW_1,"ROTARY_FAST");
+                break;
+                
+                case ROTARY_FAST: 
+                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                Display_Write_Text(ROW_1,"ROTARY_SLOW");
+                break;
+                
+                default:
+                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                Display_Write_Text(ROW_1,"ROTARY_SLOW");
+                break;
+            }
+                           
+            sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,
+                switchType.rotarySpeaker_HalfMoon,  
+                MIDI_CHANNEL_1);    
+        }
+        break;
+        
+        case BUTTON_ON_HOLD:
+        {
+            switch(switchType.rotarySpeaker_HalfMoon) 
+            {
+                case ROTARY_STOP:
+                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                Display_Write_Text(ROW_1,"RESTART ROTARY_SLOW");
+                break;
+                
+                default:
+                switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
+                Display_Write_Text(ROW_1,"ROTARY_STOP");
+                break;
+            }
+            
+            sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
+                switchType.rotarySpeaker_HalfMoon,   
+                MIDI_CHANNEL_1);                    
+        }
+        break;
+        
+        default:
+        break;
+    }
+}
+   
+/*****************************************************************************\
+*  gestisce la funzione Vibrato Scanner
+\*****************************************************************************/
+void ManageButton_Vibrato(status)
+{
+    if (SHIFT_Button_on_Hold() == FALSE)
+    {
+        switch (status) 
+        {
+            // case BUTTON_PRESSED:
+            case BUTTON_SHORT_PRESS:
+            {
+                switch(switchType.Vibrato_Upper_Switch) 
+                {
+                    case SWITCH_OFF:
+                    switchType.Vibrato_Upper_Switch = SWITCH_ON;
+                    break;
+                
+                    case SWITCH_ON: 
+                    switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+                    break;
+                    
+                    default:
+                    switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+                    break;
+                }
+                
+                sendControlChange(CC_Vibrato_Upper,             
+                    switchType.Vibrato_Upper_Switch,    
+                    MIDI_CHANNEL_1);
+            }
+            break;
+            
+            // case BUTTON_LONG_PRESS
+            case BUTTON_ON_HOLD:
+            {
+                switch (switchType.Vibrato_Lower_Switch) 
+                {
+                    case SWITCH_OFF:
+                    switchType.Vibrato_Lower_Switch = SWITCH_ON;
+                    break;
+                    
+                    case SWITCH_ON:
+                    switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+                    break;
+                    
+                    default:
+                    switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+                    break;
+                }
+                
+                sendControlChange(CC_Vibrato_Lower,       
+                    switchType.Vibrato_Lower_Switch,     
+                    MIDI_CHANNEL_1);
+            }
+            break;
+        }
+    }   // shift on hold
+    else
+    {
+        // alternate function
+        switch (status) 
+        {
+            // case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+            case BUTTON_PRESSED:     // valido immediatamente
+            {
+                switchType.chorus_Knob++;
+                switchType.chorus_Knob %= 6;    // gira su 6 elementi
+                    
+                sendControlChange(CC_Vibrato_Type,          
+                    vibratoScannerMidiValue[switchType.chorus_Knob],              
+                    MIDI_CHANNEL_1);
+                
+                // questo serve per scrivere C1 V1 C2,V2 C3, V3
+                sprintf(str,"VIBRATO SCANNER %s%d",switchType.chorus_Knob%2?"C":"V", vibratoScannerPosition[switchType.chorus_Knob]);
+                Display_Write_Text(ROW_1,str);    
+            }
+            break;
+        }   
+    }   
+}
 
+/*****************************************************************************\
+*  gestisce la funzione Percussion Level
+\*****************************************************************************/
+void ManageButton_PercussionLevel(status) 
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:
+        case BUTTON_SHORT_PRESS:
+        {
+            switch(switchType.percussion_Switch) 
+            {
+                case SWITCH_OFF:
+                switchType.percussion_Switch = SWITCH_ON;
+                Display_Write_Text(ROW_1,"Percussion_On");
+                break;
+            
+                case SWITCH_ON: 
+                switchType.percussion_Switch = SWITCH_OFF;
+                Display_Write_Text(ROW_1,"Percussion_Off");
+                break;
+                
+                default:
+                switchType.percussion_Switch = SWITCH_OFF;
+                Display_Write_Text(ROW_1,"Percussion_Off");
+                break;
+            }
+            
+            sendControlChange(CC_Percussion_On_Off,   
+                switchType.percussion_Switch,        
+                MIDI_CHANNEL_1);
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS
+        case BUTTON_ON_HOLD:
+        {
+            switch(switchType.percussionLevel_Switch) 
+            {
+                case PERC_SOFT:
+                switchType.percussionLevel_Switch = PERC_NORM;
+                Display_Write_Text(ROW_1,"Percussion_NORM");
+                break;
+            
+                case PERC_NORM: 
+                switchType.percussionLevel_Switch = PERC_SOFT;
+                Display_Write_Text(ROW_1,"Percussion_SOFT");
+                break;
+                
+                default:
+                switchType.percussionLevel_Switch = PERC_SOFT;
+                Display_Write_Text(ROW_1,"Percussion_SOFT");
+                break;
+            }
+            
+            sendControlChange(CC_Percussion_Volume, 
+                switchType.percussionLevel_Switch,        
+                MIDI_CHANNEL_1);
+        }
+        break;
+    }   
+}
+
+/*****************************************************************************\
+*  gestisce la funzione Percussion Type
+\*****************************************************************************/
+void ManageButton_PercussionType(uint8 status)
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:
+        case BUTTON_SHORT_PRESS:
+        {
+            switch(switchType.percussionHarmonics_Switch) 
+            {
+                case PERC_2ND:
+                switchType.percussionHarmonics_Switch = PERC_3RD;
+                Display_Write_Text(ROW_1,"Percussion_3RD");
+                break;
+            
+                case PERC_3RD: 
+                switchType.percussionHarmonics_Switch = PERC_2ND;
+                Display_Write_Text(ROW_1,"Percussion_2ND");
+                break;
+                
+                default:
+                switchType.percussionHarmonics_Switch = PERC_2ND;
+                Display_Write_Text(ROW_1,"Percussion_2ND");
+                break;
+            }
+            
+            sendControlChange(CC_Percussion_Harmonic,       
+                switchType.percussionHarmonics_Switch,      
+                MIDI_CHANNEL_1);
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS
+        case BUTTON_ON_HOLD:
+        {
+            switch(switchType.percussionDecay_Switch) 
+            {
+                case PERC_FAST:
+                switchType.percussionDecay_Switch = PERC_SLOW;
+                Display_Write_Text(ROW_1,"Percussion_SLOW");
+                break;
+            
+                case PERC_SLOW: 
+                switchType.percussionDecay_Switch = PERC_FAST;
+                Display_Write_Text(ROW_1,"Percussion_FAST");
+                break;
+                
+                default:
+                switchType.percussionDecay_Switch = PERC_FAST;
+                Display_Write_Text(ROW_1,"Percussion_FAST");
+                break;
+            }
+            
+            sendControlChange(CC_Percussion_Decay,            
+                switchType.percussionDecay_Switch,     
+                MIDI_CHANNEL_1);
+        }
+        break;
+        
+    }   
+}
+
+/*****************************************************************************\
+*  gestisce la funzione Shift Button Pressed
+\*****************************************************************************/
+void ManageButton_Shift(uint8 status)
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:     // valido immediatamente
+        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+        {
+            
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS   // valido al rilascio
+        case BUTTON_ON_HOLD:        
+        {
+            shiftOnHold = TRUE;
+            // servirà un timeout?
+            DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
+            // si accende il led dello shift se c'è^?
+        }
+        break;
+        
+        case BUTTON_RELEASED:
+        {
+            shiftOnHold = FALSE;
+            DBG_PRINTF("Shift Released, i led del pannello tornano normali\n");
+        }
+        break;
+        
+    }   
+}
+
+/*****************************************************************************\
+*  gestisce la funzione Solo Button
+\*****************************************************************************/
+void ManageButton_Solo(uint8 status)
+{
+    // solo button
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:     // valido immediatamente
+        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+        {
+
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS   // valido al rilascio lungo
+        case BUTTON_ON_HOLD:        // valido al mantenimento
+        {
+
+        }
+        break;
+        
+        case BUTTON_RELEASED:       // tasto rilasciato
+        {
+            
+        }
+        break;
+    }   
+}
+
+/*****************************************************************************\
+*  TEMPLATE: gestisce la funzione tasto  Generico
+\*****************************************************************************/
+void ManageButton_Generic(uint8 status)
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:     // valido immediatamente
+        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+        {
+
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS   // valido al rilascio lungo
+        case BUTTON_ON_HOLD:        // valido al mantenimento
+        {
+
+        }
+        break;
+        
+        case BUTTON_RELEASED:       // tasto rilasciato
+        {
+            
+        }
+        break;
+    }       
+}
+
+/*****************************************************************************\
+*  In base al taaso premuto richiama la corrispondente funzione
+\*****************************************************************************/
 void ButtonCommand(uint8 numTasto,uint8 status)
 {
     // funzione chiamata ad ogni pressione di un pulsante
@@ -231,351 +598,44 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     {
         case BUTTON_0:
         { // Leslie
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:
-                case BUTTON_SHORT_PRESS:
-                {
-                    switch(switchType.rotarySpeaker_HalfMoon) 
-                    {
-                        case ROTARY_SLOW:
-                        case ROTARY_STOP:
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                        Display_Write_Text(ROW_1,"ROTARY_FAST");
-                        break;
-                        
-                        case ROTARY_FAST: 
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        Display_Write_Text(ROW_1,"ROTARY_SLOW");
-                        break;
-                        
-                        default:
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        Display_Write_Text(ROW_1,"ROTARY_SLOW");
-                        break;
-                    }
-                                   
-                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,
-                        switchType.rotarySpeaker_HalfMoon,  
-                        MIDI_CHANNEL_1);    
-                }
-                break;
-                
-                case BUTTON_ON_HOLD:
-                {
-                    switch(switchType.rotarySpeaker_HalfMoon) 
-                    {
-                        case ROTARY_STOP:
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                        Display_Write_Text(ROW_1,"RESTART ROTARY_SLOW");
-                        break;
-                        
-                        default:
-                        switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
-                        Display_Write_Text(ROW_1,"ROTARY_STOP");
-                        break;
-                    }
-                    
-                    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
-                        switchType.rotarySpeaker_HalfMoon,   
-                        MIDI_CHANNEL_1);                    
-                }
-                break;
-                
-                default:
-                break;
-            }
+            ManageButton_Leslie(status);
         }
         break;
 
         case BUTTON_1:
         { // vibrato
-            if (SHIFT_Button_on_Hold() == FALSE)
-            {
-                switch (status) 
-                {
-                    // case BUTTON_PRESSED:
-                    case BUTTON_SHORT_PRESS:
-                    {
-                        switch(switchType.Vibrato_Upper_Switch) 
-                        {
-                            case SWITCH_OFF:
-                            switchType.Vibrato_Upper_Switch = SWITCH_ON;
-                            break;
-                        
-                            case SWITCH_ON: 
-                            switchType.Vibrato_Upper_Switch = SWITCH_OFF;
-                            break;
-                            
-                            default:
-                            switchType.Vibrato_Upper_Switch = SWITCH_OFF;
-                            break;
-                        }
-                        
-                        sendControlChange(CC_Vibrato_Upper,             
-                            switchType.Vibrato_Upper_Switch,    
-                            MIDI_CHANNEL_1);
-                    }
-                    break;
-                    
-                    // case BUTTON_LONG_PRESS
-                    case BUTTON_ON_HOLD:
-                    {
-                        switch (switchType.Vibrato_Lower_Switch) 
-                        {
-                            case SWITCH_OFF:
-                            switchType.Vibrato_Lower_Switch = SWITCH_ON;
-                            break;
-                            
-                            case SWITCH_ON:
-                            switchType.Vibrato_Lower_Switch = SWITCH_OFF;
-                            break;
-                            
-                            default:
-                            switchType.Vibrato_Lower_Switch = SWITCH_OFF;
-                            break;
-                        }
-                        
-                        sendControlChange(CC_Vibrato_Lower,       
-                            switchType.Vibrato_Lower_Switch,     
-                            MIDI_CHANNEL_1);
-                    }
-                    break;
-                }
-            }   // shift on hold
-            else
-            {
-                // alternate function
-                switch (status) 
-                {
-                    // case BUTTON_SHORT_PRESS:    // valido al rilascio breve
-                    case BUTTON_PRESSED:     // valido immediatamente
-                    {
-                        switchType.chorus_Knob++;
-                        switchType.chorus_Knob %= 6;    // gira su 6 elementi
-                            
-                        sendControlChange(CC_Vibrato_Type,          
-                            vibratoScannerMidiValue[switchType.chorus_Knob],              
-                            MIDI_CHANNEL_1);
-                        
-                        // questo serve per scrivere C1 V1 C2,V2 C3, V3
-                        sprintf(str,"VIBRATO SCANNER %s%d",switchType.chorus_Knob%2?"C":"V", vibratoScannerPosition[switchType.chorus_Knob]);
-                        Display_Write_Text(ROW_1,str);    
-                    }
-                    break;
-                }   
-            }
+            ManageButton_Vibrato(status);
         }
         break;
         
         case BUTTON_2:
         { // percussion on/off, level soft normal
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:
-                case BUTTON_SHORT_PRESS:
-                {
-                    switch(switchType.percussion_Switch) 
-                    {
-                        case SWITCH_OFF:
-                        switchType.percussion_Switch = SWITCH_ON;
-                        Display_Write_Text(ROW_1,"Percussion_On");
-                        break;
-                    
-                        case SWITCH_ON: 
-                        switchType.percussion_Switch = SWITCH_OFF;
-                        Display_Write_Text(ROW_1,"Percussion_Off");
-                        break;
-                        
-                        default:
-                        switchType.percussion_Switch = SWITCH_OFF;
-                        Display_Write_Text(ROW_1,"Percussion_Off");
-                        break;
-                    }
-                    
-                    sendControlChange(CC_Percussion_On_Off,   
-                        switchType.percussion_Switch,        
-                        MIDI_CHANNEL_1);
-                }
-                break;
-                
-                // case BUTTON_LONG_PRESS
-                case BUTTON_ON_HOLD:
-                {
-                    switch(switchType.percussionLevel_Switch) 
-                    {
-                        case PERC_SOFT:
-                        switchType.percussionLevel_Switch = PERC_NORM;
-                        Display_Write_Text(ROW_1,"Percussion_NORM");
-                        break;
-                    
-                        case PERC_NORM: 
-                        switchType.percussionLevel_Switch = PERC_SOFT;
-                        Display_Write_Text(ROW_1,"Percussion_SOFT");
-                        break;
-                        
-                        default:
-                        switchType.percussionLevel_Switch = PERC_SOFT;
-                        Display_Write_Text(ROW_1,"Percussion_SOFT");
-                        break;
-                    }
-                    
-                    sendControlChange(CC_Percussion_Volume, 
-                        switchType.percussionLevel_Switch,        
-                        MIDI_CHANNEL_1);
-                }
-                break;
-                
-            }   
+            ManageButton_PercussionLevel(status);
         }
         break;
 
         case BUTTON_3:
         { // percussion 3rd 2nd / fast slow
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:
-                case BUTTON_SHORT_PRESS:
-                {
-                    switch(switchType.percussionHarmonics_Switch) 
-                    {
-                        case PERC_2ND:
-                        switchType.percussionHarmonics_Switch = PERC_3RD;
-                        Display_Write_Text(ROW_1,"Percussion_3RD");
-                        break;
-                    
-                        case PERC_3RD: 
-                        switchType.percussionHarmonics_Switch = PERC_2ND;
-                        Display_Write_Text(ROW_1,"Percussion_2ND");
-                        break;
-                        
-                        default:
-                        switchType.percussionHarmonics_Switch = PERC_2ND;
-                        Display_Write_Text(ROW_1,"Percussion_2ND");
-                        break;
-                    }
-                    
-                    sendControlChange(CC_Percussion_Harmonic,       
-                        switchType.percussionHarmonics_Switch,      
-                        MIDI_CHANNEL_1);
-                }
-                break;
-                
-                // case BUTTON_LONG_PRESS
-                case BUTTON_ON_HOLD:
-                {
-                    switch(switchType.percussionDecay_Switch) 
-                    {
-                        case PERC_FAST:
-                        switchType.percussionDecay_Switch = PERC_SLOW;
-                        Display_Write_Text(ROW_1,"Percussion_SLOW");
-                        break;
-                    
-                        case PERC_SLOW: 
-                        switchType.percussionDecay_Switch = PERC_FAST;
-                        Display_Write_Text(ROW_1,"Percussion_FAST");
-                        break;
-                        
-                        default:
-                        switchType.percussionDecay_Switch = PERC_FAST;
-                        Display_Write_Text(ROW_1,"Percussion_FAST");
-                        break;
-                    }
-                    
-                    sendControlChange(CC_Percussion_Decay,            
-                        switchType.percussionDecay_Switch,     
-                        MIDI_CHANNEL_1);
-                }
-                break;
-                
-            }   
+            ManageButton_PercussionType(status);
         }
         break;
         
         
         case BUTTON_4:
         { // shift Button
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:     // valido immediatamente
-                case BUTTON_SHORT_PRESS:    // valido al rilascio breve
-                {
-                    
-                }
-                break;
-                
-                // case BUTTON_LONG_PRESS   // valido al rilascio
-                case BUTTON_ON_HOLD:        
-                {
-                    shiftOnHold = TRUE;
-                    // servirà un timeout?
-                    DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
-                }
-                break;
-                
-                case BUTTON_RELEASED:
-                {
-                    shiftOnHold = FALSE;
-                    DBG_PRINTF("Shift Released, i led del pannello tornano normali\n");
-                }
-                break;
-                
-            }   
+            ManageButton_Shift(status);
         }
         break;
         
         case BUTTON_5:
         {
-            // solo button
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:     // valido immediatamente
-                case BUTTON_SHORT_PRESS:    // valido al rilascio breve
-                {
-
-                }
-                break;
-                
-                // case BUTTON_LONG_PRESS   // valido al rilascio lungo
-                case BUTTON_ON_HOLD:        // valido al mantenimento
-                {
-
-                }
-                break;
-                
-                case BUTTON_RELEASED:       // tasto rilasciato
-                {
-                    
-                }
-                break;
-            }   
+            ManageButton_Solo(status);
         }
         break;
         
         case BUTTON_15:
         {
-            switch (status) 
-            {
-                // case BUTTON_PRESSED:     // valido immediatamente
-                case BUTTON_SHORT_PRESS:    // valido al rilascio breve
-                {
-
-                }
-                break;
-                
-                // case BUTTON_LONG_PRESS   // valido al rilascio lungo
-                case BUTTON_ON_HOLD:        // valido al mantenimento
-                {
-
-                }
-                break;
-                
-                case BUTTON_RELEASED:       // tasto rilasciato
-                {
-                    
-                }
-                break;
-            }   
+            ManageButton_Generic(status);
         }
         break;
         
@@ -588,6 +648,9 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     
 } // ButtonCommand
 
+/*****************************************************************************\
+*  gestisce il tipo di pressione del tasto
+\*****************************************************************************/
 void ButtonManager(void)
 {
     uint8 numTasto;
@@ -637,11 +700,11 @@ void ButtonManager(void)
     }
 }
 
-enum {
-    ButtonScanner_SELECT,
-    ButtonScanner_READ
-};
 
+
+/*****************************************************************************\
+*  scansiona le linee dei tasti
+\*****************************************************************************/
 void ButtonScanner(void)
 {
     // tra un select e un read passa circa 1ms
@@ -719,6 +782,9 @@ void ButtonScanner(void)
 
 }
 
+/*****************************************************************************\
+*  inizializza la scansione della matrice dei tasti
+\*****************************************************************************/
 void ButtonScannerInit(void)
 {
     uint8 i;
@@ -745,9 +811,11 @@ void ButtonScannerInit(void)
     InitSwitchButtons();
 }
 
+/*****************************************************************************\
+*  chiamata in continuo nel main
+\*****************************************************************************/
 void ButtonScannerPoll(void)
 {
-    // chiamata ogni 1 ms
     static uint8 isButtonScannerInitialized = FALSE;
     
     if(isButtonScannerInitialized == FALSE) {
