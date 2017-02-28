@@ -290,15 +290,15 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 void LCD_bootlogo (uint8 time)
 {
     /* Start LCD and set position */
-    alternateTextCounter = time;    
+    alternateTextCounter = time;    // in 100ms
     LCD_Start();
     LCD_ClearDisplay();
     
     LCD_Position(0,0);
-    LCD_PrintString("Xb2 Retrofit\0");
+    LCD_PrintString("Xb2 Retrofit 1.0 \0");
     
     LCD_Position(1,0);
-    LCD_PrintString("FW ver: 0.1.0\0");
+    LCD_PrintString("Marco Tavan 2017 \0");
     // LCD_ClearDisplay();
 }
 
@@ -340,6 +340,7 @@ void LCD_Poll(void)
             if(alternateTextCounter == 0)
             {
                 // swappa LCD
+                LCD_ClearDisplay();
                 Write_BarGraphs();
             }
         }
