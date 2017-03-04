@@ -27,7 +27,7 @@
 * the software package with which this file was provided.
 *******************************************************************************/
 
-#include "LCD.h"
+#include "LCD_Driver.h"
 #include "customLcd.h"
 #include "tick.h"
 #include "debug.h"
