@@ -288,11 +288,13 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 #endif /* LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG */
 
 
-char8 const *lcdText[] =
+char8 const *lcdTextMessage[] =
 {
     "Xb2 Retrofit 1.0\0",   // 0
     "Waiting for USB \0",   // 1
     "Marco Tavan 2017\0",   // 2
+    "Xb2 Marco Tavan \0",   // 3
+
 };
 
 
@@ -309,15 +311,12 @@ void LCD_splashScreen(void)
         LCD_Start();    // write
         DBG_PRINTF("LCD READY\n");
 
-        // CyDelay(50);
         LCD_Position(0,0);  // write
-        // CyDelay(50);
-        LCD_PrintString("Xb2 Retrofit 1.0\0");  // write
-        // CyDelay(50);
+        // LCD_PrintString("Xb2 Retrofit 1.0\0");  // write
+        LCD_PrintString(lcdTextMessage[3]);  // write
         LCD_Position(1,0);  // write
-        // CyDelay(50);
-        LCD_PrintString("Waiting for USB \0");
-        // CyDelay(50);
+        // LCD_PrintString("Waiting for USB \0");
+        LCD_PrintString(lcdTextMessage[1]);  // write
     }
 }
 
@@ -327,10 +326,10 @@ void LCD_bootlogo (uint8 time)
     alternateTextCounter = time;    // in 100ms
     
     LCD_Position(0,0);
-    LCD_PrintString(lcdText[0]);
+    LCD_PrintString(lcdTextMessage[0]);
     
     LCD_Position(1,0);
-    LCD_PrintString(lcdText[2]);
+    LCD_PrintString(lcdTextMessage[2]);
     // LCD_ClearDisplay();
 }
 
