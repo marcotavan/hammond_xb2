@@ -36,7 +36,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "customLcd.h"
 #include "EepromManager.h"
 
-#define MIN_DEBOUNCE 9      // * 8ms
+#define MIN_DEBOUNCE 7      // * 8ms
 #define MAX_DEBOUNCE 120     // * 8ms  
 #define MAX_PULSANTI 16
 
@@ -47,20 +47,20 @@ const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
 const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
 
 enum _num_button_ {
-    BUTTON_0_VIBRATO,   
-    BUTTON_1_LESLIE,
-    BUTTON_2_KEY_4,
-    BUTTON_3_KEY_8,
-    BUTTON_4_PERC_3RD,
-    BUTTON_5_EDIT,
-    BUTTON_6_KEY_3,
-    BUTTON_7_KEY_7,
-    BUTTON_8_PERC_2ND,
-    BUTTON_9_REC,
+    BUTTON_00_VIBRATO,   
+    BUTTON_01_LESLIE,
+    BUTTON_02_KEY_4,
+    BUTTON_03_KEY_8,
+    BUTTON_04_PERC_3RD,
+    BUTTON_05_EDIT,
+    BUTTON_06_KEY_3,
+    BUTTON_07_KEY_7,
+    BUTTON_08_PERC_2ND,
+    BUTTON_09_RECORD,
     BUTTON_10_KEY_2,
     BUTTON_11_KEY_6,
     BUTTON_12_SOLO,
-    BUTTON_13_CANC,
+    BUTTON_13_SHIFT_CANCEL,
     BUTTON_14_KEY_1,
     BUTTON_15_KEY_5    
 };
@@ -596,42 +596,31 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     
     switch(numTasto)
     {
-        case BUTTON_0_VIBRATO:
+        case BUTTON_00_VIBRATO:
         { // vibrato
             ManageButton_Vibrato(status);
         }
         break;
 
-        case BUTTON_1_LESLIE:
+        case BUTTON_01_LESLIE:
         { // Leslie 
             ManageButton_Leslie(status);
         }
         break;
         
-        
-        case BUTTON_14_KEY_1:
-        case BUTTON_10_KEY_2:
-        case BUTTON_6_KEY_3:
-        case BUTTON_2_KEY_4:
-        case BUTTON_15_KEY_5:
-        case BUTTON_11_KEY_6:
-        case BUTTON_7_KEY_7:
-        case BUTTON_3_KEY_8:
-        break;
-        
-        case BUTTON_8_PERC_2ND:
+        case BUTTON_08_PERC_2ND:
         { // percussion on/off, level soft normal
             ManageButton_PercussionLevel(status);
         }
         break;
 
-        case BUTTON_4_PERC_3RD:
+        case BUTTON_04_PERC_3RD:
         { // percussion 3rd 2nd / fast slow
             ManageButton_PercussionType(status);
         }
         break;
 
-        case BUTTON_9_REC:
+        case BUTTON_13_SHIFT_CANCEL:
         { // shift Button
             ManageButton_Shift(status);
         }
@@ -644,8 +633,16 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         break;
         
         // 5,13
-        case BUTTON_5_EDIT:
-        case BUTTON_13_CANC:
+        case BUTTON_05_EDIT:
+        case BUTTON_09_RECORD:
+        case BUTTON_14_KEY_1:
+        case BUTTON_10_KEY_2:
+        case BUTTON_06_KEY_3:
+        case BUTTON_02_KEY_4:
+        case BUTTON_15_KEY_5:
+        case BUTTON_11_KEY_6:
+        case BUTTON_07_KEY_7:
+        case BUTTON_03_KEY_8:
         {
             ManageButton_Generic(status);
         }
