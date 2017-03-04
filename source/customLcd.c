@@ -35,6 +35,8 @@
 char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
 
+static uint8 lcdMessageStates = 0;
+
 uint8 const CYCODE LCD_InvertedVerticalBar[] = \
 {
     /* Character LCD_CUSTOM_0   */
@@ -298,25 +300,33 @@ char8 const *lcdTextMessage[] =
 };
 
 
-void LCD_splashScreen(void)
+void LCD_splashScreen(uint8 mex)
 {
     /* Start LCD and set position */
     // alternateTextCounter = time;    // in 100ms
     static uint8 isLcdInit = 0;
-    
+    alternateTextCounter = 20;
     if(isLcdInit == 0)
     {
-        isLcdInit = 1;
         DBG_PRINTF("wait for LCD\n");
         LCD_Start();    // write
         DBG_PRINTF("LCD READY\n");
-
-        LCD_Position(0,0);  // write
-        // LCD_PrintString("Xb2 Retrofit 1.0\0");  // write
-        LCD_PrintString(lcdTextMessage[3]);  // write
-        LCD_Position(1,0);  // write
-        // LCD_PrintString("Waiting for USB \0");
-        LCD_PrintString(lcdTextMessage[1]);  // write
+        isLcdInit = 1;
+    }
+    
+    switch(mex)
+    {
+        case 0:
+            LCD_Position(0,0);  // write
+            LCD_PrintString(lcdTextMessage[0]);  // write
+            LCD_Position(1,0);  // write
+            LCD_PrintString(lcdTextMessage[2]);  // write
+        break;
+        
+        case 1:
+            LCD_Position(1,0);  // write
+            LCD_PrintString(lcdTextMessage[1]);  // write
+        break;
     }
 }
 
@@ -350,7 +360,7 @@ void Write_BarGraphs(void)
     LCD_PrintString(&str_bargraph[ROW_1][0]);
 }
 
-void LCD_Poll(void)
+void LCD_Poll(uint8 status)
 {
     // chiamata nel main
     static uint8 isModuleNotInitialized = 1;
@@ -358,7 +368,7 @@ void LCD_Poll(void)
     if(isModuleNotInitialized)
     {
         memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
-        LCD_bootlogo(50);
+        // LCD_bootlogo(50);
         
         isModuleNotInitialized = 0;
     }
@@ -370,9 +380,28 @@ void LCD_Poll(void)
             alternateTextCounter--;
             if(alternateTextCounter == 0)
             {
-                // swappa LCD
-                LCD_ClearDisplay();
-                Write_BarGraphs();
+                if(status == 0) // not initialized
+                {
+                    switch(lcdMessageStates)
+                    {
+                        case 0: // -> vai in 1
+                        lcdMessageStates = 1;
+                        LCD_splashScreen(1);
+                        break;
+                        
+                        case 1: // -> vai in 2
+                        lcdMessageStates = 0;
+                        LCD_splashScreen(0);
+                        break;
+                    }
+                }
+                else
+                {
+                    // swappa LCD
+                    // LCD_ClearDisplay();
+                    // Write_BarGraphs();
+                }
+                
             }
         }
         

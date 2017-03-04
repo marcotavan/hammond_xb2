@@ -15,9 +15,9 @@
 #include "project.h"
 
 void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value);
-void LCD_Poll(void);
+void LCD_Poll(uint8 status);
 void Write_BarGraphs(void);
-void LCD_splashScreen(void);
+void LCD_splashScreen(uint8 mex);
 void Display_Write_Text(uint8 where, char *what);
 
 #define MAX_CHARS   16

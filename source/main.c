@@ -112,7 +112,9 @@ int main()
     play_note = MIDI_FIRST_NOTE_61;
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
-
+    
+    LCD_splashScreen(0);
+                
     // SysTick_Start();  
     TimerTick_Start();
     
@@ -192,7 +194,7 @@ int main()
             // TestPlayNote();
             
             // TestVB3Drawbars();
-            LCD_Poll();
+            LCD_Poll(1);
             
             AnalogPoll();
             
@@ -212,7 +214,7 @@ int main()
         }
         else
         {
-            LCD_splashScreen();
+            LCD_Poll(0);
         }
         
        
