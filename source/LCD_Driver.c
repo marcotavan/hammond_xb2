@@ -66,11 +66,17 @@ void LCD_Init(void)
     CyDelay(5u);                                                         /* Delay 5 ms */
 
     LCD_WriteControl(LCD_CURSOR_AUTO_INCR_ON);    /* Incr Cursor After Writes */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_DISPLAY_CURSOR_ON);      /* Turn Display, Cursor ON */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_DISPLAY_2_LINES_5x10);   /* 2 Lines by 5x10 Characters */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_DISPLAY_CURSOR_OFF);     /* Turn Display, Cursor OFF */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_CLEAR_DISPLAY);          /* Clear LCD Screen */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_DISPLAY_ON_CURSOR_OFF);  /* Turn Display ON, Cursor OFF */
+    CyDelay(5u);    
     LCD_WriteControl(LCD_RESET_CURSOR_POSITION);  /* Set Cursor to 0,0 */
     CyDelay(5u);
 
@@ -485,22 +491,20 @@ void LCD_IsReady(void)
 *******************************************************************************/
 static void LCD_WrDatNib(uint8 nibble) 
 {
+    CyDelayUs(10u);
+    
     /* RS should be low to select data register */
     LCD_PORT_DR_REG |= LCD_RS;
-    
-    CyDelay(1u);
-    
+    CyDelayUs(10u);
     /* Reset RW for write operation */
     LCD_PORT_DR_REG &= ((uint8)(~LCD_RW));
 
     /* Guaranteed delay between Setting RS and RW and setting E bits */
-    CyDelay(1u);
+    CyDelayUs(10u);
     
     /* Clear data pins */
     LCD_PORT_DR_REG &= ((uint8)(~LCD_DATA_MASK));
-    
-    CyDelay(1u);
-    
+	CyDelayUs(10u);
     /* Write data, bring E high */
     #if(0u != LCD_PORT_SHIFT) /* MISRA forbids shift by 0 so need to handle that */
         LCD_PORT_DR_REG |= 
@@ -510,11 +514,11 @@ static void LCD_WrDatNib(uint8 nibble)
     #endif /* (0u != LCD_PORT_SHIFT) */
 
     /* Minimum of 230 ns delay */
-    CyDelay(1u);
+    CyDelayUs(10u);
 
     LCD_PORT_DR_REG &= ((uint8)(~LCD_E));
     
-    CyDelay(1u);
+    CyDelayUs(10u);
 }
 
 
@@ -535,15 +539,17 @@ static void LCD_WrDatNib(uint8 nibble)
 static void LCD_WrCntrlNib(uint8 nibble) 
 {
     /* RS and RW should be low to select instruction register and  write operation respectively */
-    LCD_PORT_DR_REG &= ((uint8)(~(LCD_RS | LCD_RW)));
+	CyDelayUs(10u);
     
-    CyDelay(1u);
+    LCD_PORT_DR_REG &= ((uint8)(~(LCD_RS | LCD_RW)));
+	CyDelayUs(10u);
+    
     /* Two following lines of code will give 40ns delay */
     /* Clear data pins */
     LCD_PORT_DR_REG &= ((uint8)(~LCD_DATA_MASK));
-    
-    CyDelay(1u);
-    
+
+    CyDelayUs(10u);
+
     /* Write control data and set enable signal */
     #if(0u != LCD_PORT_SHIFT) /* MISRA forbids shift by 0 so need to handle that */
         LCD_PORT_DR_REG |= 
@@ -553,10 +559,10 @@ static void LCD_WrCntrlNib(uint8 nibble)
     #endif /* (0u != LCD_PORT_SHIFT) */
 
     /* Minimum of 230 ns delay */
-    CyDelay(1u);
+    CyDelayUs(10u);
 
     LCD_PORT_DR_REG &= ((uint8)(~LCD_E));
-    CyDelay(1u);
+    CyDelayUs(10u);
 }
 
 
