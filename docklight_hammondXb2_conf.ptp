@@ -3,7 +3,7 @@ VERSION
 
 COMMSETTINGS
 0
-COM2
+COM30
 COM6
 230400
 2
@@ -80,83 +80,90 @@ send Control change C0 CC + val -> rotary slow
 
 SEND
 9
+send Control change C0 =  CC + val -> PRESET UPPER A
+01 05 C0 C1 C0 31 00 EE
+0
+5
+
+SEND
+10
 ----------------------------------
 00
 0
 5
 
 SEND
-10
+11
 SHIFT KIP ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 04 02 EE
 0
 5
 
 SEND
-11
+12
 SHIFT REL ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 04 00 EE
 0
 5
 
 SEND
-12
+13
 Rotary PB0 SP ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 00 03 EE
 0
 5
 
 SEND
-13
+14
 Rotary PB0 OH ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 00 02 EE
 0
 5
 
 SEND
-14
+15
 SP PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 03 EE
 0
 5
 
 SEND
-15
+16
 OH PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 02 EE
 0
 5
 
 SEND
-16
+17
 PR PB1 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 01 01 EE
 0
 5
 
 SEND
-17
+18
 SP PB2 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 02 03 EE
 0
 5
 
 SEND
-18
+19
 OH PB2 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 02 02 EE
 0
 5
 
 SEND
-19
+20
 SP PB3 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 03 03 EE
 0
 5
 
 SEND
-20
+21
 OH PB3 ButtonCommand B0: numTasto, status: 0Rel, 1pressed , 2 onHold, 3 SP, 4LR
 01 05 C0 C1 B0 03 02 EE
 0

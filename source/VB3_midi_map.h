@@ -14,6 +14,7 @@
 #define _VB3_MIDI_MAP_H_
 
 #define CC_Upper_Manual_Drawbars_AB_Switch        49    // switch
+#define VAL_UPPER_DRAWBARS_A                    0
 enum upperManualDrawbarSetA
 {
     UM_SET_A_DRAWBAR_16     = 40,

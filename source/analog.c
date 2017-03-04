@@ -42,6 +42,10 @@ CY_ISR( ADC_ISR )
     adcConversionDone = 1;
 }
 #endif
+/***************************************************************************
+* invia il dato di Control Change e prepara la stringa da scrivere nel display
+* chiamta solo se isValidDifference()
+****************************************************************************/
 
 void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
@@ -54,6 +58,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     {
         case EVENT_DRAWBAR_GENERIC:
         {
+            sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
+            
             sendControlChange(UM_SET_A_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
