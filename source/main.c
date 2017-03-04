@@ -117,6 +117,7 @@ int main()
     TimerTick_Start();
     
     MOD_SysLog_Init(); 
+    
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
     
@@ -208,6 +209,10 @@ int main()
             EepromPoll();
             
             UART_DEBUG_PARSER_Task();
+        }
+        else
+        {
+            LCD_splashScreen();
         }
         
        

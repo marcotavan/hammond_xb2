@@ -287,18 +287,50 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 
 #endif /* LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG */
 
+
+char8 const *lcdText[] =
+{
+    "Xb2 Retrofit 1.0\0",   // 0
+    "Waiting for USB \0",   // 1
+    "Marco Tavan 2017\0",   // 2
+};
+
+
+void LCD_splashScreen(void)
+{
+    /* Start LCD and set position */
+    // alternateTextCounter = time;    // in 100ms
+    static uint8 isLcdInit = 0;
+    
+    if(isLcdInit == 0)
+    {
+        isLcdInit = 1;
+        DBG_PRINTF("wait for LCD\n");
+        LCD_Start();    // write
+        DBG_PRINTF("LCD READY\n");
+
+        // CyDelay(50);
+        LCD_Position(0,0);  // write
+        // CyDelay(50);
+        LCD_PrintString("Xb2 Retrofit 1.0\0");  // write
+        // CyDelay(50);
+        LCD_Position(1,0);  // write
+        // CyDelay(50);
+        LCD_PrintString("Waiting for USB \0");
+        // CyDelay(50);
+    }
+}
+
 void LCD_bootlogo (uint8 time)
 {
     /* Start LCD and set position */
     alternateTextCounter = time;    // in 100ms
-    LCD_Start();
-    LCD_ClearDisplay();
     
     LCD_Position(0,0);
-    LCD_PrintString("Xb2 Retrofit 1.0 \0");
+    LCD_PrintString(lcdText[0]);
     
     LCD_Position(1,0);
-    LCD_PrintString("Marco Tavan 2017 \0");
+    LCD_PrintString(lcdText[2]);
     // LCD_ClearDisplay();
 }
 
@@ -353,8 +385,8 @@ void Display_Write_Text(uint8 where, char *what)
     // where = where;
     // what = what;
     
-    LCD_Position(where,0);
-    LCD_PrintString(what);
+    // LCD_Position(where,0);
+    // LCD_PrintString(what);
     
     DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,what);
     // nop
