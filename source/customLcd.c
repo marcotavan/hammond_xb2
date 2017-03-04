@@ -317,6 +317,7 @@ void LCD_splashScreen(uint8 mex)
     switch(mex)
     {
         case 0:
+            // LCD_ClearDisplay(); // spacca il display
             LCD_Position(0,0);  // write
             LCD_PrintString(lcdTextMessage[0]);  // write
             LCD_Position(1,0);  // write
@@ -373,6 +374,16 @@ void LCD_Poll(uint8 status)
         isModuleNotInitialized = 0;
     }
     
+    if(status == 0)
+    {
+        // ricarica lo splashscreen in caso di disconnseesione
+        if(lcdMessageStates == 2)
+        {
+            lcdMessageStates = 0;
+            alternateTextCounter = 10;
+        }
+    }
+    
     if (tick_100ms(TICK_LCD))
     {
         if(alternateTextCounter)
@@ -397,9 +408,10 @@ void LCD_Poll(uint8 status)
                 }
                 else
                 {
+                    lcdMessageStates = 2;
                     // swappa LCD
                     // LCD_ClearDisplay();
-                    // Write_BarGraphs();
+                    Write_BarGraphs();
                 }
                 
             }
@@ -413,8 +425,8 @@ void Display_Write_Text(uint8 where, char *what)
     // where = where;
     // what = what;
     
-    // LCD_Position(where,0);
-    // LCD_PrintString(what);
+    LCD_Position(where,0);
+    LCD_PrintString(what);
     
     DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,what);
     // nop
