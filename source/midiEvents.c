@@ -32,11 +32,11 @@ void USB_callbackLocalMidiEvent(uint8 cable, uint8 *midiMsg) CYREENTRANT
         {
             if(midiMsg[USB_EVENT_BYTE1] == USB_MIDI_SYSEX_SYSTEM_ON)
             {
-                MIDI_PWR_Write(0u); /* Power ON */
+                DBG_PRINTF("[%s] MIDI_PWR_Write(0u); /* Power ON */\n",__func__);
             }
             else if(midiMsg[USB_EVENT_BYTE1] == USB_MIDI_SYSEX_SYSTEM_OFF)
             {
-                MIDI_PWR_Write(1u); /* Power OFF */
+                DBG_PRINTF("[%s] MIDI_PWR_Write(1u); /* Power OFF */\n",__func__);
             }
         }
     }

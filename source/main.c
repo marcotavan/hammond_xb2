@@ -501,8 +501,8 @@ void Check_if_host_requested_USB_Suspend(void)
         MIDI2_UART_Sleep();
         
         /* Power OFF CY8CKIT-044 board */
-        DBG_PRINTF("Power OFF MIDI board\n");
-        MIDI_PWR_Write(1u);     
+        DBG_PRINTF("Power OFF MIDI board... ");
+        DBG_PRINTF("MIDI_PWR_Write(1u);   \n");  
         
         /***************************************************************
         * Disable USBFS block and set DP Interrupt for wake-up 
@@ -530,9 +530,9 @@ void Check_if_host_requested_USB_Suspend(void)
         /* Enable output endpoint */
         USB_MIDI_Init();
         
-        DBG_PRINTF("Power ON MIDI board\n");
+        DBG_PRINTF("Power ON MIDI board... \n");
         /* Power ON CY8CKIT-044 board */
-        MIDI_PWR_Write(0u);
+        DBG_PRINTF("MIDI_PWR_Write(0u); \n");
         
         MIDI1_UART_Wakeup();
         MIDI2_UART_Wakeup();
