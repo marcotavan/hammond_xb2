@@ -56,7 +56,7 @@ void USB_callbackLocalMidiEvent(uint8 cable, uint8 *midiMsg) CYREENTRANT
 void USB_MIDI1_ProcessUsbOut_EntryCallback(void)
 {
     DBG_PRINTF("[%s]\n",__func__);
-    LED_OutA_Write(1);
+    // LED_OutA_Write(1);
 }
 
 
@@ -70,7 +70,7 @@ void USB_MIDI1_ProcessUsbOut_EntryCallback(void)
 void USB_MIDI1_ProcessUsbOut_ExitCallback(void)
 {
     DBG_PRINTF("[%s]\n",__func__);
-    LED_OutA_Write(0);
+    // LED_OutA_Write(0);
 }
 
 
@@ -85,7 +85,7 @@ void USB_MIDI1_ProcessUsbOut_ExitCallback(void)
 void USB_MIDI2_ProcessUsbOut_EntryCallback(void)
 {
     DBG_PRINTF("[%s]\n",__func__);
-    LED_OutB_Write(1);
+    // LED_OutB_Write(1);
 }
 
 
@@ -99,7 +99,7 @@ void USB_MIDI2_ProcessUsbOut_EntryCallback(void)
 void USB_MIDI2_ProcessUsbOut_ExitCallback(void)
 {
     DBG_PRINTF("[%s]\n",__func__);
-    LED_OutB_Write(0);
+    // LED_OutB_Write(0);
 }
 
 
@@ -115,7 +115,7 @@ void MIDI1_UART_RXISR_EntryCallback(void)
 {
     /* These LEDs indicate MIDI input activity */
     DBG_PRINTF("[%s]: MIDI input activity\n",__func__);
-    LED_InA_Write(1);
+    // LED_InA_Write(1);
 }
 
 
@@ -132,7 +132,7 @@ void MIDI1_UART_RXISR_ExitCallback(void)
         USB_MIDI_IN_Service();
     #endif /* (USB_EP_MANAGEMENT_DMA_AUTO) */
     DBG_PRINTF("[%s]\n",__func__);
-    LED_InA_Write(0);
+    // LED_InA_Write(0);
 }
 
 
@@ -148,7 +148,7 @@ void MIDI2_UART_RXISR_EntryCallback(void)
 {
     /* These LEDs indicate MIDI input activity */
     DBG_PRINTF("[%s]: MIDI input activity\n",__func__);
-    LED_InB_Write(1);
+    // LED_InB_Write(1);
 }
 
 
@@ -165,7 +165,7 @@ void MIDI2_UART_RXISR_ExitCallback(void)
         USB_MIDI_IN_Service();
     #endif /* (USB_EP_MANAGEMENT_DMA_AUTO) */
     DBG_PRINTF("[%s]\n",__func__);
-    LED_InB_Write(0);
+    // LED_InB_Write(0);
 }
 
 void MidiPanicButton(void)

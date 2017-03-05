@@ -221,7 +221,7 @@ int main()
     }
 }
 
-
+#if(0)
 void TestPlayButtons(void)
 {
     static uint8 midiMsg[MIDI_MSG_SIZE];
@@ -347,6 +347,7 @@ void TestPlayButtons(void)
         #endif
 	} /* Process any button change */
 }          
+#endif
 
 void  TestPlayNote(void)
 {   // usato per mandare fuori una sequenza di note
