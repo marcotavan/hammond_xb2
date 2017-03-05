@@ -296,7 +296,6 @@ char8 const *lcdTextMessage[] =
     "Waiting for USB \0",   // 1
     "Marco Tavan 2017\0",   // 2
     "Xb2 Marco Tavan \0",   // 3
-
 };
 
 
@@ -411,7 +410,7 @@ void LCD_Poll(uint8 status)
                     lcdMessageStates = 2;
                     // swappa LCD
                     // LCD_ClearDisplay();
-                    Write_BarGraphs();
+                    // Write_BarGraphs();
                 }
                 
             }

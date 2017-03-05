@@ -208,7 +208,7 @@ void InitSwitchButtons(void)
         MIDI_CHANNEL_1);
     CyDelay(10);
     
-    Display_Write_Text(ROW_1,"InitSwitchButtons Done");
+    // Display_Write_Text(ROW_1,"InitSwitchButtons Done");
  }
 
 /*****************************************************************************\

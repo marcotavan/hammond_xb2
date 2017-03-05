@@ -177,7 +177,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         break;
     }
     
-    Write_BarGraphs();
+    // Write_BarGraphs();
 }
 
 uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
