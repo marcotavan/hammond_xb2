@@ -44,7 +44,7 @@ CY_ISR(TimerTick_InterruptHandler)
     // 100us
     // 1000us
     
-     KeyScan_Poll();
+    // KeyScan_Poll();
     
     upCounter++;
 
@@ -82,7 +82,7 @@ CY_ISR(TimerTick_InterruptHandler)
 	 */
     Timer_1_STATUS;
     
-     // flag_500us_ISR = 1;
+    flag_500us_ISR = 1;
     // DBG_PRINTF("isr\n");
 } // CY_ISR(SysTick_ISR)
 

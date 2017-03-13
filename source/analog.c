@@ -60,7 +60,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
             // sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
             // mnon si puo' perchè si impappa il sistema
-            sendControlChange(UM_SET_A_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
+            sendControlChange(UM_SET_B_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
             barGraph = ((data>>4) + 1) & 0x7F;
