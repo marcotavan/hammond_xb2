@@ -35,6 +35,6 @@ struct _switchType_ {
     uint8 lowerManualPreset_Switch;
 } switchType;
 
-
+uint8 SOLO_Button_on_Hold(void);
 #endif    
 /* [] END OF FILE */

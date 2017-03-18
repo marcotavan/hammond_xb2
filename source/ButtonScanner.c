@@ -36,11 +36,14 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "customLcd.h"
 #include "EepromManager.h"
 
-#define MIN_DEBOUNCE 7      // * 8ms
-#define MAX_DEBOUNCE 120     // * 8ms  
+#define MIN_DEBOUNCE 5      // * 8ms
+#define MAX_DEBOUNCE 100     // * 8ms  
 #define MAX_PULSANTI 16
 
-static uint8 shiftOnHold = FALSE;
+static struct onHold_s {
+    uint8 shift;
+    uint8 solo;
+}OnHold;
 
 static char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
@@ -157,6 +160,9 @@ void InitSwitchButtons(void)
         EEPROM_Write((uint8 *) &switchType, EEPROM_ROW_BUTTONS);
     }
     
+    OnHold.shift = FALSE;
+    OnHold.solo = FALSE;
+    
     // invia via midi la configurazione di default
     sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
         switchType.rotarySpeaker_HalfMoon,
@@ -216,7 +222,15 @@ void InitSwitchButtons(void)
 \*****************************************************************************/
 uint8 SHIFT_Button_on_Hold(void)
 {
-    return shiftOnHold; 
+    return OnHold.shift; 
+}
+
+/*****************************************************************************\
+*  restituisce se il tasto shift e' premuto
+\*****************************************************************************/
+uint8 SOLO_Button_on_Hold(void)
+{
+    return OnHold.solo; 
 }
 
 /*****************************************************************************\
@@ -506,7 +520,7 @@ void ManageButton_Shift(uint8 status)
         // case BUTTON_LONG_PRESS   // valido al rilascio
         case BUTTON_ON_HOLD:        
         {
-            shiftOnHold = TRUE;
+            OnHold.shift = TRUE;
             // servirà un timeout?
             DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
             // si accende il led dello shift se c'è^?
@@ -514,8 +528,9 @@ void ManageButton_Shift(uint8 status)
         break;
         
         case BUTTON_RELEASED:
+        case BUTTON_LONG_RELEASE:
         {
-            shiftOnHold = FALSE;
+            OnHold.shift = FALSE;
             DBG_PRINTF("Shift Released, i led del pannello tornano normali\n");
         }
         break;
@@ -534,20 +549,25 @@ void ManageButton_Solo(uint8 status)
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
-
+            // DBG_PRINTF("Solo pressed\n");
         }
         break;
         
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
-        case BUTTON_ON_HOLD:        // valido al mantenimento
+        case BUTTON_ON_HOLD:        
         {
-
+            OnHold.solo = TRUE;
+            // servirà un timeout?
+            DBG_PRINTF("Solo on Hold -> alternate Function\n");
+            // si accende il led dello shift se c'è^?
         }
         break;
         
-        case BUTTON_RELEASED:       // tasto rilasciato
+        case BUTTON_RELEASED:
+        case BUTTON_LONG_RELEASE:
         {
-            
+            OnHold.solo = FALSE;
+            DBG_PRINTF("solo Released\n");
         }
         break;
     }   
@@ -610,13 +630,13 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         
         case BUTTON_08_PERC_2ND:
         { // percussion on/off, level soft normal
-            ManageButton_PercussionLevel(status);
+            ManageButton_PercussionType(status);
         }
         break;
 
         case BUTTON_04_PERC_3RD:
         { // percussion 3rd 2nd / fast slow
-            ManageButton_PercussionType(status);
+            ManageButton_PercussionLevel(status);
         }
         break;
 

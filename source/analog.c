@@ -20,6 +20,7 @@
 #include "VB3_midi_map.h"
 #include "customLcd.h"
 #include "FiltroMediano.h"
+#include "ButtonScanner.h"
 
 #define MAX_SAMPLE  1
 
@@ -53,6 +54,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
+    static uint8 SendOverdriveSwitchOn = 0;
     
     switch(event)
     {
@@ -75,14 +77,25 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         case MOD_WHEEL_ANALOG_INPUT:
         {
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
-            sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
-            
-            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-            barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
-            
-            if (data >= 126) offset = 0;
-            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+            if(SOLO_Button_on_Hold())
+            {
+                if(SendOverdriveSwitchOn == 0)
+                {
+                    sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
+                    SendOverdriveSwitchOn = 1;
+                }
+                
+                sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
+                
+                lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+                barGraph = ((data>>4) + 1) & 0x7F;
+                str_bargraph[ROW_0][lcdColPosition] =  barGraph;
+                
+                if (data >= 126) offset = 0;
+                str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+            } else {
+                SendOverdriveSwitchOn = 0;
+            }
         }
         break;
         
