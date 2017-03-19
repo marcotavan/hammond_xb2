@@ -119,6 +119,9 @@ uint8 sendControlChange(byte ControlNumber,
 								   byte ControlValue,
 								   byte Channel);
 
+void sendSysEx(int length, 
+					const byte *const array,
+					bool ArrayContainsBoundaries);
 
 #endif // _MIDI_LIBRARY_H_
 

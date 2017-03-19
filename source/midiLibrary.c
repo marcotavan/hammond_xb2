@@ -304,26 +304,27 @@ void sendSysEx(int length,
 {
     DBG_PRINTF("[%s]\n",__func__);
 	int i;
+	static const uint8 endByte[1] = {0xF7};
 	if (ArrayContainsBoundaries == FALSE) {
 		
 		DBG_PRINTF("TODO USE_SERIAL_PORT.write(0xF0);\n");
 		
-		for (i=0;i<length;++i) {
-			
+		// for (i=0;i<length;++i) 
+		// {
 			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
-			
-		}
+			USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
+		// }
 		
 		DBG_PRINTF("USE_SERIAL_PORT.write(0xF7);\n");
-		
+		USB_PutUsbMidiIn(1, endByte, USB_MIDI_CABLE_00);
 	}
 	else {
 		
-		for (i=0;i<length;++i) {
-			
+		// for (i=0;i<length;++i) 
+		// {
 			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
-			
-		}
+			USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
+		// }
 		
 	}
 	

@@ -27,9 +27,9 @@
         TICK_LCD,                           // 4
         TICK_BUTTONSCANNER,                 // 5
         TICK_EEPROM,                        // 6
+        TICK_IS_VST_READY,          		// 7
         //--------------------------------------
-        TICK_SCRITTURA_RITARDATA,           // 7
-        TICK_CODA_PWM,                      // 8
+		TICK_CODA_PWM,                      // 8
         TICK_GESTIONE_RELE,                 // 9
         TICK_EEPROM_BUSY,                   // 10
         TICK_LED_SCENE_TIMEOUT,             // 11

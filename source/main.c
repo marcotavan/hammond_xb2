@@ -68,9 +68,10 @@ uint16 play_note = 0;
 int8 note_direction = 1;
 
 void Check_if_host_requested_USB_Suspend(void);
-void  TestPlayNote(void);
-void TestPlayButtons(void);
-void  TestVB3Drawbars(void);
+// void  TestPlayNote(void);
+// void TestPlayButtons(void);
+// void  TestVB3Drawbars(void);
+void isVSTReady();
 /*******************************************************************************
 * Function Name: SleepIsr
 ********************************************************************************
@@ -189,37 +190,47 @@ int main()
                 }
             #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
 
-            // TestPlayButtons();
-            
-            // TestPlayNote();
-            
-            // TestVB3Drawbars();
-            LCD_Poll(1);
-            
-            AnalogPoll();
-            
             Check_if_host_requested_USB_Suspend();
-            
-            if(flag_500us_ISR)
-            { // probabilmente questo deve essere inserito nell'ISR
-                KeyScan_Poll();
-                flag_500us_ISR = 0;
-            }
-            
-            ButtonScannerPoll();
-            
-            EepromPoll();
-            
-            UART_DEBUG_PARSER_Task();
         }
-        else
-        {
-            LCD_Poll(0);
+
+        LCD_Poll(1);
+        
+        AnalogPoll();
+      
+        if(flag_500us_ISR)
+        { // probabilmente questo deve essere inserito nell'ISR
+            KeyScan_Poll();
+            flag_500us_ISR = 0;
         }
         
-       
+        ButtonScannerPoll();
+        
+        EepromPoll();
+        
+        UART_DEBUG_PARSER_Task();
+        
+        isVSTReady();
+        
+        
     }
 }
+
+void isVSTReady(void)
+{
+	static uint8 isVSTReadyToPlay = 0;
+	#define len 6
+	uint8 data[len] = {0xf0,0x7F,0x7F,0x06,0x02,0xF7};
+	
+	if(tick_1s(TICK_IS_VST_READY))
+	{
+		if(isVSTReadyToPlay == 0)
+		{
+			// sendSysEx(len,data,1);
+		}
+	}
+	
+}
+
 
 #if(0)
 void TestPlayButtons(void)
@@ -347,7 +358,6 @@ void TestPlayButtons(void)
         #endif
 	} /* Process any button change */
 }          
-#endif
 
 void  TestPlayNote(void)
 {   // usato per mandare fuori una sequenza di note
@@ -490,6 +500,7 @@ void  TestVB3Drawbars(void)
     }
     */
 }
+#endif
 
 void Check_if_host_requested_USB_Suspend(void)
 {
