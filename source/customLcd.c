@@ -37,6 +37,44 @@ uint8 alternateTextCounter = 0;
 
 static uint8 lcdMessageStates = 0;
 
+
+char8 const *lcdTextMessage[] =
+{
+    "Xb2 Retrofit 1.0",   // 0
+    "Waiting for USB ",   // 1
+    "Marco Tavan 2017",   // 2
+    "Xb2 Marco Tavan ",   // 3
+};
+
+
+char8 const *lcdAlternateTextMessage[] =
+{
+
+    "ALT_ROTARY_FAST ",
+    "ALT_ROTARY_SLOW ",
+    "ALT_RESTART_RSLW",
+    "ALT_ROTARY_STOP ",
+    "ALT_Perc_On     ",
+    "ALT_Perc_Off    ",
+    "ALT_Perc_NORM   ",
+    "ALT_Perc_SOFT   ",
+    "ALT_Perc_3RD    ",
+    "ALT_Perc_2ND    ",
+    "ALT_Perc_SLOW   ",
+    "ALT_Perc_FAST   ",
+    "ALT_VCS_UPPER_ON",
+    "ALT_VCS_UPPR_OFF",
+    "ALT_VCS_LOWER_ON",
+    "ALT_VCS_LOWER_ON",
+    "ALT_VCS_0       ",
+    "ALT_VCS_1       ",
+    "ALT_VCS_2       ",
+    "ALT_VCS_3       ",
+    "ALT_VCS_4       ",
+    "ALT_VCS_5       ",
+};
+
+
 uint8 const CYCODE LCD_InvertedVerticalBar[] = \
 {
     /* Character LCD_CUSTOM_0   */
@@ -289,16 +327,6 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 
 #endif /* LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG */
 
-
-char8 const *lcdTextMessage[] =
-{
-    "Xb2 Retrofit 1.0\0",   // 0
-    "Waiting for USB \0",   // 1
-    "Marco Tavan 2017\0",   // 2
-    "Xb2 Marco Tavan \0",   // 3
-};
-
-
 void LCD_splashScreen(uint8 mex)
 {
     /* Start LCD and set position */
@@ -419,15 +447,15 @@ void LCD_Poll(uint8 status)
     }
 }
 
-void Display_Write_Text(uint8 where, char *what)
+void Display_Alternate_Text(uint8 where, uint8 what)
 {
     // where = where;
     // what = what;
     
     LCD_Position(where,0);
-    LCD_PrintString(what);
+    LCD_PrintString(lcdAlternateTextMessage[what]);
     
-    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,what);
+    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdTextMessage[what]);
     // nop
 }
 

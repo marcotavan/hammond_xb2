@@ -45,7 +45,7 @@ static struct onHold_s {
     uint8 solo;
 }OnHold;
 
-static char str[20];
+// static char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
 const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
 
@@ -214,7 +214,13 @@ void InitSwitchButtons(void)
         MIDI_CHANNEL_1);
     CyDelay(10);
     
-    // Display_Write_Text(ROW_1,"InitSwitchButtons Done");
+    // preset
+    sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,
+        VAL_UPPER_DRAWBARS_B,
+        MIDI_CHANNEL_1);  // invia un cambio forzato
+    
+	// aggiungere lo SPLIT ON
+    // Display_Alternate_Text(ROW_1,ALT_InitSwitchButtons_Done);
  }
 
 /*****************************************************************************\
@@ -247,18 +253,24 @@ void ManageButton_Leslie (uint8 status)
             {
                 case ROTARY_SLOW:
                 case ROTARY_STOP:
+                {
                 switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
-                Display_Write_Text(ROW_1,"ROTARY_FAST");
+                    Display_Alternate_Text(ROW_1,ALT_ROTARY_FAST);
+                }
                 break;
                 
                 case ROTARY_FAST: 
+                {
                 switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                Display_Write_Text(ROW_1,"ROTARY_SLOW");
+                    Display_Alternate_Text(ROW_1,ALT_ROTARY_SLOW);
+                }
                 break;
                 
                 default:
+                {
                 switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                Display_Write_Text(ROW_1,"ROTARY_SLOW");
+                    Display_Alternate_Text(ROW_1,ALT_ROTARY_SLOW);
+                }
                 break;
             }
                            
@@ -273,13 +285,17 @@ void ManageButton_Leslie (uint8 status)
             switch(switchType.rotarySpeaker_HalfMoon) 
             {
                 case ROTARY_STOP:
-                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
-                Display_Write_Text(ROW_1,"RESTART ROTARY_SLOW");
+                {
+                    switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                    Display_Alternate_Text(ROW_1,ALT_RESTART_ROTARY_SLOW);
+                }
                 break;
                 
                 default:
-                switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
-                Display_Write_Text(ROW_1,"ROTARY_STOP");
+                {
+                    switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
+                    Display_Alternate_Text(ROW_1,ALT_ROTARY_STOP);
+                }
                 break;
             }
             
@@ -321,6 +337,8 @@ void ManageButton_Vibrato(status)
                     break;
                 }
                 
+                Display_Alternate_Text(ROW_1,switchType.Vibrato_Upper_Switch?ALT_VIBRATO_SCANNER_UPPER_ON:ALT_VIBRATO_SCANNER_UPPER_OFF); 
+                
                 sendControlChange(CC_Vibrato_Upper,             
                     switchType.Vibrato_Upper_Switch,    
                     MIDI_CHANNEL_1);
@@ -345,6 +363,8 @@ void ManageButton_Vibrato(status)
                     break;
                 }
                 
+                Display_Alternate_Text(ROW_1,switchType.Vibrato_Lower_Switch?ALT_VIBRATO_SCANNER_LOWER_ON:ALT_VIBRATO_SCANNER_LOWER_OFF); 
+                
                 sendControlChange(CC_Vibrato_Lower,       
                     switchType.Vibrato_Lower_Switch,     
                     MIDI_CHANNEL_1);
@@ -368,8 +388,8 @@ void ManageButton_Vibrato(status)
                     MIDI_CHANNEL_1);
                 
                 // questo serve per scrivere C1 V1 C2,V2 C3, V3
-                sprintf(str,"VIBRATO SCANNER %s%d",switchType.chorus_Knob%2?"C":"V", vibratoScannerPosition[switchType.chorus_Knob]);
-                Display_Write_Text(ROW_1,str);    
+                // sprintf(str,"VIBRATO SCANNER %s%d",switchType.chorus_Knob%2?"C":"V", vibratoScannerPosition[switchType.chorus_Knob]);
+                Display_Alternate_Text(ROW_1,ALT_VIBRATO_SCANNER_0+switchType.chorus_Knob);    
             }
             break;
         }   
@@ -390,17 +410,17 @@ void ManageButton_PercussionLevel(status)
             {
                 case SWITCH_OFF:
                 switchType.percussion_Switch = SWITCH_ON;
-                Display_Write_Text(ROW_1,"Percussion_On");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_On);
                 break;
             
                 case SWITCH_ON: 
                 switchType.percussion_Switch = SWITCH_OFF;
-                Display_Write_Text(ROW_1,"Percussion_Off");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
                 break;
                 
                 default:
                 switchType.percussion_Switch = SWITCH_OFF;
-                Display_Write_Text(ROW_1,"Percussion_Off");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
                 break;
             }
             
@@ -417,17 +437,17 @@ void ManageButton_PercussionLevel(status)
             {
                 case PERC_SOFT:
                 switchType.percussionLevel_Switch = PERC_NORM;
-                Display_Write_Text(ROW_1,"Percussion_NORM");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_NORM);
                 break;
             
                 case PERC_NORM: 
                 switchType.percussionLevel_Switch = PERC_SOFT;
-                Display_Write_Text(ROW_1,"Percussion_SOFT");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
                 break;
                 
                 default:
                 switchType.percussionLevel_Switch = PERC_SOFT;
-                Display_Write_Text(ROW_1,"Percussion_SOFT");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
                 break;
             }
             
@@ -453,17 +473,17 @@ void ManageButton_PercussionType(uint8 status)
             {
                 case PERC_2ND:
                 switchType.percussionHarmonics_Switch = PERC_3RD;
-                Display_Write_Text(ROW_1,"Percussion_3RD");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_3RD);
                 break;
             
                 case PERC_3RD: 
                 switchType.percussionHarmonics_Switch = PERC_2ND;
-                Display_Write_Text(ROW_1,"Percussion_2ND");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
                 break;
                 
                 default:
                 switchType.percussionHarmonics_Switch = PERC_2ND;
-                Display_Write_Text(ROW_1,"Percussion_2ND");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
                 break;
             }
             
@@ -480,17 +500,17 @@ void ManageButton_PercussionType(uint8 status)
             {
                 case PERC_FAST:
                 switchType.percussionDecay_Switch = PERC_SLOW;
-                Display_Write_Text(ROW_1,"Percussion_SLOW");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SLOW);
                 break;
             
                 case PERC_SLOW: 
                 switchType.percussionDecay_Switch = PERC_FAST;
-                Display_Write_Text(ROW_1,"Percussion_FAST");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
                 break;
                 
                 default:
                 switchType.percussionDecay_Switch = PERC_FAST;
-                Display_Write_Text(ROW_1,"Percussion_FAST");
+                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
                 break;
             }
             

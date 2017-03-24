@@ -17,7 +17,9 @@
   
 #define MAX_SLOW_VELOCITY_COUNTER 1260
 #define MAX_KEYS 88
-    
+
+#define DELAY_US_DEBOUNCE_KEYSCANNER	10 // 16*10us sta qui dentro. con tiziano abbiamo visto che va bene 1uS	
+	
 void KeyScan_Poll(void);
 void KeyScanInit(void);
 #endif 

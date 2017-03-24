@@ -312,18 +312,18 @@ void sendSysEx(int length,
 		// for (i=0;i<length;++i) 
 		// {
 			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
-			USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
+			// USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
 		// }
 		
 		DBG_PRINTF("USE_SERIAL_PORT.write(0xF7);\n");
-		USB_PutUsbMidiIn(1, endByte, USB_MIDI_CABLE_00);
+		// USB_PutUsbMidiIn(1, endByte, USB_MIDI_CABLE_00);
 	}
 	else {
 		
 		// for (i=0;i<length;++i) 
 		// {
 			DBG_PRINTF("USE_SERIAL_PORT.write(array[i]);\n");
-			USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
+			// USB_PutUsbMidiIn(length, array, USB_MIDI_CABLE_00);
 		// }
 		
 	}

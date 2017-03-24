@@ -209,7 +209,7 @@ int main()
         
         UART_DEBUG_PARSER_Task();
         
-        isVSTReady();
+        // isVSTReady();
         
         
     }

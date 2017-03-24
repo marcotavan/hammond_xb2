@@ -15,6 +15,8 @@
 
 #define CC_Upper_Manual_Drawbars_AB_Switch        49    // switch
 #define VAL_UPPER_DRAWBARS_A                    0
+#define VAL_UPPER_DRAWBARS_B                    127
+    
 enum upperManualDrawbarSetA
 {
     UM_SET_A_DRAWBAR_16     = 40,
