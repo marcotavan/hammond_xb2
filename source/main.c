@@ -209,7 +209,7 @@ int main()
         
         UART_DEBUG_PARSER_Task();
         
-        // isVSTReady();
+        //isVSTReady();
         
         
     }
@@ -219,10 +219,11 @@ void isVSTReady(void)
 {
 	static uint8 isVSTReadyToPlay = 0;
 	#define len 6
-	uint8 data[len] = {0xf0,0x7F,0x7F,0x06,0x02,0xF7};
+	//uint8 data[len] = {0xf0,0x7F,0x7F,0x06,0x02,0xF7};
 	
 	if(tick_1s(TICK_IS_VST_READY))
 	{
+		//DBG_PRINTF("A");
 		if(isVSTReadyToPlay == 0)
 		{
 			// sendSysEx(len,data,1);
