@@ -631,6 +631,35 @@ void ManageButton_Solo(uint8 status)
 /*****************************************************************************\
 *  TEMPLATE: gestisce la funzione tasto  Generico
 \*****************************************************************************/
+void ManageButton_Record(uint8 status)
+{
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:     // valido immediatamente
+        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+        {
+
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS   // valido al rilascio lungo
+        case BUTTON_ON_HOLD:        // valido al mantenimento
+        {
+			RefreshAllAnalogElements();
+        }
+        break;
+        
+        case BUTTON_RELEASED:       // tasto rilasciato
+        {
+            
+        }
+        break;
+    }       
+}
+
+/*****************************************************************************\
+*  TEMPLATE: gestisce la funzione tasto  Generico
+\*****************************************************************************/
 void ManageButton_Generic(uint8 status)
 {
     switch (status) 
@@ -707,9 +736,14 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         }
         break;
         
-        // 5,13
-        case BUTTON_05_EDIT:
         case BUTTON_09_RECORD:
+		{
+            ManageButton_Record(status);
+        }
+		break;
+		
+		// 5,13
+        case BUTTON_05_EDIT:
         case BUTTON_14_KEY_1:
         case BUTTON_10_KEY_2:
         case BUTTON_06_KEY_3:

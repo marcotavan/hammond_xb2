@@ -236,6 +236,7 @@ uint8 isValidDifference(uint8 a, uint8 b, uint8 diff)
     return 0;
 }
 
+static uint8 analogVal[MAX_ANALOG_CHANNELS];
 
 void AnalogPoll(void)
 {
@@ -252,10 +253,8 @@ void AnalogPoll(void)
     static uint8 isAnalogPollNotInitialized = 1;
     
     static uint8 analogChannel = 0;
-    
-    static uint8 analogVal[MAX_ANALOG_CHANNELS];
-    
-    static uint16 validData=0;
+
+	static uint16 validData=0;
     
     if (isAnalogPollNotInitialized)
     {
@@ -356,6 +355,12 @@ void AnalogPoll(void)
 }
 
 uint8 GetOverallVolumeLevel(void) {
+	// prende il livello attual del volume letto dal potenziometro
 	return overallVolumeLevel;
+}
+
+void RefreshAllAnalogElements(void){
+	DBG_PRINTF("reinvia tutti i dati delle analogiche\n");
+	memset(analogVal,0xff,sizeof(analogVal));
 }
 /* [] END OF FILE */
