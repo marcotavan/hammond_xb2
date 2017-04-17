@@ -18,6 +18,7 @@ void ButtonScannerPoll(void);
 void ButtonCommand(uint8 numTasto,uint8 status);
 void InitSwitchButtons(void);
 uint8 SHIFT_Button_on_Hold(void);
+uint8 getVolumeSolo(void);
 
 // potrebbe andare in eeprom
 struct _switchType_ {
@@ -37,5 +38,11 @@ struct _switchType_ {
 } switchType;
 
 uint8 SOLO_Button_on_Hold(void);
+
+enum _Volume_level_ {
+	VOLUME_NORMAL,
+	VOLUME_MAX
+};
+
 #endif    
 /* [] END OF FILE */

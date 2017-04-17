@@ -35,6 +35,7 @@ enum rotarySpeed
 };
 
 uint8 rotaryWheelStatus = ROTARY_SLOW_SPEED;
+static uint8 overallVolumeLevel = 0;
 
 #if ADC_ISR_ENABLE
 CY_ISR( ADC_ISR )
@@ -55,7 +56,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
     static uint8 SendOverdriveSwitchOn = 0;
-    
+    static uint8 pitchWheelData = 0;
+	
     switch(event)
     {
         case EVENT_DRAWBAR_GENERIC:
@@ -80,7 +82,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
 			DBG_PRINTF("MOD_WHEEL_ANALOG_INPUT %d\n",data);
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
-            if(SOLO_Button_on_Hold())
+            // if(SOLO_Button_on_Hold())
+			if(pitchWheelData < 40)
             {
                 if(SendOverdriveSwitchOn == 0)
                 {
@@ -110,9 +113,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 0:31 SLOW.
             // 32:65 STOP
             // 96:127 FAST
-			#if (0)
-            if(data > 88)
+			pitchWheelData = data;
+			if(data > 88)
             {
+				/*
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
                 {
                     data = 127;
@@ -127,9 +131,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     
                     rotaryWheelStatus = ROTARY_FAST_SPEED;
                 }
+				*/
             }
             else if(data < 40)
             {
+				/*
                 if (rotaryWheelStatus == ROTARY_FAST_SPEED)
                 {
                     data = 0;
@@ -144,8 +150,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
+				*/
             }
-			#endif
+			else {
+				// zona centrale
+			}
         }
         break;
         
@@ -188,15 +197,17 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
             	Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
 			} else {
-			
-            sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
-            
-            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-            barGraph = ((data>>4) + 1) & 0x7F;
-            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
+				if(getVolumeSolo() == VOLUME_NORMAL) {
+					overallVolumeLevel = data; // store per ritorno da solo
+		            sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
+		            
+		            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
+		            barGraph = ((data>>4) + 1) & 0x7F;
+		            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
-            if (data >= 126) offset = 0;
-            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+		            if (data >= 126) offset = 0;
+		            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+				}
 			}
         }
         break;
@@ -342,5 +353,9 @@ void AnalogPoll(void)
             adcConversionDone = 0;   
         }
    }
+}
+
+uint8 GetOverallVolumeLevel(void) {
+	return overallVolumeLevel;
 }
 /* [] END OF FILE */

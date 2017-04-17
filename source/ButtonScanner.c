@@ -35,6 +35,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "VB3_midi_map.h"
 #include "customLcd.h"
 #include "EepromManager.h"
+#include "analog.h"
 
 #define MIN_DEBOUNCE 5      // * 8ms
 #define MAX_DEBOUNCE 100     // * 8ms  
@@ -128,6 +129,7 @@ struct {
     uint8 oneShot;
 } button[MAX_PULSANTI];
 
+static uint8 soloVolume = VOLUME_NORMAL;
 /*****************************************************************************\
 *  
 \*****************************************************************************/
@@ -227,16 +229,14 @@ void InitSwitchButtons(void)
 /*****************************************************************************\
 *  restituisce se il tasto shift e' premuto
 \*****************************************************************************/
-uint8 SHIFT_Button_on_Hold(void)
-{
+uint8 SHIFT_Button_on_Hold(void) {
     return OnHold.shift; 
 }
 
 /*****************************************************************************\
 *  restituisce se il tasto shift e' premuto
 \*****************************************************************************/
-uint8 SOLO_Button_on_Hold(void)
-{
+uint8 SOLO_Button_on_Hold(void) {
     return OnHold.solo; 
 }
 
@@ -597,7 +597,14 @@ void ManageButton_Solo(uint8 status)
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
-            // DBG_PRINTF("Solo pressed\n");
+            DBG_PRINTF("Solo pressed\n");
+			if(soloVolume == VOLUME_NORMAL) {
+				soloVolume = VOLUME_MAX;
+				sendControlChange(CC_Overall_Volume,127,MIDI_CHANNEL_1);
+			} else {
+				sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
+				soloVolume = VOLUME_NORMAL;
+			}
         }
         break;
         
@@ -904,5 +911,12 @@ void ButtonScannerPoll(void)
         ButtonScanner();
         ButtonManager();
     }
+	
+	if (tick_10ms(TICK_BUTTONSCANNER)) {
+    }
+}
+
+uint8 getVolumeSolo(void) {
+	return soloVolume;
 }
 /* [] END OF FILE */

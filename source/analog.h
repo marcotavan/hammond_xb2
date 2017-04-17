@@ -13,15 +13,18 @@
 #ifndef _ANALOG_H_
 #define _ANALOG_H_
 
-#define EVENT_DRAWBAR_GENERIC           1
-#define MOD_WHEEL_ANALOG_INPUT          9
-#define PITCH_WHEEL_ANALOG_INPUT        10
-#define EXPRESSION_ANALOG_INPUT         11
-#define REVERB_ANALOG_INPUT             12
-#define VOLUME_ANALOG_INPUT             13
-#define MAX_ANALOG_CHANNELS             14
-    
-void AnalogPoll(void);
-   
+	#include "project.h"
+	
+	#define EVENT_DRAWBAR_GENERIC           1
+	#define MOD_WHEEL_ANALOG_INPUT          9
+	#define PITCH_WHEEL_ANALOG_INPUT        10
+	#define EXPRESSION_ANALOG_INPUT         11
+	#define REVERB_ANALOG_INPUT             12
+	#define VOLUME_ANALOG_INPUT             13
+	#define MAX_ANALOG_CHANNELS             14
+	    
+	void AnalogPoll(void);
+	uint8 GetOverallVolumeLevel(void);
+
 #endif
 /* [] END OF FILE */
