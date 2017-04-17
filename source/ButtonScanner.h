@@ -17,6 +17,8 @@
 void ButtonScannerPoll(void);
 void ButtonCommand(uint8 numTasto,uint8 status);
 void InitSwitchButtons(void);
+void RefreshAllButtonElements(void);
+
 uint8 SHIFT_Button_on_Hold(void);
 uint8 getVolumeSolo(void);
 

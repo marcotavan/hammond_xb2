@@ -130,43 +130,9 @@ struct {
 } button[MAX_PULSANTI];
 
 static uint8 soloVolume = VOLUME_NORMAL;
-/*****************************************************************************\
-*  
-\*****************************************************************************/
-void InitSwitchButtons(void)
-{
-    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
-    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
-        
-    // punto all-inizio della struttura
-    memcpy((uint8 *) &switchType,(uint8 *) internal_eeprom.RegPointer,sizeof(switchType));    
 
-    if (switchType.marker != MARKER_EEPROM_DEFAULT)
-    {
-        // prendi da default else carica da eeprom
-        switchType.marker = MARKER_EEPROM_DEFAULT;
-
-        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
-        switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
-        switchType.Tube_Overdrive_Switch = SWITCH_OFF;
-        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
-        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
-        switchType.chorus_Knob = CHORUS_C1;
-        switchType.percussion_Switch = SWITCH_ON;
-        switchType.percussionLevel_Switch = PERC_SOFT;
-        switchType.percussionDecay_Switch = PERC_FAST;
-        switchType.percussionHarmonics_Switch = PERC_2ND;
-        switchType.upperManualPreset_Switch = PRESET_B;
-        switchType.lowerManualPreset_Switch = PRESET_B;
-        
-        // write in eeprom
-        EEPROM_Write((uint8 *) &switchType, EEPROM_ROW_BUTTONS);
-    }
-    
-    OnHold.shift = FALSE;
-    OnHold.solo = FALSE;
-    
-    // invia via midi la configurazione di default
+void RefreshAllButtonElements(void) {
+	// invia via midi la configurazione di default
     sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
         switchType.rotarySpeaker_HalfMoon,
         MIDI_CHANNEL_1);
@@ -216,12 +182,50 @@ void InitSwitchButtons(void)
         switchType.percussionHarmonics_Switch,
         MIDI_CHANNEL_1);
     CyDelay(10);
-    
-    // preset
+	    // preset
     sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,
         VAL_UPPER_DRAWBARS_B,
         MIDI_CHANNEL_1);  // invia un cambio forzato
+	CyDelay(10);
+}
+/*****************************************************************************\
+*  
+\*****************************************************************************/
+void InitSwitchButtons(void)
+{
+    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
+    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
+        
+    // punto all-inizio della struttura
+    memcpy((uint8 *) &switchType,(uint8 *) internal_eeprom.RegPointer,sizeof(switchType));    
+
+    if (switchType.marker != MARKER_EEPROM_DEFAULT)
+    {
+        // prendi da default else carica da eeprom
+        switchType.marker = MARKER_EEPROM_DEFAULT;
+
+        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
+        switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
+        switchType.Tube_Overdrive_Switch = SWITCH_OFF;
+        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+        switchType.chorus_Knob = CHORUS_C1;
+        switchType.percussion_Switch = SWITCH_ON;
+        switchType.percussionLevel_Switch = PERC_SOFT;
+        switchType.percussionDecay_Switch = PERC_FAST;
+        switchType.percussionHarmonics_Switch = PERC_2ND;
+        switchType.upperManualPreset_Switch = PRESET_B;
+        switchType.lowerManualPreset_Switch = PRESET_B;
+        
+        // write in eeprom
+        EEPROM_Write((uint8 *) &switchType, EEPROM_ROW_BUTTONS);
+    }
     
+    OnHold.shift = FALSE;
+    OnHold.solo = FALSE;
+    
+	RefreshAllButtonElements();
+	
 	// aggiungere lo SPLIT ON
     // Display_Alternate_Text(ROW_1,ALT_InitSwitchButtons_Done);
  }
@@ -645,6 +649,7 @@ void ManageButton_Record(uint8 status)
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
         case BUTTON_ON_HOLD:        // valido al mantenimento
         {
+			RefreshAllButtonElements();
 			RefreshAllAnalogElements();
         }
         break;
