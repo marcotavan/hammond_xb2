@@ -50,6 +50,7 @@ enum alternative_text {
     ALT_VIBRATO_SCANNER_3,
     ALT_VIBRATO_SCANNER_4,
     ALT_VIBRATO_SCANNER_5,
+	ALT_Overall_Tone
 };
 
 #endif

@@ -184,6 +184,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         {
 			DBG_PRINTF("VOLUME_ANALOG_INPUT\n");
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
+			if(SHIFT_Button_on_Hold()) {
+				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
+            	Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
+			} else {
+			
             sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
@@ -192,6 +197,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 
             if (data >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+			}
         }
         break;
         

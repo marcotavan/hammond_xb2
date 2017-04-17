@@ -17,6 +17,7 @@
 void ButtonScannerPoll(void);
 void ButtonCommand(uint8 numTasto,uint8 status);
 void InitSwitchButtons(void);
+uint8 SHIFT_Button_on_Hold(void);
 
 // potrebbe andare in eeprom
 struct _switchType_ {
