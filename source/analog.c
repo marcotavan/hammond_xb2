@@ -290,7 +290,6 @@ void AnalogPoll(void)
                 switch (analogChannel)
                 {
                     case MOD_WHEEL_ANALOG_INPUT:
-                    case EXPRESSION_ANALOG_INPUT:
                     { // analogInputs
                         if(isValidDifference(analogVal[analogChannel],validData,1)) // granularita del dato in uscita: 1 la differenza è 1 55 56 57 58 
                         {
@@ -301,9 +300,12 @@ void AnalogPoll(void)
                     }
                     break;
 					
+                    case EXPRESSION_ANALOG_INPUT:
+					case REVERB_ANALOG_INPUT:
+					case VOLUME_ANALOG_INPUT:					
                     case PITCH_WHEEL_ANALOG_INPUT:
                     { // analogInputs
-                        if(isValidDifference(analogVal[analogChannel],validData,2)) 
+                        if(isValidDifference(analogVal[analogChannel],validData,2)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);

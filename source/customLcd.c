@@ -472,7 +472,7 @@ void Display_Alternate_Text(uint8 where, uint8 what)
     LCD_Position(where,0);
     LCD_PrintString(lcdAlternateTextMessage[what]);
     
-    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdTextMessage[what]);
+    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdAlternateTextMessage[what]);
     // nop
 }
 
