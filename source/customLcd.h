@@ -28,16 +28,16 @@ void Display_Alternate_Text(uint8 where, uint8 what);
 extern char str_bargraph[MAX_ROWS][MAX_CHARS];
 
 enum alternative_text {
-    ALT_ROTARY_FAST,
-    ALT_ROTARY_SLOW,
-    ALT_RESTART_ROTARY_SLOW,
-    ALT_ROTARY_STOP,
-    ALT_Percussion_On,
-    ALT_Percussion_Off,
-    ALT_Percussion_NORM,
-    ALT_Percussion_SOFT,
-    ALT_Percussion_3RD,
-    ALT_Percussion_2ND,
+    ALT_ROTARY_FAST		= 0,		// 0	
+    ALT_ROTARY_SLOW,				// 1
+    ALT_RESTART_ROTARY_SLOW,		// 2
+    ALT_ROTARY_STOP,				// 3
+    ALT_Percussion_On,				// 4
+    ALT_Percussion_Off,				// 5
+    ALT_Percussion_NORM,			// 6
+    ALT_Percussion_SOFT,			// 7
+    ALT_Percussion_3RD,				// 8
+    ALT_Percussion_2ND,				// 9
     ALT_Percussion_SLOW,
     ALT_Percussion_FAST,
     ALT_VIBRATO_SCANNER_UPPER_ON,

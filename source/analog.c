@@ -60,7 +60,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     {
         case EVENT_DRAWBAR_GENERIC:
         {
-            // sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
+            DBG_PRINTF("EVENT_DRAWBAR_GENERIC\n");
+			// sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
             // mnon si puo' perchè si impappa il sistema
             sendControlChange(UM_SET_B_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
             
@@ -70,12 +71,14 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             if (data >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+			// Write_BarGraphs();
             
         } 
         break;
         
         case MOD_WHEEL_ANALOG_INPUT:
         {
+			DBG_PRINTF("MOD_WHEEL_ANALOG_INPUT %d\n",data);
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             if(SOLO_Button_on_Hold())
             {
@@ -102,10 +105,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case PITCH_WHEEL_ANALOG_INPUT:
         {
+			DBG_PRINTF("PITCH_WHEEL_ANALOG_INPUT %d\n",data);
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             // 0:31 SLOW.
             // 32:65 STOP
             // 96:127 FAST
+			#if (0)
             if(data > 88)
             {
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
@@ -140,11 +145,13 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                     rotaryWheelStatus = ROTARY_SLOW_SPEED;
                 }
             }
+			#endif
         }
         break;
         
         case EXPRESSION_ANALOG_INPUT:
         {
+			DBG_PRINTF("EXPRESSION_ANALOG_INPUT\n");
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Expression_Pedal,data,MIDI_CHANNEL_1);
             
@@ -160,6 +167,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case REVERB_ANALOG_INPUT:
         {
+			DBG_PRINTF("REVERB_ANALOG_INPUT\n");
            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
             
@@ -174,6 +182,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case VOLUME_ANALOG_INPUT:
         {
+			DBG_PRINTF("VOLUME_ANALOG_INPUT\n");
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
             
@@ -281,10 +290,20 @@ void AnalogPoll(void)
                 switch (analogChannel)
                 {
                     case MOD_WHEEL_ANALOG_INPUT:
-                    case PITCH_WHEEL_ANALOG_INPUT:
                     case EXPRESSION_ANALOG_INPUT:
                     { // analogInputs
                         if(isValidDifference(analogVal[analogChannel],validData,1)) // granularita del dato in uscita: 1 la differenza è 1 55 56 57 58 
+                        {
+                            // c'è una valida differenza con il campione precedente?
+                            AnalogEventTrigger(analogChannel,analogChannel, validData);
+                            analogVal[analogChannel] = validData;
+                        }
+                    }
+                    break;
+					
+                    case PITCH_WHEEL_ANALOG_INPUT:
+                    { // analogInputs
+                        if(isValidDifference(analogVal[analogChannel],validData,2)) 
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);

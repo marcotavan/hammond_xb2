@@ -474,16 +474,19 @@ void ManageButton_PercussionType(uint8 status)
                 case PERC_2ND:
                 switchType.percussionHarmonics_Switch = PERC_3RD;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_3RD);
+				// DBG_PRINTF("PERC_2ND\n");
                 break;
             
                 case PERC_3RD: 
                 switchType.percussionHarmonics_Switch = PERC_2ND;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
+				// DBG_PRINTF("PERC_3RD\n");
                 break;
                 
                 default:
                 switchType.percussionHarmonics_Switch = PERC_2ND;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
+				// DBG_PRINTF("default\n");
                 break;
             }
             
@@ -501,16 +504,19 @@ void ManageButton_PercussionType(uint8 status)
                 case PERC_FAST:
                 switchType.percussionDecay_Switch = PERC_SLOW;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_SLOW);
+				// DBG_PRINTF("PERC_FAST\n");
                 break;
             
                 case PERC_SLOW: 
                 switchType.percussionDecay_Switch = PERC_FAST;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
+				// DBG_PRINTF("PERC_SLOW\n");
                 break;
                 
                 default:
                 switchType.percussionDecay_Switch = PERC_FAST;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
+				// DBG_PRINTF("default\n");
                 break;
             }
             

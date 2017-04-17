@@ -38,7 +38,7 @@ uint8 alternateTextCounter = 0;
 static uint8 lcdMessageStates = 0;
 
 
-char8 const *lcdTextMessage[] =
+char8 const *lcdTextMessage[10] =
 {
     "Xb2 Retrofit 1.0",   // 0
     "Waiting for USB ",   // 1
@@ -47,9 +47,8 @@ char8 const *lcdTextMessage[] =
 };
 
 
-char8 const *lcdAlternateTextMessage[] =
+char8 const *lcdAlternateTextMessage[50] =
 {
-
     "ALT_ROTARY_FAST ",
     "ALT_ROTARY_SLOW ",
     "ALT_RESTART_RSLW",
@@ -71,7 +70,7 @@ char8 const *lcdAlternateTextMessage[] =
     "ALT_VCS_2       ",
     "ALT_VCS_3       ",
     "ALT_VCS_4       ",
-    "ALT_VCS_5       ",
+    "ALT_VCS_5       "
 };
 
 
@@ -271,7 +270,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
         /* Number of remaining pixels to draw */
         remainingPixels = value % LCD_CHARACTER_HEIGHT;
 
-        /* Put Cursor at start position */
+        // DBG_PRINTF("Put Cursor at start position r:%d, c:%d\n",row, column);
         LCD_Position(row, column);
 
         /* Make sure the bar graph fits inside the space allotted */
@@ -283,6 +282,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
         /*  Write full characters */
         while(count8 < fullChars)
         {
+			// DBG_PRINTF("LCD_WriteData(LCD_CUSTOM_7)\n");
             LCD_WriteData(LCD_CUSTOM_7);
 
             count8++;
@@ -290,6 +290,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
             /* Each pass through, move one row higher */
             if((((int8) row) - ((int8) count8)) >= 0)
             {
+				// DBG_PRINTF("LCD_Position r:%d, c:%d\n",row - count8, column);
                 LCD_Position(row - count8, column);
             }
             else
@@ -303,10 +304,12 @@ void LCD_LoadCustomFonts(uint8 const customData[])
             /* Write remaining pixels */
             if(remainingPixels == 0u)
             {
+				// DBG_PRINTF("LCD_WriteData(\' \')\n");
                 LCD_WriteData((uint8) ' ');
             }
             else
             {
+				// DBG_PRINTF("LCD_WriteData(remainingPixels-1 %d)\n",remainingPixels - 1u);
                 LCD_WriteData(remainingPixels - 1u);
             }
 
@@ -317,7 +320,9 @@ void LCD_LoadCustomFonts(uint8 const customData[])
                 /* Move up one row and fill with whitespace till top of bar graph */
                 for(count8 = 0u; count8 < (maxCharacters - fullChars - 1u); count8++)
                 {
+					// DBG_PRINTF("r:%d, c:%d\n",currentRow, column);
                     LCD_Position((uint8)currentRow, column);
+					// DBG_PRINTF("LCD_WriteData(\' \')\n");
                     LCD_WriteData((uint8) ' ');
                     currentRow --;
                 }
@@ -374,18 +379,25 @@ void LCD_bootlogo (uint8 time)
 void Write_BarGraphs(void)
 {
     uint8 i;
-    
+    static uint16 cnt = 0;
+	static char prev_bargraph[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
     if (alternateTextCounter) return;  // non scrive niente
     
-    // DBG_PRINTF("riscrivo barre\n");
+    // DBG_PRINTF("riscrivo barre %d\n",cnt++);
     for (i=0;i<MAX_CHARS;i++)
     {
-        LCD_DrawVerticalBG(0, i, 8,str_bargraph[ROW_0][i]);
+		if(prev_bargraph[i] != str_bargraph[ROW_0][i]) {
+			prev_bargraph[i] = str_bargraph[ROW_0][i];
+			// LCD_Position(0,i);
+			// LCD_PrintNumber(str_bargraph[ROW_0][i]);
+        	LCD_DrawVerticalBG(0, i, 8,str_bargraph[ROW_0][i]);
+			// DBG_PRINTF("riscrivo barre %d\n",i);
+		}
     }
     
     // sposta il cursore sotto
-    LCD_Position(1,0);
-    LCD_PrintString(&str_bargraph[ROW_1][0]);
+    // LCD_Position(1,0);
+    // LCD_PrintString(&str_bargraph[ROW_1][0]);
 }
 
 void LCD_Poll(uint8 status)
@@ -443,8 +455,13 @@ void LCD_Poll(uint8 status)
                 
             }
         }
-        
+		
+		Write_BarGraphs();
     }
+	
+	if (tick_10ms(TICK_LCD)) {
+		// aa
+	}
 }
 
 void Display_Alternate_Text(uint8 where, uint8 what)
