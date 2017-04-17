@@ -107,7 +107,8 @@ enum _perc_decay_ {
 };
 
 enum _perc_type_ {
-    PERC_2ND = 0x00,
+	PERC_2ND = 0x00,
+	PERC_OFF = 0x01,
     PERC_3RD = 0x7F
 };
 
@@ -406,27 +407,39 @@ void ManageButton_PercussionLevel(status)
         // case BUTTON_PRESSED:
         case BUTTON_SHORT_PRESS:
         {
-            switch(switchType.percussion_Switch) 
-            {
-                case SWITCH_OFF:
-                switchType.percussion_Switch = SWITCH_ON;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_On);
+			switch(switchType.percussionHarmonics_Switch) {
+                case PERC_3RD:
+                switchType.percussion_Switch = SWITCH_OFF;
+				switchType.percussionHarmonics_Switch = PERC_OFF;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
+				
+				sendControlChange(CC_Percussion_On_Off,   
+                	switchType.percussion_Switch,        
+                	MIDI_CHANNEL_1);
+				
+				// DBG_PRINTF("PERC_2ND -> PERC_OFF\n");
                 break;
             
-                case SWITCH_ON: 
-                switchType.percussion_Switch = SWITCH_OFF;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
-                break;
+				case PERC_2ND:
+                case PERC_OFF: 
+				switchType.percussion_Switch = SWITCH_ON;
+				switchType.percussionHarmonics_Switch = PERC_3RD;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_3RD);
+
+				sendControlChange(CC_Percussion_Harmonic,       
+	                switchType.percussionHarmonics_Switch,      
+	                MIDI_CHANNEL_1);         
+				
+				CyDelay(10);
+				
+				sendControlChange(CC_Percussion_On_Off,   
+                	switchType.percussion_Switch,        
+                	MIDI_CHANNEL_1);
+				break;
                 
                 default:
-                switchType.percussion_Switch = SWITCH_OFF;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
                 break;
             }
-            
-            sendControlChange(CC_Percussion_On_Off,   
-                switchType.percussion_Switch,        
-                MIDI_CHANNEL_1);
         }
         break;
         
@@ -469,30 +482,39 @@ void ManageButton_PercussionType(uint8 status)
         // case BUTTON_PRESSED:
         case BUTTON_SHORT_PRESS:
         {
-            switch(switchType.percussionHarmonics_Switch) 
-            {
+			switch(switchType.percussionHarmonics_Switch) {
                 case PERC_2ND:
-                switchType.percussionHarmonics_Switch = PERC_3RD;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_3RD);
-				// DBG_PRINTF("PERC_2ND\n");
+                switchType.percussion_Switch = SWITCH_OFF;
+				switchType.percussionHarmonics_Switch = PERC_OFF;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_Off);
+				
+				sendControlChange(CC_Percussion_On_Off,   
+                	switchType.percussion_Switch,        
+                	MIDI_CHANNEL_1);
+				
+				// DBG_PRINTF("PERC_2ND -> PERC_OFF\n");
                 break;
             
-                case PERC_3RD: 
-                switchType.percussionHarmonics_Switch = PERC_2ND;
+				case PERC_3RD:
+                case PERC_OFF: 
+				switchType.percussion_Switch = SWITCH_ON;
+				switchType.percussionHarmonics_Switch = PERC_2ND;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
-				// DBG_PRINTF("PERC_3RD\n");
-                break;
+
+				sendControlChange(CC_Percussion_Harmonic,       
+	                switchType.percussionHarmonics_Switch,      
+	                MIDI_CHANNEL_1);         
+				
+				CyDelay(10);
+				
+				sendControlChange(CC_Percussion_On_Off,   
+                	switchType.percussion_Switch,        
+                	MIDI_CHANNEL_1);
+				break;
                 
                 default:
-                switchType.percussionHarmonics_Switch = PERC_2ND;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_2ND);
-				// DBG_PRINTF("default\n");
                 break;
             }
-            
-            sendControlChange(CC_Percussion_Harmonic,       
-                switchType.percussionHarmonics_Switch,      
-                MIDI_CHANNEL_1);
         }
         break;
         
