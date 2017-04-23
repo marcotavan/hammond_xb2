@@ -23,7 +23,8 @@
 #include "ButtonScanner.h"
 
 #define MAX_SAMPLE  1
-
+#define DELTA_DRAWBARS		 3
+#define DELTA_POTENZIOMETRI 2
 volatile uint8 adcConversionDone = 0;
 static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
 
@@ -52,26 +53,33 @@ CY_ISR( ADC_ISR )
 void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
     // static char displayStr[15] = {'\0'};
+	#define DRAWBARS_MULTIPLIER 116	// usat oper rapportare la sacla 0>110 a 127 PER I 220OHM in serie
+	#define EXPRESSION_MULTIPLIER 100
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
     static uint8 SendOverdriveSwitchOn = 0;
     static uint8 pitchWheelData = 0;
+	uint16 scaledData = 0;
 	
     switch(event)
     {
         case EVENT_DRAWBAR_GENERIC:
         {
-            DBG_PRINTF("EVENT_DRAWBAR_GENERIC\n");
 			// sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
             // mnon si puo' perchè si impappa il sistema
-            sendControlChange(UM_SET_B_DRAWBAR_16+channel,data,MIDI_CHANNEL_1);
+			
+			scaledData = (data * DRAWBARS_MULTIPLIER) / 100 ;
+			if(scaledData>127) scaledData = 127;
+
+			DBG_PRINTF("EVENT_DRAWBAR_GENERIC %d->%d\n",data,scaledData);
+            sendControlChange(UM_SET_B_DRAWBAR_16+channel,scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
-            barGraph = ((data>>4) + 1) & 0x7F;
+            barGraph = ((scaledData>>4) + 1) & 0x7F;
             str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
-            if (data >= 126) offset = 0;
+            if (scaledData >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
 			// Write_BarGraphs();
             
@@ -160,7 +168,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case EXPRESSION_ANALOG_INPUT:
         {
-			DBG_PRINTF("EXPRESSION_ANALOG_INPUT\n");
+			scaledData = (data * EXPRESSION_MULTIPLIER) / 100 ;
+			if(scaledData>127) scaledData = 127;
+			
+			DBG_PRINTF("EXPRESSION_ANALOG_INPUT %d->%d\n",data,scaledData);
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Expression_Pedal,data,MIDI_CHANNEL_1);
             
@@ -176,7 +187,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case REVERB_ANALOG_INPUT:
         {
-			DBG_PRINTF("REVERB_ANALOG_INPUT\n");
+			DBG_PRINTF("REVERB_ANALOG_INPUT %d\n",data);
            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
             
@@ -191,7 +202,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case VOLUME_ANALOG_INPUT:
         {
-			DBG_PRINTF("VOLUME_ANALOG_INPUT\n");
+			DBG_PRINTF("VOLUME_ANALOG_INPUT %d\n",data);
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
 			if(SHIFT_Button_on_Hold()) {
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
@@ -321,7 +332,7 @@ void AnalogPoll(void)
 					case VOLUME_ANALOG_INPUT:					
                     case PITCH_WHEEL_ANALOG_INPUT:
                     { // analogInputs
-                        if(isValidDifference(analogVal[analogChannel],validData,2)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
+                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_POTENZIOMETRI)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);
@@ -332,7 +343,7 @@ void AnalogPoll(void)
                     
                     default: 
                     { // drawbars
-                        if(isValidDifference(analogVal[analogChannel],validData,2)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
+                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_DRAWBARS)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
                         {
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);

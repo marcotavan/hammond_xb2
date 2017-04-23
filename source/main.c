@@ -41,7 +41,8 @@
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
 
-#define USB_SUSPEND_TIMEOUT     (2u)
+// #define USB_SUSPEND_TIMEOUT     (2u)
+#define USB_ACTIVITY_TIMEOUT	2
 
 volatile uint8 usbActivityCounter = 0u;
 
@@ -88,13 +89,12 @@ void isVSTReady();
 CY_ISR(SleepIsr)
 {
     /* Check USB activity */
-    if(0u != USB_CheckActivity()) 
-    {
-        usbActivityCounter = 0u;
-    } 
-    else 
-    {
-        usbActivityCounter++;
+    if(USB_CheckActivity()) {
+        usbActivityCounter = USB_ACTIVITY_TIMEOUT;
+    } else {
+        if(usbActivityCounter) {
+			usbActivityCounter--;
+		}
     }
     /* Clear Pending Interrupt */
     SleepTimer_GetStatus();
@@ -135,14 +135,11 @@ int main()
     
     while(1u)
     {
-        /* Host can send double SET_INTERFACE request */
-        if(0u != USB_IsConfigurationChanged())
-        {
-            /* Initialize IN endpoints when device configured */
-            if(0u != USB_GetConfiguration())   
-            {
-                /* Power ON CY8CKIT-044 board */
-                // MIDI_PWR_Write(0u); 
+        if(0u != USB_IsConfigurationChanged()) {
+            // DBG_PRINTF("Initialize IN endpoints when device configured\n");
+            if(0u != USB_GetConfiguration())   {
+				DBG_PRINTF("USB_MIDI_Init\n");
+				/* Power ON CY8CKIT-044 board */
                 
                 /* Start ISR to determine sleep condition */		
                 Sleep_isr_StartEx(SleepIsr);
@@ -155,26 +152,27 @@ int main()
             }
             else
             {
+				DBG_PRINTF("SleepTimer_Stop\n");
                 SleepTimer_Stop();
             }    
         }        
   
-        /* Service USB MIDI when device is configured */
-        if(0u != USB_GetConfiguration())    
-        {
-  
-          /* Call this API from UART RX ISR for Auto DMA mode */
+        
+        if(0u != USB_GetConfiguration()) {
+			// Service USB MIDI when device is configured 
+			
+          	/* Call this API from UART RX ISR for Auto DMA mode */
             #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
                 USB_MIDI_IN_Service();
             #endif
             /* In Manual EP Memory Management mode OUT_EP_Service() 
             *  may have to be called from main foreground or from OUT EP ISR
             */
-        /*
+       		 /*
             #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
                 USB_MIDI_OUT_Service();
             #endif
-    	*/
+    		*/
             /* Sending Identity Reply Universal System Exclusive message 
              * back to computer */
 			/*
@@ -508,7 +506,7 @@ void  TestVB3Drawbars(void)
 void Check_if_host_requested_USB_Suspend(void)
 {
 	
-    if( usbActivityCounter >= USB_SUSPEND_TIMEOUT ) 
+    if( usbActivityCounter == 0 ) 
     {
         DBG_PRINTF("Prepares system for sleep mode\n");
 //        DBG_PRINTF("MIDI_UART_Sleep\n");
@@ -516,42 +514,43 @@ void Check_if_host_requested_USB_Suspend(void)
 //        MIDI2_UART_Sleep();
         
         /* Power OFF CY8CKIT-044 board */
-        DBG_PRINTF("Power OFF MIDI board... ");
-        DBG_PRINTF("MIDI_PWR_Write(1u);   \n");  
+        // DBG_PRINTF("Power OFF MIDI board... ");
+        // DBG_PRINTF("MIDI_PWR_Write(1u);   \n");  
         
         /***************************************************************
         * Disable USBFS block and set DP Interrupt for wake-up 
         * from sleep mode. 
         ***************************************************************/
-        DBG_PRINTF("USB_Suspend\n");
-        USB_Suspend(); 
-        DBG_PRINTF("system sleep mode\n");
-        CyDelay(1000);
+        // DBG_PRINTF("USB_Suspend\n");
+        // USB_Suspend(); 
+        // DBG_PRINTF("system sleep mode\n");
+        // CyDelay(1000);
         /* Prepares system clocks for sleep mode */
-        CyPmSaveClocks();
+        // CyPmSaveClocks();
         /***************************************************************
         * Switch to the Sleep Mode for the PSoC 3 or PSoC 5LP devices:
         *  - PM_SLEEP_TIME_NONE: wakeup time is defined by PICU source
         *  - PM_SLEEP_SRC_PICU: PICU wakeup source 
         ***************************************************************/
-        CyPmSleep(PM_SLEEP_TIME_NONE, PM_SLEEP_SRC_PICU);
+        // CyPmSleep(PM_SLEEP_TIME_NONE, PM_SLEEP_SRC_PICU);
         /* Restore clock configuration */
-        CyPmRestoreClocks();
+        // CyPmRestoreClocks();
         
-        DBG_PRINTF("\nUSB_Resume\n");
+        // DBG_PRINTF("\nUSB_Resume\n");
         /* Enable USBFS block after power-down mode */
-        USB_Resume();
+        // USB_Resume();
         
         /* Enable output endpoint */
-        USB_MIDI_Init();
+        // USB_MIDI_Init();
         
-        DBG_PRINTF("Power ON MIDI board... \n");
+        // DBG_PRINTF("Power ON MIDI board... \n");
         /* Power ON CY8CKIT-044 board */
-        DBG_PRINTF("MIDI_PWR_Write(0u); \n");
+        // DBG_PRINTF("MIDI_PWR_Write(0u); \n");
         
 //        MIDI1_UART_Wakeup();
 //        MIDI2_UART_Wakeup();
-        usbActivityCounter = 0u; /* Re-init USB Activity Counter*/
+      //   usbActivityCounter = 0u; /* Re-init USB Activity Counter*/
+		// usbActivityCounter++;
     }
 }      
 
