@@ -25,7 +25,7 @@ struct midimsg	mMessage;
 
 byte genstatus(const enum kMIDIType inType,const byte inChannel);
 void sendRealTime(enum kMIDIType Type);
-
+void SendUartMidiOut(uint8 len, uint8 *midiMsg);
 
 
 const char *noteNamearray[] = {
@@ -112,11 +112,14 @@ uint8 sendMidiMessage(enum kMIDIType type,
         {
 			// DBG_PRINTF("USB_3BYTE_COMMON\n");
             midiMsg[MIDI_NOTE_VELOCITY] = data2;
-            err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+            // DBG_PRINTF("%02x %02x %02x\n",midiMsg[0],midiMsg[1],midiMsg[2]);
+			SendUartMidiOut(USB_3BYTE_COMMON, midiMsg);
+			err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 		}
         else 
         {
             // DBG_PRINTF("USB_2BYTE_COMMON\n");
+			SendUartMidiOut(USB_2BYTE_COMMON, midiMsg);
             err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
         }
         
@@ -445,5 +448,37 @@ void sendRealTime(enum kMIDIType Type)
 #endif
 	
 }
+
+
+void UART_MIDI_Init(void) {
+/* Start UART block */
+	MIDI1_UART_Start();
+
+	/* Change the priority of the UART TX and RX interrupt */
+    CyIntSetPriority(MIDI1_UART_TX_VECT_NUM, USB_CUSTOM_UART_TX_PRIOR_NUM);
+    CyIntSetPriority(MIDI1_UART_RX_VECT_NUM, USB_CUSTOM_UART_RX_PRIOR_NUM);
+
+}
+
+void SendUartMidiOut(uint8 len, uint8 *midiMsg) {
+ /* Puts data into the MIDI TX output buffer.*/
+	// DBG_PRINTF("[%s]: ",__func__);
+	// DBG_PRINT_ARRAY(midiMsg,len);
+	// DBG_PRINTF("\n");
+	/*
+	uint8 i = 0;
+	
+	do
+	{
+	    MIDI1_UART_PutChar(midiMsg[i]);
+	    i++;
+	}
+	while (i < len);
+	*/
+	
+	MIDI1_UART_PutArray(midiMsg,len);
+	
+}
+
 
 /* [] END OF FILE */

@@ -123,6 +123,7 @@ void sendSysEx(int length,
 					const byte *const array,
 					bool ArrayContainsBoundaries);
 
+void UART_MIDI_Init(void);
 #endif // _MIDI_LIBRARY_H_
 
 /* [] END OF FILE */

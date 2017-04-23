@@ -45,7 +45,6 @@ struct key_t key[MAX_KEYS];
 
 double LOG_2 = 0;
 
-// void Damper_Pedal(void);
 void MatrixScanner(void);
 
 uint8 LogVelocity(uint16 counter)
@@ -171,21 +170,6 @@ void KeyScan_Poll(void)
 {
    // sul main con flag 500us
    MatrixScanner();
-   // Damper_Pedal();
-}
-
-
-void Damper_Pedal(void) {
-    // questo va ancora fatto
-  #define INPUT_PIN_READ 0 // PINF & 0b00000001;
-  static uint8 prev_val = 0;
-  uint8 val = INPUT_PIN_READ; 
-  
-  if(val != prev_val) {
-    sendControlChange(64, (val ? 1 : 64), MIDI_CHANNEL_1);
-    prev_val = val;
-  }
-  
 }
 
 void MatrixScanner(void) 

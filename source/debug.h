@@ -92,13 +92,12 @@ void sprintfWrite(void);
     #define DBG_PRINT_ARRAY(a,len)     do\
                                         {\
                                             uint32 i;\
-                                            \
-                                            for(i = 0u; i < (len); i++)\
-                                            {\
-                                                sprintf(string,"%02X ", a[i]);\
+                                            for(i = 0u; i < (len); i++) {\
+                                                sprintf(string,"%02X ", *(a+i));\
+												sprintfWrite();\
                                             }\
-                                        } while (0);\
-                                        sprintfWrite()
+                                        } while (0);
+                                        
 
     #define DBG_PRINTF(...)          (sprintf(string,__VA_ARGS__));\
                                         sprintfWrite()

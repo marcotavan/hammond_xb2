@@ -14,6 +14,8 @@
 #include "debug.h"
 #include "midiEvents.h"
 
+
+
 uint8 inqFlagsOld = 0u;
 
 /*******************************************************************************
@@ -22,10 +24,12 @@ uint8 inqFlagsOld = 0u;
 * Summary: Local processing of the USB MIDI out-events.
 *
 *******************************************************************************/
+
 void USB_callbackLocalMidiEvent(uint8 cable, uint8 *midiMsg) CYREENTRANT
 {
     /* Support General System On/Off Message. */
-    if((0u == (USB_MIDI1_InqFlags & USB_INQ_SYSEX_FLAG)) \
+#if 0
+	if((0u == (USB_MIDI1_InqFlags & USB_INQ_SYSEX_FLAG)) \
             && (0u != (inqFlagsOld & USB_INQ_SYSEX_FLAG)))
     {
         if(midiMsg[USB_EVENT_BYTE0] == USB_MIDI_SYSEX_GEN_MESSAGE)
@@ -40,11 +44,12 @@ void USB_callbackLocalMidiEvent(uint8 cable, uint8 *midiMsg) CYREENTRANT
             }
         }
     }
-    inqFlagsOld = USB_MIDI1_InqFlags;
+//    inqFlagsOld = USB_MIDI1_InqFlags;
     cable = cable;
+#endif
 }    
 
-
+#if 0
 /*******************************************************************************
 * Function Name: USB_MIDI1_ProcessUsbOut_EntryCallback
 ********************************************************************************
@@ -173,4 +178,5 @@ void MidiPanicButton(void)
     
 }
 
+#endif
 /* [] END OF FILE */

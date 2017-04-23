@@ -131,6 +131,8 @@ struct {
 
 static uint8 soloVolume = VOLUME_NORMAL;
 
+void FootSwitchManager(void);
+
 void RefreshAllButtonElements(void) {
 	// invia via midi la configurazione di default
     sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
@@ -952,10 +954,52 @@ void ButtonScannerPoll(void)
     }
 	
 	if (tick_10ms(TICK_BUTTONSCANNER)) {
+		FootSwitchManager();
     }
 }
 
 uint8 getVolumeSolo(void) {
 	return soloVolume;
+}
+
+void FootSwitchManager(void) {
+	#define FOOTSWITCH_DEBOUNCE 5 // per 10ms
+	static uint8 debounce[3] = {FOOTSWITCH_DEBOUNCE,FOOTSWITCH_DEBOUNCE,FOOTSWITCH_DEBOUNCE};
+	static uint16 counter[3] = {0,0,0};
+	
+	if(FootSwitch_0_Read() == 0){
+		if(debounce[0]) {
+			debounce[0]--;
+			if(debounce[0] == 0) {
+				DBG_PRINTF("FootSwitch_0 pressed %d\n",counter[0]++);
+			}
+		}
+	} else {
+		debounce[0] = FOOTSWITCH_DEBOUNCE;
+	}
+	
+	if(FootSwitch_1_Read() == 0){
+		if(debounce[1]) {
+			debounce[1]--;
+			if(debounce[1] == 0) {
+				DBG_PRINTF("FootSwitch_1 pressed %d\n",counter[1]++);
+			}
+		}
+	} else {
+		debounce[1] = FOOTSWITCH_DEBOUNCE;
+	}
+	
+	if(FootSwitch_2_Read() == 0){
+		if(debounce[2]) {
+			debounce[2]--;
+			if(debounce[2] == 0) {
+				DBG_PRINTF("FootSwitch_2 pressed %d\n",counter[2]++);
+			}
+		}
+	} else {
+		debounce[2] = FOOTSWITCH_DEBOUNCE;
+	}
+
+	
 }
 /* [] END OF FILE */

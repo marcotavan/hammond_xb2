@@ -128,7 +128,9 @@ int main()
     
     KeyScanInit(); 
     // fill_icsi_log_table(8, lookup_table);
-    
+
+	UART_MIDI_Init();
+		
     CyDelay(1000);  // non si sa mai
     
     while(1u)
@@ -168,19 +170,21 @@ int main()
             /* In Manual EP Memory Management mode OUT_EP_Service() 
             *  may have to be called from main foreground or from OUT EP ISR
             */
-          
+        /*
             #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
                 USB_MIDI_OUT_Service();
             #endif
-    
+    	*/
             /* Sending Identity Reply Universal System Exclusive message 
              * back to computer */
+			/*
             if(0u != (USB_MIDI1_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
             {
                 USB_PutUsbMidiIn(sizeof(MIDI_IDENTITY_REPLY), \
                             (uint8 *)MIDI_IDENTITY_REPLY, USB_MIDI_CABLE_00);
                 USB_MIDI1_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
             }
+			*/
             #if (USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF)
                 if(0u != (USB_MIDI2_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
                 {
@@ -210,8 +214,6 @@ int main()
         UART_DEBUG_PARSER_Task();
         
         //isVSTReady();
-        
-        
     }
 }
 
@@ -505,12 +507,13 @@ void  TestVB3Drawbars(void)
 
 void Check_if_host_requested_USB_Suspend(void)
 {
+	
     if( usbActivityCounter >= USB_SUSPEND_TIMEOUT ) 
     {
         DBG_PRINTF("Prepares system for sleep mode\n");
-        DBG_PRINTF("MIDI_UART_Sleep\n");
-        MIDI1_UART_Sleep();
-        MIDI2_UART_Sleep();
+//        DBG_PRINTF("MIDI_UART_Sleep\n");
+//        MIDI1_UART_Sleep();
+//        MIDI2_UART_Sleep();
         
         /* Power OFF CY8CKIT-044 board */
         DBG_PRINTF("Power OFF MIDI board... ");
@@ -546,8 +549,8 @@ void Check_if_host_requested_USB_Suspend(void)
         /* Power ON CY8CKIT-044 board */
         DBG_PRINTF("MIDI_PWR_Write(0u); \n");
         
-        MIDI1_UART_Wakeup();
-        MIDI2_UART_Wakeup();
+//        MIDI1_UART_Wakeup();
+//        MIDI2_UART_Wakeup();
         usbActivityCounter = 0u; /* Re-init USB Activity Counter*/
     }
 }      
