@@ -972,6 +972,8 @@ void FootSwitchManager(void) {
 			debounce[0]--;
 			if(debounce[0] == 0) {
 				DBG_PRINTF("FootSwitch_0 pressed %d\n",counter[0]++);
+				/* fsw0FunctionAssigned */
+				ManageButton_Leslie (BUTTON_SHORT_PRESS);
 			}
 		}
 	} else {
