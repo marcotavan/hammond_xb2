@@ -284,7 +284,7 @@ void AnalogPoll(void)
         adcSamples = 0;
         sampleCount = 0;
         isAnalogPollNotInitialized = 0;
-        AMux_FastSelect(analogChannel);
+        AMux_FastSelect(analogChannel); // primo canale da scandire
         
         ADC_StartConvert();
     }
@@ -300,14 +300,15 @@ void AnalogPoll(void)
         if(ADC_IsEndConversion(ADC_RETURN_STATUS)) // continua solo se la precedente conversione e' andata a buon fine
 #endif
         {
+			DBG_PRINTF("ADC_GetResult16(%d): %d\n",analogChannel,ADC_GetResult16());
             adcSamples = adcSamples + ADC_GetResult16();
             sampleCount++;
             
             if(sampleCount == MAX_SAMPLE)
             {
-                averageSamples = adcSamples >> 1; // diviso 4 + 1 per fare il 127
+                averageSamples = (adcSamples >> 1); // diviso 4 + 1 per fare il 127
                 
-                // DBG_PRINTF("averageSamples %d\n ",averageSamples);
+                DBG_PRINTF("averageSamples %d\n ",averageSamples);
                 
                 adcSamples = 0;
                 sampleCount = 0;
