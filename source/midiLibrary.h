@@ -45,7 +45,9 @@
 
 #define USE_1BYTE_PARSING       0           // Each call to MIDI.read will only parse one byte (might be faster).
     
-    
+#define MIDI_2BYTE_COMMON               (0x02u)
+#define MIDI_3BYTE_COMMON               (0x03u)
+	
 typedef uint8 byte;
 typedef uint8 bool;
     

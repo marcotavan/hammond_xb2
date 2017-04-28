@@ -113,14 +113,20 @@ uint8 sendMidiMessage(enum kMIDIType type,
 			// DBG_PRINTF("USB_3BYTE_COMMON\n");
             midiMsg[MIDI_NOTE_VELOCITY] = data2;
             // DBG_PRINTF("%02x %02x %02x\n",midiMsg[0],midiMsg[1],midiMsg[2]);
-			SendUartMidiOut(USB_3BYTE_COMMON, midiMsg);
+			SendUartMidiOut(MIDI_3BYTE_COMMON, midiMsg);
+			
+			#if defined USB_MIDI_INTERCACE
 			err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+			#endif	
 		}
         else 
         {
             // DBG_PRINTF("USB_2BYTE_COMMON\n");
-			SendUartMidiOut(USB_2BYTE_COMMON, midiMsg);
+			SendUartMidiOut(MIDI_2BYTE_COMMON, midiMsg);
+			
+			#if defined USB_MIDI_INTERCACE
             err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
+			#endif
         }
         
         #if VERBOSE_SEND_MIDI_MESSAGE
@@ -453,10 +459,13 @@ void sendRealTime(enum kMIDIType Type)
 void UART_MIDI_Init(void) {
 /* Start UART block */
 	MIDI1_UART_Start();
-
+	
+    #define MIDI_UART_RX_PRIOR_NUM   (0x02u)
+    #define MIDI_UART_TX_PRIOR_NUM   (0x04u)
+	
 	/* Change the priority of the UART TX and RX interrupt */
-    CyIntSetPriority(MIDI1_UART_TX_VECT_NUM, USB_CUSTOM_UART_TX_PRIOR_NUM);
-    CyIntSetPriority(MIDI1_UART_RX_VECT_NUM, USB_CUSTOM_UART_RX_PRIOR_NUM);
+    CyIntSetPriority(MIDI1_UART_TX_VECT_NUM, MIDI_UART_TX_PRIOR_NUM);
+    CyIntSetPriority(MIDI1_UART_RX_VECT_NUM, MIDI_UART_RX_PRIOR_NUM);
 
 }
 

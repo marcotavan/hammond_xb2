@@ -42,6 +42,9 @@
 #define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
+	
+// #define USB_MIDI_INTERCACE
+		
 #endif
 
 /* [] END OF FILE */

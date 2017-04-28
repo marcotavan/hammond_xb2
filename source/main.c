@@ -89,6 +89,7 @@ void isVSTReady();
 CY_ISR(SleepIsr)
 {
     /* Check USB activity */
+	#if defined USB_MIDI_INTERCACE
     if(USB_CheckActivity()) {
         usbActivityCounter = USB_ACTIVITY_TIMEOUT;
     } else {
@@ -96,6 +97,7 @@ CY_ISR(SleepIsr)
 			usbActivityCounter--;
 		}
     }
+	#endif
     /* Clear Pending Interrupt */
     SleepTimer_GetStatus();
 }
@@ -121,9 +123,11 @@ int main()
     
     MOD_SysLog_Init(); 
     
+	#if defined USB_MIDI_INTERCACE
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
-    
+    #endif
+	
     eeprom_init();
     
     KeyScanInit(); 
@@ -135,6 +139,7 @@ int main()
     
     while(1u)
     {
+		#if defined USB_MIDI_INTERCACE
         if(0u != USB_IsConfigurationChanged()) {
             // DBG_PRINTF("Initialize IN endpoints when device configured\n");
             if(0u != USB_GetConfiguration())   {
@@ -194,7 +199,8 @@ int main()
 
             Check_if_host_requested_USB_Suspend();
         }
-
+		#endif
+		
         LCD_Poll(1);
         
         AnalogPoll();
