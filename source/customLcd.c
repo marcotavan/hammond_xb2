@@ -72,6 +72,10 @@ char8 const *lcdAlternateTextMessage[50] =
     "ALT_VCS_4       ",
     "ALT_VCS_5       ",
 	"ALT_Overall_Tone",
+	"ALT_RefreshAll  ",
+	"ALT_Volume_Norm ",
+	"ALT_Volume_Max  ",
+	"ALT_Shift_Hold  "
 };
 
 

@@ -38,19 +38,23 @@ enum alternative_text {
     ALT_Percussion_SOFT,			// 7
     ALT_Percussion_3RD,				// 8
     ALT_Percussion_2ND,				// 9
-    ALT_Percussion_SLOW,
-    ALT_Percussion_FAST,
-    ALT_VIBRATO_SCANNER_UPPER_ON,
-    ALT_VIBRATO_SCANNER_UPPER_OFF,
-    ALT_VIBRATO_SCANNER_LOWER_ON,
-    ALT_VIBRATO_SCANNER_LOWER_OFF,
-    ALT_VIBRATO_SCANNER_0,
-    ALT_VIBRATO_SCANNER_1,
-    ALT_VIBRATO_SCANNER_2,
-    ALT_VIBRATO_SCANNER_3,
-    ALT_VIBRATO_SCANNER_4,
-    ALT_VIBRATO_SCANNER_5,
-	ALT_Overall_Tone
+    ALT_Percussion_SLOW,			// 10
+    ALT_Percussion_FAST,			// 11
+    ALT_VIBRATO_SCANNER_UPPER_ON,	// 12
+    ALT_VIBRATO_SCANNER_UPPER_OFF,	// 13
+    ALT_VIBRATO_SCANNER_LOWER_ON,	// 14
+    ALT_VIBRATO_SCANNER_LOWER_OFF,	// 15
+    ALT_VIBRATO_SCANNER_0,			// 16
+    ALT_VIBRATO_SCANNER_1,			// 17
+    ALT_VIBRATO_SCANNER_2,			// 18		
+    ALT_VIBRATO_SCANNER_3,			// 19
+    ALT_VIBRATO_SCANNER_4,			// 20
+    ALT_VIBRATO_SCANNER_5,			// 21
+	ALT_Overall_Tone,				// 22	
+	ALT_RefreshAll_Elements,		// 23
+	ALT_Volume_Normal,				// 24
+	ALT_Volume_Max,					// 25
+	ALT_Shift_on_Hold,				// 26
 };
 
 #endif

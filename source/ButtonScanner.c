@@ -41,6 +41,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #define MAX_DEBOUNCE 100     // * 8ms  
 #define MAX_PULSANTI 16
 
+#define BUTTON_UART_DEBUG (0)
 static struct onHold_s {
     uint8 shift;
     uint8 solo;
@@ -261,22 +262,31 @@ void ManageButton_Leslie (uint8 status)
                 case ROTARY_SLOW:
                 case ROTARY_STOP:
                 {
-                switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
+                	switchType.rotarySpeaker_HalfMoon = ROTARY_FAST;
                     Display_Alternate_Text(ROW_1,ALT_ROTARY_FAST);
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("ALT_ROTARY_FAST\n");
+					#endif
                 }
                 break;
                 
                 case ROTARY_FAST: 
                 {
-                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                	switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
                     Display_Alternate_Text(ROW_1,ALT_ROTARY_SLOW);
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("ALT_ROTARY_SLOW\n");
+					#endif
                 }
                 break;
                 
                 default:
                 {
-                switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
+                	switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
                     Display_Alternate_Text(ROW_1,ALT_ROTARY_SLOW);
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("ALT_ROTARY_SLOW\n");
+					#endif
                 }
                 break;
             }
@@ -295,6 +305,9 @@ void ManageButton_Leslie (uint8 status)
                 {
                     switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;
                     Display_Alternate_Text(ROW_1,ALT_RESTART_ROTARY_SLOW);
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("ALT_RESTART_ROTARY_SLOW\n");
+					#endif
                 }
                 break;
                 
@@ -302,6 +315,9 @@ void ManageButton_Leslie (uint8 status)
                 {
                     switchType.rotarySpeaker_HalfMoon = ROTARY_STOP;
                     Display_Alternate_Text(ROW_1,ALT_ROTARY_STOP);
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("ALT_ROTARY_STOP\n");
+					#endif
                 }
                 break;
             }
@@ -333,14 +349,23 @@ void ManageButton_Vibrato(status)
                 {
                     case SWITCH_OFF:
                     switchType.Vibrato_Upper_Switch = SWITCH_ON;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Upper_Switch = SWITCH_ON\n");
+					#endif
                     break;
                 
                     case SWITCH_ON: 
                     switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Upper_Switch = SWITCH_OFF\n");
+					#endif
                     break;
                     
                     default:
                     switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Upper_Switch = SWITCH_OFF\n");
+					#endif
                     break;
                 }
                 
@@ -359,14 +384,23 @@ void ManageButton_Vibrato(status)
                 {
                     case SWITCH_OFF:
                     switchType.Vibrato_Lower_Switch = SWITCH_ON;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Lower_Switch = SWITCH_ON\n");
+					#endif
                     break;
                     
                     case SWITCH_ON:
                     switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Lower_Switch = SWITCH_OFF\n");
+					#endif
                     break;
                     
                     default:
                     switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+					#if BUTTON_UART_DEBUG
+					DBG_PRINTF("Vibrato_Lower_Switch = SWITCH_OFF\n");
+					#endif
                     break;
                 }
                 
@@ -396,7 +430,10 @@ void ManageButton_Vibrato(status)
                 
                 // questo serve per scrivere C1 V1 C2,V2 C3, V3
                 // sprintf(str,"VIBRATO SCANNER %s%d",switchType.chorus_Knob%2?"C":"V", vibratoScannerPosition[switchType.chorus_Knob]);
-                Display_Alternate_Text(ROW_1,ALT_VIBRATO_SCANNER_0+switchType.chorus_Knob);    
+                Display_Alternate_Text(ROW_1,ALT_VIBRATO_SCANNER_0+switchType.chorus_Knob);  
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_VIBRATO_SCANNER = %d\n",ALT_VIBRATO_SCANNER_0+switchType.chorus_Knob);
+				#endif
             }
             break;
         }   
@@ -422,8 +459,9 @@ void ManageButton_PercussionLevel(status)
 				sendControlChange(CC_Percussion_On_Off,   
                 	switchType.percussion_Switch,        
                 	MIDI_CHANNEL_1);
-				
-				// DBG_PRINTF("PERC_2ND -> PERC_OFF\n");
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_Off\n");
+				#endif
                 break;
             
 				case PERC_2ND:
@@ -441,6 +479,9 @@ void ManageButton_PercussionLevel(status)
 				sendControlChange(CC_Percussion_On_Off,   
                 	switchType.percussion_Switch,        
                 	MIDI_CHANNEL_1);
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_3RD\n");
+				#endif
 				break;
                 
                 default:
@@ -457,16 +498,25 @@ void ManageButton_PercussionLevel(status)
                 case PERC_SOFT:
                 switchType.percussionLevel_Switch = PERC_NORM;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_NORM);
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_NORM\n");
+				#endif
                 break;
             
                 case PERC_NORM: 
                 switchType.percussionLevel_Switch = PERC_SOFT;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_SOFT\n");
+				#endif
                 break;
                 
                 default:
                 switchType.percussionLevel_Switch = PERC_SOFT;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_SOFT\n");
+				#endif
                 break;
             }
             
@@ -497,8 +547,9 @@ void ManageButton_PercussionType(uint8 status)
 				sendControlChange(CC_Percussion_On_Off,   
                 	switchType.percussion_Switch,        
                 	MIDI_CHANNEL_1);
-				
-				// DBG_PRINTF("PERC_2ND -> PERC_OFF\n");
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("PERC_2ND -> PERC_OFF\n");
+				#endif
                 break;
             
 				case PERC_3RD:
@@ -516,6 +567,9 @@ void ManageButton_PercussionType(uint8 status)
 				sendControlChange(CC_Percussion_On_Off,   
                 	switchType.percussion_Switch,        
                 	MIDI_CHANNEL_1);
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_2ND\n");
+				#endif
 				break;
                 
                 default:
@@ -532,19 +586,25 @@ void ManageButton_PercussionType(uint8 status)
                 case PERC_FAST:
                 switchType.percussionDecay_Switch = PERC_SLOW;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_SLOW);
-				// DBG_PRINTF("PERC_FAST\n");
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_SLOW\n");
+				#endif
                 break;
             
                 case PERC_SLOW: 
                 switchType.percussionDecay_Switch = PERC_FAST;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
-				// DBG_PRINTF("PERC_SLOW\n");
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_FAST\n");
+				#endif
                 break;
                 
                 default:
                 switchType.percussionDecay_Switch = PERC_FAST;
                 Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
-				// DBG_PRINTF("default\n");
+				#if BUTTON_UART_DEBUG
+				DBG_PRINTF("ALT_Percussion_FAST\n");
+				#endif
                 break;
             }
             
@@ -578,6 +638,7 @@ void ManageButton_Shift(uint8 status)
             // servirà un timeout?
             DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
             // si accende il led dello shift se c'è^?
+			Display_Alternate_Text(ROW_1,ALT_Shift_on_Hold);
         }
         break;
         
@@ -607,9 +668,11 @@ void ManageButton_Solo(uint8 status)
 			if(soloVolume == VOLUME_NORMAL) {
 				soloVolume = VOLUME_MAX;
 				sendControlChange(CC_Overall_Volume,127,MIDI_CHANNEL_1);
+				Display_Alternate_Text(ROW_1,ALT_Volume_Max);
 			} else {
 				sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
 				soloVolume = VOLUME_NORMAL;
+				Display_Alternate_Text(ROW_1,ALT_Volume_Normal);
 			}
         }
         break;
@@ -644,13 +707,15 @@ void ManageButton_Record(uint8 status)
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
-
+			DBG_PRINTF("ManageButton_Record BUTTON_SHORT_PRESS\n");
         }
         break;
         
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
         case BUTTON_ON_HOLD:        // valido al mantenimento
         {
+			DBG_PRINTF("ManageButton_Record BUTTON_ON_HOLD -> RefreshAll Elements\n");
+			Display_Alternate_Text(ROW_1,ALT_RefreshAll_Elements);
 			RefreshAllButtonElements();
 			RefreshAllAnalogElements();
         }
