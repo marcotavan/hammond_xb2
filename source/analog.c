@@ -28,6 +28,8 @@
 volatile uint8 adcConversionDone = 0;
 static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
 
+#define DEBUG_UART_ATTIVO (0)
+
 enum rotarySpeed
 {
     ROTARY_STOP_SPEED,   
@@ -54,7 +56,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
     // static char displayStr[15] = {'\0'};
 	#define DRAWBARS_MULTIPLIER 116	// usat oper rapportare la sacla 0>110 a 127 PER I 220OHM in serie
-	#define EXPRESSION_MULTIPLIER 100
+	#define EXPRESSION_MULTIPLIER 106
     uint8 barGraph = 0;
     uint8 lcdColPosition = 0;
     uint8 offset = 1;
@@ -72,8 +74,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			scaledData = (data * DRAWBARS_MULTIPLIER) / 100 ;
 			if(scaledData>127) scaledData = 127;
 
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("EVENT_DRAWBAR_GENERIC %d->%d\n",data,scaledData);
-            sendControlChange(UM_SET_B_DRAWBAR_16+channel,scaledData,MIDI_CHANNEL_1);
+            #endif 
+			
+			sendControlChange(UM_SET_B_DRAWBAR_16+channel,scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
             barGraph = ((scaledData>>4) + 1) & 0x7F;
@@ -88,7 +93,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case MOD_WHEEL_ANALOG_INPUT:
         {
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("MOD_WHEEL_ANALOG_INPUT %d\n",data);
+			#endif 
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             // if(SOLO_Button_on_Hold())
 			if(pitchWheelData < 40)
@@ -116,7 +123,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case PITCH_WHEEL_ANALOG_INPUT:
         {
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("PITCH_WHEEL_ANALOG_INPUT %d\n",data);
+			#endif 
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             // 0:31 SLOW.
             // 32:65 STOP
@@ -171,15 +180,17 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			scaledData = (data * EXPRESSION_MULTIPLIER) / 100 ;
 			if(scaledData>127) scaledData = 127;
 			
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("EXPRESSION_ANALOG_INPUT %d->%d\n",data,scaledData);
+			#endif 
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
-            sendControlChange(CC_Expression_Pedal,data,MIDI_CHANNEL_1);
+            sendControlChange(CC_Expression_Pedal,scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-            barGraph = ((data>>4) + 1) & 0x7F;
+            barGraph = ((scaledData>>4) + 1) & 0x7F;
             str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
-            if (data >= 126) offset = 0;
+            if (scaledData >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
             
         }
@@ -187,7 +198,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case REVERB_ANALOG_INPUT:
         {
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("REVERB_ANALOG_INPUT %d\n",data);
+			#endif 
            // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
             
@@ -202,7 +215,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
         
         case VOLUME_ANALOG_INPUT:
         {
+			#if DEBUG_UART_ATTIVO
 			DBG_PRINTF("VOLUME_ANALOG_INPUT %d\n",data);
+			#endif 
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
 			if(SHIFT_Button_on_Hold()) {
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
@@ -300,7 +315,10 @@ void AnalogPoll(void)
         if(ADC_IsEndConversion(ADC_RETURN_STATUS)) // continua solo se la precedente conversione e' andata a buon fine
 #endif
         {
-			DBG_PRINTF("ADC_GetResult16(%d): %d\n",analogChannel,ADC_GetResult16());
+			//if(analogChannel == EXPRESSION_ANALOG_INPUT) {
+				// DBG_PRINTF("ADC_GetResult16(%d): %d\n",analogChannel,ADC_GetResult16());
+			//}
+			
             adcSamples = adcSamples + ADC_GetResult16();
             sampleCount++;
             
@@ -308,7 +326,7 @@ void AnalogPoll(void)
             {
                 averageSamples = (adcSamples >> 1); // diviso 4 + 1 per fare il 127
                 
-                DBG_PRINTF("averageSamples %d\n ",averageSamples);
+                // DBG_PRINTF("averageSamples %d\n ",averageSamples);
                 
                 adcSamples = 0;
                 sampleCount = 0;
