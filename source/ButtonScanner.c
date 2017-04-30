@@ -141,6 +141,7 @@ struct {
 static uint8 soloVolume = VOLUME_NORMAL;
 
 void FootSwitchManager(void);
+void ResetButtonCycle(void);
 
 void RefreshAllButtonElements(void) {
 	// invia via midi la configurazione di default
@@ -636,6 +637,7 @@ void ManageButton_Shift(uint8 status)
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
             Display_Alternate_Text(ROW_1,ALT_Cancel_on_Press);
+			ResetButtonCycle();
 			SendProgramChange(0, MIDI_CHANNEL_1);
         }
         break;
@@ -766,12 +768,17 @@ void ManageButton_Edit(uint8 status)
     }       
 }
 
+static uint8 buttonCycle[9] = {0,0,0,0,0,0,0,0,0};
+	
+void ResetButtonCycle(void) {
+	memset(buttonCycle,0,sizeof(buttonCycle));
+}
 /*****************************************************************************\
 *  TEMPLATE: gestisce la funzione tasto  Generico
 \*****************************************************************************/
 void ManageButton_Preset(uint8 status,uint8 numTasto)
 {
-	static uint8 buttonCycle[9] = {0,0,0,0,0,0,0,0,0};
+
 	uint8 sommatore;
     switch (status) 
     {
