@@ -36,6 +36,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "customLcd.h"
 #include "EepromManager.h"
 #include "analog.h"
+#include "midilibrary.h"
 
 #define MIN_DEBOUNCE 5      // * 8ms
 #define MAX_DEBOUNCE 100     // * 8ms  
@@ -50,6 +51,13 @@ static struct onHold_s {
 // static char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
 const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
+
+const uint8 keyTranslator[16] = { 
+	0,0,4,8,
+	0,0,3,7,
+	0,0,2,6,
+	0,0,1,5
+};
 
 enum _num_button_ {
     BUTTON_00_VIBRATO,   
@@ -627,7 +635,8 @@ void ManageButton_Shift(uint8 status)
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
-            
+            Display_Alternate_Text(ROW_1,ALT_Cancel_on_Press);
+			SendProgramChange(0, MIDI_CHANNEL_1);
         }
         break;
         
@@ -729,16 +738,59 @@ void ManageButton_Record(uint8 status)
     }       
 }
 
-/*****************************************************************************\
-*  TEMPLATE: gestisce la funzione tasto  Generico
-\*****************************************************************************/
-void ManageButton_Generic(uint8 status)
+
+void ManageButton_Edit(uint8 status)
 {
     switch (status) 
     {
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
+			DBG_PRINTF("ManageButton_Edit BUTTON_SHORT_PRESS\n");
+			Display_Alternate_Text(ROW_1,ALT_Edit);
+        }
+        break;
+        
+        // case BUTTON_LONG_PRESS   // valido al rilascio lungo
+        case BUTTON_ON_HOLD:        // valido al mantenimento
+        {
+			DBG_PRINTF("ManageButton_Edit BUTTON_ON_HOLD\n");
+        }
+        break;
+        
+        case BUTTON_RELEASED:       // tasto rilasciato
+        {
+            
+        }
+        break;
+    }       
+}
+
+/*****************************************************************************\
+*  TEMPLATE: gestisce la funzione tasto  Generico
+\*****************************************************************************/
+void ManageButton_Preset(uint8 status,uint8 numTasto)
+{
+	static uint8 buttonCycle[9] = {0,0,0,0,0,0,0,0,0};
+	uint8 sommatore;
+    switch (status) 
+    {
+        // case BUTTON_PRESSED:     // valido immediatamente
+        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+        {
+			
+			sommatore = 8*buttonCycle[keyTranslator[numTasto]];
+			
+			DBG_PRINTF("Preset %d->%d\n",keyTranslator[numTasto],sommatore);
+			
+			Display_Alternate_Text(ROW_1,ALT_Preset_1+(keyTranslator[numTasto]-1)+sommatore);
+			// SendControlChange(keyTranslator[numTasto],MIDI_CHANNEL_1);
+			SendProgramChange(sommatore+keyTranslator[numTasto], MIDI_CHANNEL_1);
+			
+			buttonCycle[keyTranslator[numTasto]]++; // inclrementa il ciclo del tasto
+			if (buttonCycle[keyTranslator[numTasto]] == 4) {
+				buttonCycle[keyTranslator[numTasto]] = 0;
+			}
 
         }
         break;
@@ -746,7 +798,7 @@ void ManageButton_Generic(uint8 status)
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
         case BUTTON_ON_HOLD:        // valido al mantenimento
         {
-
+			DBG_PRINTF("ON_HOLD %d\n",keyTranslator[numTasto]);
         }
         break;
         
@@ -816,6 +868,11 @@ void ButtonCommand(uint8 numTasto,uint8 status)
 		
 		// 5,13
         case BUTTON_05_EDIT:
+		{
+            ManageButton_Edit(status);
+        }
+		break;
+		
         case BUTTON_14_KEY_1:
         case BUTTON_10_KEY_2:
         case BUTTON_06_KEY_3:
@@ -825,7 +882,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
         case BUTTON_07_KEY_7:
         case BUTTON_03_KEY_8:
         {
-            ManageButton_Generic(status);
+            ManageButton_Preset(status,numTasto);
         }
         break;
         

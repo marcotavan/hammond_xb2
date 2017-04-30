@@ -47,37 +47,70 @@ char8 const *lcdTextMessage[10] =
 };
 
 
-char8 const *lcdAlternateTextMessage[50] =
+char8 const *lcdAlternateTextMessage[100] =
 {
-    "ALT_ROTARY_FAST ",
-    "ALT_ROTARY_SLOW ",
-    "ALT_RESTART_RSLW",
-    "ALT_ROTARY_STOP ",
-    "ALT_Perc_On     ",
-    "ALT_Perc_Off    ",
-    "ALT_Perc_NORM   ",
-    "ALT_Perc_SOFT   ",
-    "ALT_Perc_3RD    ",
-    "ALT_Perc_2ND    ",
-    "ALT_Perc_SLOW   ",
-    "ALT_Perc_FAST   ",
-    "ALT_VCS_UPPER_ON",
-    "ALT_VCS_UPPR_OFF",
-    "ALT_VCS_LOWER_ON",
-    "ALT_VCS_LOWER_ON",
-    "ALT_VCS_0       ",
-    "ALT_VCS_1       ",
-    "ALT_VCS_2       ",
-    "ALT_VCS_3       ",
-    "ALT_VCS_4       ",
-    "ALT_VCS_5       ",
-	"ALT_Overall_Tone",
-	"ALT_RefreshAll  ",
-	"ALT_Volume_Norm ",
-	"ALT_Volume_Max  ",
-	"ALT_Shift_Hold  "
-};
-
+    "ALT_ROTARY_FAST ",	// 0
+    "ALT_ROTARY_SLOW ", // 1
+    "ALT_RESTART_RSLW", // 2
+    "ALT_ROTARY_STOP ", // 3
+    "ALT_Perc_On     ", // 4
+    "ALT_Perc_Off    ", // 5
+    "ALT_Perc_NORM   ", // 6
+    "ALT_Perc_SOFT   ", // 7
+    "ALT_Perc_3RD    ", // 8
+    "ALT_Perc_2ND    ", // 9
+    "ALT_Perc_SLOW   ", // 10
+    "ALT_Perc_FAST   ", // 11 
+    "ALT_VCS_UPPER_ON", // 12
+    "ALT_VCS_UPPR_OFF", // 13
+    "ALT_VCS_LOWER_ON", // 14
+    "ALT_VCS_LOWER_ON", // 15
+    "ALT_VCS_0       ", // 16
+    "ALT_VCS_1       ", // 17
+    "ALT_VCS_2       ", // 18
+    "ALT_VCS_3       ", // 19
+    "ALT_VCS_4       ", // 20
+    "ALT_VCS_5       ", // 21
+	"ALT_Overall_Tone", // 22
+	"ALT_RefreshAll  ", // 23
+	"ALT_Volume_Norm ", // 24
+	"ALT_Volume_Max  ", // 25
+	"ALT_Shift_Hold  ", // 26
+	"ALT_CANCEL_Press", // 27
+	"ALT_Edit        ", // 28
+	"ALT_Preset_1    ", // 29
+	"ALT_Preset_2    ", // 30
+	"ALT_Preset_3    ", // 
+	"ALT_Preset_4    ", // 
+	"ALT_Preset_5    ", // 
+	"ALT_Preset_6    ", // 
+	"ALT_Preset_7    ", // 
+	"ALT_Preset_8    ", // 
+	"ALT_Preset_9    ", // 
+	"ALT_Preset_10   ", // 
+	"ALT_Preset_11   ", // 
+	"ALT_Preset_12   ", // 
+	"ALT_Preset_13   ", // 
+	"ALT_Preset_14   ", // 
+	"ALT_Preset_15   ", // 
+	"ALT_Preset_16   ", // 
+	"ALT_Preset_17   ", // 
+	"ALT_Preset_18   ", // 
+	"ALT_Preset_19   ", // 
+	"ALT_Preset_20   ", // 
+	"ALT_Preset_21   ", // 
+	"ALT_Preset_22   ", // 
+	"ALT_Preset_23   ", // 
+	"ALT_Preset_24   ", // 
+	"ALT_Preset_25   ", // 
+	"ALT_Preset_26   ", // 
+	"ALT_Preset_27   ", // 
+	"ALT_Preset_28   ", // 
+	"ALT_Preset_29   ", // 
+	"ALT_Preset_30   ", // 
+	"ALT_Preset_31   ", // 
+	"ALT_Preset_32   ", // 
+}; // Max Array Size 50
 
 uint8 const CYCODE LCD_InvertedVerticalBar[] = \
 {

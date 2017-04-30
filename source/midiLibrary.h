@@ -114,8 +114,7 @@ uint8 sendNoteOff(byte NoteNumber,
 							 byte Velocity,
 							 byte Channel);
 
-uint8 sendProgramChange(byte ProgramNumber,
-								   byte Channel);
+uint8 SendProgramChange(uint8 ProgramNumber,   uint8 Channel);
 
 uint8 sendControlChange(byte ControlNumber,
 								   byte ControlValue,

@@ -55,6 +55,40 @@ enum alternative_text {
 	ALT_Volume_Normal,				// 24
 	ALT_Volume_Max,					// 25
 	ALT_Shift_on_Hold,				// 26
+	ALT_Cancel_on_Press,			// 27
+	ALT_Edit,						// 28	
+	ALT_Preset_1, 					// 29
+	ALT_Preset_2, 					// 
+	ALT_Preset_3, 					// 
+	ALT_Preset_4, 					// 
+	ALT_Preset_5, 					// 
+	ALT_Preset_6, 					// 
+	ALT_Preset_7, 					// 
+	ALT_Preset_8, 					// 
+	ALT_Preset_9, // 
+	ALT_Preset_10, // 
+	ALT_Preset_11, // 
+	ALT_Preset_12, // 
+	ALT_Preset_13, // 
+	ALT_Preset_14, // 
+	ALT_Preset_15, // 
+	ALT_Preset_16, // 
+	ALT_Preset_17, // 
+	ALT_Preset_18, // 
+	ALT_Preset_19, // 
+	ALT_Preset_20, // 
+	ALT_Preset_21, // 
+	ALT_Preset_22, // 
+	ALT_Preset_23, // 
+	ALT_Preset_24, // 
+	ALT_Preset_25, // 
+	ALT_Preset_26, // 
+	ALT_Preset_27, // 
+	ALT_Preset_28, // 
+	ALT_Preset_29, // 
+	ALT_Preset_30, // 
+	ALT_Preset_31, // 
+	ALT_Preset_32, // 
 };
 
 #endif

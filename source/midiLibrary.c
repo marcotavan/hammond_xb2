@@ -193,11 +193,10 @@ uint8 sendNoteOff(byte NoteNumber,
  \param ProgramNumber	The Program to select (0 to 127).
  \param Channel			The channel on which the message will be sent (1 to 16).
  */
-uint8 sendProgramChange(byte ProgramNumber,
-								   byte Channel)
+uint8 SendProgramChange(uint8 ProgramNumber,   uint8 Channel)
 {
     #if VERBOSE_SEND_MIDI
-	DBG_PRINTF("[%s]\n",__func__);
+	DBG_PRINTF("[%s] %d \n",__func__,ProgramNumber);
     #endif
 	return sendMidiMessage(ProgramChange,ProgramNumber,0,Channel);
 
