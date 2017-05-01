@@ -1,6 +1,6 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright MARCO TAVAN, 2017-01-16
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
@@ -311,8 +311,8 @@ void sendSysEx(int length,
 						   bool ArrayContainsBoundaries)
 {
     DBG_PRINTF("[%s]\n",__func__);
-	int i;
-	static const uint8 endByte[1] = {0xF7};
+	// int i;
+	// static const uint8 endByte[1] = {0xF7};
 	if (ArrayContainsBoundaries == FALSE) {
 		
 		DBG_PRINTF("TODO USE_SERIAL_PORT.write(0xF0);\n");

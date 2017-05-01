@@ -1,6 +1,6 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright MARCO TAVAN, 2017-01-18
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *

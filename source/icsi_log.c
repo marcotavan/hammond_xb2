@@ -1,10 +1,23 @@
-/* Creates the ICSILog lookup table. Must be called
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-01-26
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
+
+/************************************************************** 
+	Creates the ICSILog lookup table. Must be called
     once before any call to icsi_log().
     n is the number of bits to be taken from the mantissa
     (0<=n<=23)
     lookup_table is a pointer to a floating point array
     (memory has to be allocated by the user) of 2^n positions.
-*/
+***************************************************************/
 
 #include "project.h"
 #include "math.h"

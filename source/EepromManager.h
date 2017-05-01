@@ -1,3 +1,14 @@
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-02-18
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
 
 #ifndef _EEPROM_H_
 #define _EEPROM_H_

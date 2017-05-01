@@ -1,30 +1,14 @@
-/*******************************************************************************
-* File Name: main.c
-*
-* Version: 1.0
-*
-* Description:
-*  This example project demonstrates the MIDI interface device operation.  The 
-*  project enumerates as a USB Audio Device with the MIDI feature and does not 
-*  require additional drivers. The main goal of the USB MIDI interface is to 
-*  transfer and convert MIDI data between external MIDI devices that use the 
-*  UART interface, and a PC through the USB bus.			
-*   
-* Related Document:
-*  Universal Serial Bus Specification Revision 2.0 
-*  Universal Serial Bus Device Class Definition for MIDI Devices Release 1.0
-*  MIDI 1.0 Detailed Specification Document Version 4.2
-*
-********************************************************************************
-* Copyright 2012-2015, Cypress Semiconductor Corporation. All rights reserved.
-* This software is owned by Cypress Semiconductor Corporation and is protected
-* by and subject to worldwide patent and copyright laws and treaties.
-* Therefore, you may use this software only as provided in the license agreement
-* accompanying the software package from which you obtained this software.
-* CYPRESS AND ITS SUPPLIERS MAKE NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* WITH REGARD TO THIS SOFTWARE, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT,
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-*******************************************************************************/
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-01-14
+ * All Rights Reserve
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
 
 #include <project.h>
 #include "tick.h"

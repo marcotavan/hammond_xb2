@@ -1,24 +1,15 @@
-/*******************************************************************************
-* File Name: Debug.h
-*
-* Version: 1.0
-*
-* Description:
-*  Provides debug API.
-*
-* Hardware Dependency:
-*  CY8CKIT-042 BLE
-*
-********************************************************************************
-* Copyright 2014, Cypress Semiconductor Corporation. All rights reserved.
-* This software is owned by Cypress Semiconductor Corporation and is protected
-* by and subject to worldwide patent and copyright laws and treaties.
-* Therefore, you may use this software only as provided in the license agreement
-* accompanying the software package from which you obtained this software.
-* CYPRESS AND ITS SUPPLIERS MAKE NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* WITH REGARD TO THIS SOFTWARE, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT,
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-*******************************************************************************/
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-01-15
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
+
 
 #ifndef _DEBUG_H_
 #define _DEBUG_H_

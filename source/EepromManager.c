@@ -1,6 +1,14 @@
-/*******************************************************************************
-* File Name: eeprom.c
-*******************************************************************************/
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-02-18
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
 
 #include <project.h>
 #include "debug.h"

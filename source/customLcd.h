@@ -1,6 +1,6 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright MARCO TAVAN, 2017-01-20
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
@@ -9,6 +9,7 @@
  *
  * ========================================
 */
+
 #ifndef _CUSTOMLCD_H_
 #define _CUSTOMLCD_H_
     

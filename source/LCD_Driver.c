@@ -1,18 +1,14 @@
-/*******************************************************************************
-* File Name: LCD.c
-* Version 2.20
-*
-* Description:
-*  This file provides source code for the Character LCD component's API.
-*
-* Note:
-*
-********************************************************************************
-* Copyright 2008-2014, Cypress Semiconductor Corporation.  All rights reserved.
-* You may use this file only in accordance with the license, terms, conditions,
-* disclaimers, and limitations in the end user license agreement accompanying
-* the software package with which this file was provided.
-*******************************************************************************/
+/* ========================================
+ *
+ * Copyright MARCO TAVAN, 2017-03-04
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
 
 #include "CyLib.h"
 #include "LCD.h"
