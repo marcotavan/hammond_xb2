@@ -40,6 +40,8 @@ enum rotarySpeed
 uint8 rotaryWheelStatus = ROTARY_SLOW_SPEED;
 static uint8 overallVolumeLevel = 0;
 
+uint8 overdrive = 0;
+
 #if ADC_ISR_ENABLE
 CY_ISR( ADC_ISR )
 {
@@ -98,11 +100,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			#endif 
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             // if(SOLO_Button_on_Hold())
-			if(pitchWheelData < 40)
-            {
-                if(SendOverdriveSwitchOn == 0)
-                {
+			if(pitchWheelData < 40) {
+                if((SendOverdriveSwitchOn == 0) || (overdrive == 0)) {
+					// qui ci enstra una volta sola
                     sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
+					overdrive = 1;
                     SendOverdriveSwitchOn = 1;
                 }
                 
@@ -133,6 +135,14 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			pitchWheelData = data;
 			if(data > 88)
             {
+				
+					if(overdrive == 0) {
+						sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
+						overdrive = 1;
+					} else if(overdrive == 2) {
+						sendControlChange(CC_Tube_Overdrive_Switch,0,MIDI_CHANNEL_1);
+						overdrive = 3;
+					}
 				/*
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
                 {
@@ -171,6 +181,11 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             }
 			else {
 				// zona centrale
+				if(overdrive == 1) {
+					overdrive = 2;
+				} else if(overdrive == 3) {
+					overdrive = 0;
+				}
 			}
         }
         break;

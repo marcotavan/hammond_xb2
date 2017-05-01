@@ -46,3 +46,7 @@ Overall Tone                            8
 Expression Pedal                        11 
 
 Overall Volume                          7 
+
+- doesn't allow assignment of CC# 0;
+- doesn't respond to Pitch Bend messages, or maybe it does... who knows;
+- responds on CC#120 & CC#123 for "All Notes Off" (muting and reset).
