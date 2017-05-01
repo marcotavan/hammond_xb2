@@ -13,5 +13,7 @@
 #ifndef _USER_PRESET_H_
 #define _USER_PRESET_H_
 
+#include "project.h"
+void userPresetManager(uint8 presetNumber);
 
 #endif

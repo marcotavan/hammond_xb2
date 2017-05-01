@@ -38,6 +38,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "EepromManager.h"
 #include "analog.h"
 #include "midilibrary.h"
+#include "userPreset.h"
 
 #define MIN_DEBOUNCE 5      // * 8ms
 #define MAX_DEBOUNCE 100     // * 8ms  
@@ -806,7 +807,8 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
         case BUTTON_ON_HOLD:        // valido al mantenimento
         {
-			DBG_PRINTF("ON_HOLD %d\n",keyTranslator[numTasto]);
+			// DBG_PRINTF("ON_HOLD %d\n",keyTranslator[numTasto]);
+			userPresetManager(keyTranslator[numTasto]);
         }
         break;
         
@@ -824,7 +826,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 void ButtonCommand(uint8 numTasto,uint8 status)
 {
     // funzione chiamata ad ogni pressione di un pulsante
-    DBG_PRINTF("[%s] tasto %d status %d\n",__func__,numTasto,status);
+    // DBG_PRINTF("[%s] tasto %d status %d\n",__func__,numTasto,status);
     // status torna: 1 pressione immediata, 
     // 3 rilascio veloce, 
     // 2 pressione prlungata, 

@@ -90,7 +90,14 @@ enum alternative_text {
 	ALT_Preset_30, // 
 	ALT_Preset_31, // 
 	ALT_Preset_32, // 
+	ALT_USR_Preset_1, // 
+	ALT_USR_Preset_2, // 
+	ALT_USR_Preset_3, // 
+	ALT_USR_Preset_4, // 
+	ALT_USR_Preset_5, // 
+	ALT_USR_Preset_6, // 
+	ALT_USR_Preset_7, // 
+	ALT_USR_Preset_8, // 
 };
-
 #endif
 /* [] END OF FILE */
