@@ -65,14 +65,18 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     static uint8 SendOverdriveSwitchOn = 0;
     static uint8 pitchWheelData = 0;
 	uint16 scaledData = 0;
-	
+	static uint8 isRefreshTime  = 1;
     switch(event)
     {
         case EVENT_DRAWBAR_GENERIC:
         {
 			// sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,VAL_UPPER_DRAWBARS_A,MIDI_CHANNEL_1);  // invia un cambio forzato
             // mnon si puo' perchè si impappa il sistema
-			
+			if(GetPresetStatus()) { 
+				if(isRefreshTime) {
+					isRefreshTime = 0;
+					// RefreshAllAnalogElements();
+				}
 			scaledData = (data * DRAWBARS_MULTIPLIER) / 100 ;
 			if(scaledData>127) scaledData = 127;
 
@@ -89,7 +93,9 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             if (scaledData >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
 			// Write_BarGraphs();
-            
+            } else {
+				isRefreshTime = 1; // mi serve per ricaricare i drawbars la prima volta che rientro
+			}
         } 
         break;
         

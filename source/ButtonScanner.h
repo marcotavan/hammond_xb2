@@ -21,6 +21,7 @@ void RefreshAllButtonElements(void);
 
 uint8 SHIFT_Button_on_Hold(void);
 uint8 getVolumeSolo(void);
+uint8 GetPresetStatus(void);
 
 // potrebbe andare in eeprom
 struct _switchType_ {

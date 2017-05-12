@@ -21,6 +21,12 @@ void userPresetManager(uint8 presetNumber) {
 	DBG_PRINTF("[%s]:%d\n",__func__,presetNumber);
 	Display_Alternate_Text(ROW_1,ALT_USR_Preset_1+(presetNumber-1));
 
+	/*
+	treble horn: | 0,765 | 6.600 | 1.2s | -25% | 0%   |
+	bass Rotor : | 0,720 | 6.200 | 8s   |  20% | 100% |
+	key click 60%
+	drive 10% edge 50% reverb 10%
+	*/
 }
 
 #if 0
