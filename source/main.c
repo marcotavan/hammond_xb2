@@ -21,6 +21,7 @@
 #include "customLcd.h"
 #include "ButtonScanner.h"
 #include "EepromManager.h"
+#include "pca9685_driver.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -106,6 +107,9 @@ int main()
     TimerTick_Start();
     
     MOD_SysLog_Init(); 
+	
+	PCA9685_init(0,Mode_register_1,Mode_register_2);
+    PCA9685_setPWMFrequency(1600);
     
 	#if defined USB_MIDI_INTERCACE
     /* Start USBFS device 0 with VDDD operation */
@@ -202,6 +206,8 @@ int main()
         UART_DEBUG_PARSER_Task();
         
         //isVSTReady();
+		
+		LedPoll();	
     }
 }
 

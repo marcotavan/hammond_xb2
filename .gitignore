@@ -14,3 +14,6 @@ Backup/
 *.cywrk.*
 *swp
 utilities/VirtualGrand_v3_FR/
+/source/i2c/debug.c
+/source/i2c/debug.h
+/source/i2c/main.c
