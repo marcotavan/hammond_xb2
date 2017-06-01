@@ -97,5 +97,20 @@ void PWM_setPWMFreq(float freq);
 void PCA9685_setAllChannelsPWM(uint16_t pwmAmount);
 void test_pwm(void);
 void LedPoll(void);
+
+#define ROSSO_LESLIE_FAST 0
+#define VERDE_LESLIE_FAST 1
+#define ROSSO_VIBRATO_ON 2
+#define VERDE_VIBRATO_ON 3
+#define ROSSO_THIRD_PERCUSSION 4
+#define VERDE_THIRD_PERCUSSION 5
+#define ROSSO_SECOND_PERCUSSION 6
+#define VERDE_SECOND_PERCUSSION 7
+#define ROSSO_ORGAN_SOLO 8
+#define VERDE_ORGAN_SOLO 9
+
+
+
+
 #endif
 /* EOF */
