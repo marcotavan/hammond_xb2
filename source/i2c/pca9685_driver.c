@@ -62,13 +62,13 @@ uint8 PCA9685_writeChannelBegin(int channel) {
     DBG_PRINTF("[%s] channel: %d, regAddress: 0x%02X\n\n",__func__,channel,regAddress);
 #endif
 	
-    if ((i2cStatus = I2C_MasterSendStart(pca9685_i2cAddress, I2C_WRITE_XFER_MODE))) {
+    if ((i2cStatus = I2C_LED_MasterSendStart(pca9685_i2cAddress, I2C_LED_WRITE_XFER_MODE))) {
 		// DBG_PRINTF("[%s] i2cStatus :%d\n",__func__,i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_1;
 		return i2cStatus;
 	}
 	
-    I2C_MasterWriteByte(regAddress);
+    I2C_LED_MasterWriteByte(regAddress);
 	return i2cStatus;
 }
 
@@ -78,10 +78,10 @@ void PCA9685_writeChannelPWM(uint16_t phaseBegin, uint16_t phaseEnd) {
     DBG_PRINTF("[%s] phaseBegin: %d, phaseEnd: %d\n",__func__,phaseBegin,phaseEnd);
 #endif
 
-    I2C_MasterWriteByte(lowByte(phaseBegin));
-    I2C_MasterWriteByte(highByte(phaseBegin));
-    I2C_MasterWriteByte(lowByte(phaseEnd));
-    I2C_MasterWriteByte(highByte(phaseEnd));
+    I2C_LED_MasterWriteByte(lowByte(phaseBegin));
+    I2C_LED_MasterWriteByte(highByte(phaseBegin));
+    I2C_LED_MasterWriteByte(lowByte(phaseEnd));
+    I2C_LED_MasterWriteByte(highByte(phaseEnd));
 }
 
 uint8 PCA9685_getLastI2CError() {
@@ -117,7 +117,7 @@ void PCA9685_checkForErrors() {
 
 void PCA9685_writeChannelEnd() {
 	// verificare
-    I2C_MasterSendStop();
+    I2C_LED_MasterSendStop();
 
 #ifdef PCA9685_ENABLE_DEBUG_OUTPUT
     PCA9685_checkForErrors();
@@ -130,25 +130,25 @@ uint8 PCA9685_writeRegister(uint8_t reg, uint8_t data) {
 	// DBG_PRINTF("[%s]: 0x%02X 0x%02X\n",__func__,reg,data);
 	uint8 i2cStatus = 0;
 	
-  	if ((i2cStatus = I2C_MasterSendStart(pca9685_i2cAddress, I2C_WRITE_XFER_MODE))) {
+  	if ((i2cStatus = I2C_LED_MasterSendStart(pca9685_i2cAddress, I2C_LED_WRITE_XFER_MODE))) {
 		// DBG_PRINTF("[%s] i2cStatus :%d\n",__func__,i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_2;
 		return i2cStatus;
 	}
 	
-	if ((i2cStatus = I2C_MasterWriteByte(reg))) {
+	if ((i2cStatus = I2C_LED_MasterWriteByte(reg))) {
 		// DBG_PRINTF("2 i2cStatus :%d\n",i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_3;
 		return i2cStatus;
 	}
 	
-  	if ((i2cStatus = I2C_MasterWriteByte(data))) {
+  	if ((i2cStatus = I2C_LED_MasterWriteByte(data))) {
 		// DBG_PRINTF("3 i2cStatus :%d\n",i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_4;
 		return i2cStatus;
 	}
 	
-  	if ((i2cStatus = I2C_MasterSendStop())) {
+  	if ((i2cStatus = I2C_LED_MasterSendStop())) {
 		// DBG_PRINTF("4 i2cStatus :%d\n",i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_5;
 		return i2cStatus;
@@ -168,16 +168,16 @@ uint8_t PCA9685_readRegister(uint8_t reg) {
     DBG_PRINTF("[%s]: reg=0x%02X, ",__func__,reg);
 	#endif
 	uint8 val = 0x00;
-  	if(I2C_MasterSendStart(pca9685_i2cAddress, I2C_WRITE_XFER_MODE)) {
+  	if(I2C_LED_MasterSendStart(pca9685_i2cAddress, I2C_LED_WRITE_XFER_MODE)) {
 		pca9685_lastI2CError = I2C_ERROR_6;
 		return val;
 	}
 	
-  	I2C_MasterWriteByte(reg);
-  	I2C_MasterSendRestart(pca9685_i2cAddress, I2C_READ_XFER_MODE);
+  	I2C_LED_MasterWriteByte(reg);
+  	I2C_LED_MasterSendRestart(pca9685_i2cAddress, I2C_LED_READ_XFER_MODE);
 
-  	val =  I2C_MasterReadByte(I2C_NAK_DATA);
-  	I2C_MasterSendStop();
+  	val =  I2C_LED_MasterReadByte(I2C_LED_NAK_DATA);
+  	I2C_LED_MasterSendStop();
 	#ifdef PCA9685_ENABLE_DEBUG_OUTPUT
     DBG_PRINTF("val=0x%02X\n",val);
 	#endif
@@ -194,16 +194,16 @@ uint8 PCA9685_SoftwareReset(void) {
 	// verificare
 	uint8 i2cStatus = 0;
 	
-	if((i2cStatus = I2C_MasterSendStart(pca9685_i2cAddress, I2C_WRITE_XFER_MODE))){
+	if((i2cStatus = I2C_LED_MasterSendStart(pca9685_i2cAddress, I2C_LED_WRITE_XFER_MODE))){
 		DBG_PRINTF("1 i2cStatus :%d\n",i2cStatus);
 		pca9685_lastI2CError = I2C_ERROR_7;
-		I2C_MasterSendStop();
+		I2C_LED_MasterSendStop();
 		return i2cStatus;
 	}
 	
 	
-  	I2C_MasterWriteByte(PCA9685_SW_RESET);
-	I2C_MasterSendStop();
+  	I2C_LED_MasterWriteByte(PCA9685_SW_RESET);
+	I2C_LED_MasterSendStop();
 	
 	return i2cStatus;
 }
@@ -217,7 +217,7 @@ void PCA9685_init(uint8 i2cAddress, uint8 mode1, uint8 mode2) {
 	
 	DBG_PRINTF("[%s]  pca9685_i2cAddress:0x%02X\n",__func__,pca9685_i2cAddress);
 	
-	I2C_Start();
+	I2C_LED_Start();
 	PCA9685_SoftwareReset();
     PCA9685_writeRegister(PCA9685_MODE1_REG, mode1);
     PCA9685_writeRegister(PCA9685_MODE2_REG, mode2);

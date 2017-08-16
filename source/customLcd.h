@@ -26,6 +26,20 @@ void Display_Alternate_Text(uint8 where, uint8 what);
 #define ROW_0       0
 #define ROW_1       1    
 
+/* LCD Characteristics */
+// #define LCD_CHARACTER_WIDTH          (0x05u)
+#define LCD_CHARACTER_HEIGHT         (0x08u)
+
+/* Custom Character References */
+#define LCD_CUSTOM_0                 (0x00u)
+#define LCD_CUSTOM_1                 (0x01u)
+#define LCD_CUSTOM_2                 (0x02u)
+#define LCD_CUSTOM_3                 (0x03u)
+#define LCD_CUSTOM_4                 (0x04u)
+#define LCD_CUSTOM_5                 (0x05u)
+#define LCD_CUSTOM_6                 (0x06u)
+#define LCD_CUSTOM_7                 (0x07u)
+
 extern char str_bargraph[MAX_ROWS][MAX_CHARS];
 
 enum alternative_text {
