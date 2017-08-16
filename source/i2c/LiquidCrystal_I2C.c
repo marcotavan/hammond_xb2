@@ -1,13 +1,6 @@
 #include "LiquidCrystal_I2C.h"
 #include "debug.h"
 
-//Portado para PSoC por Šarūnas Straigis
-//http://www.element14.com/community/people/sarunaszx/blog
-//Portado y modificado para PSoC 4 y PSoC 5LP por Brayan Bermudez y Carlos Diaz
-//http://digitalprojectsudistrital.blogspot.com.co/
-
-
-
 // When the display powers up, it is configured as follows:
 //
 // 1. Display clear
@@ -62,7 +55,7 @@ void begin(void){
 
 	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
 	// according to datasheet, we need at least 40ms after power rises above 2.7V
-	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
+	// before sending commands. 
 	CyDelay(50); 
 
 	// Now we pull both RS and R/W low to begin commands
@@ -306,8 +299,8 @@ void write4bits(uint8_t value) {
 void expanderWrite(uint8_t _data){     
     
 	I2C_M_write_byte(_addr,_data | _backlightval);	   
-    
-    return;
+    // DBG_PRINTF("[%s] data: 0x%02X\n",__func__,_data);
+	return;
 }
 
 void pulseEnable(uint8_t _data){
@@ -351,21 +344,10 @@ void LCD_print(char word[]){ uint32_t i = 0;
 
 void I2C_M_write_byte(uint8_t addr,uint8_t data){ 
 	uint8 retval;
-#if CY_PSOC5
-    
-	
-	
 	retval = I2C_MasterSendStart(addr, 0);
-	
-	DBG_PRINTF("retval: 0x%02X\n",retval);
-	
+	DBG_PRINTF("[%s] retval: 0x%02X\n",__func__,retval);
     I2C_MasterWriteByte(data);
     I2C_MasterSendStop();
-#elif CY_PSOC4
-    I2C_I2CMasterSendStart(addr, 0);
-    I2C_I2CMasterWriteByte(data);
-    I2C_I2CMasterSendStop();
-#endif
-    
-    return;
+	
+	return;
 }

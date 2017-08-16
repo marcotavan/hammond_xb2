@@ -467,12 +467,20 @@ void PWM_setPin(uint8_t num, uint16_t val)
 void LedPoll(void)
 {
 	static uint16 pwm = 0;
+	static uint8 toggle = 0;
 	static uint8 div = 0;
 	
 	if(tick_100ms(TICK_PWM_LED)){
 		div++;
 		if (div == 5) {
-				div = 0;
+			div = 0;
+			toggle ^= 1;
+			if(toggle) {
+				PCA9685_setChannelPWM(ROSSO_EDIT,1600);
+			} else {
+				PCA9685_setChannelOff(ROSSO_EDIT);
+			}
+			
 		// PCA9685_setChannelPWM(15, i); // Set PWM to 128/255, but in 4096 land
 			if(pwm==PCA9685_FULL) {
 				// accende di verde
@@ -492,7 +500,6 @@ void LedPoll(void)
 				PCA9685_setChannelOff(ROSSO_ORGAN_SOLO);	// rosso_organ_solo
 				PCA9685_setChannelOn(VERDE_ORGAN_SOLO);	// verde_organ_solo
 				
-				PCA9685_setChannelOff(ROSSO_EDIT);
 			} 
 			else if(pwm==PCA9685_MID){
 				// accende di giallo
@@ -511,8 +518,6 @@ void LedPoll(void)
 				
 				PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,RED_LEVEL);
 				PCA9685_setChannelOn(VERDE_ORGAN_SOLO);
-				
-				PCA9685_setChannelOff(ROSSO_EDIT);
 			}
 			else {
 				// accende di rosso
@@ -531,8 +536,6 @@ void LedPoll(void)
 				
 				PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,1600);
 				PCA9685_setChannelOff(VERDE_ORGAN_SOLO);
-				
-				PCA9685_setChannelPWM(ROSSO_EDIT,1600);
 			}
 			
 			// PCA9685_setAllChannelsPWM(pwm);
