@@ -476,66 +476,39 @@ void LedPoll(void)
 			div = 0;
 			toggle ^= 1;
 			if(toggle) {
-				PCA9685_setChannelPWM(ROSSO_EDIT,1600);
+				LED_EDIT_ON;
 			} else {
-				PCA9685_setChannelOff(ROSSO_EDIT);
+				LED_EDIT_OFF;
 			}
 			
 		// PCA9685_setChannelPWM(15, i); // Set PWM to 128/255, but in 4096 land
 			if(pwm==PCA9685_FULL) {
 				// accende di verde
 				pwm = PCA9685_MID;
-				PCA9685_setChannelOff(ROSSO_LESLIE_FAST);	// rosso_leslie fast
-				PCA9685_setChannelOn(VERDE_LESLIE_FAST); 	// verde_leslie_fast
-				
-				PCA9685_setChannelOff(ROSSO_VIBRATO_ON);	// rosso_vibrato_on
-				PCA9685_setChannelOn(VERDE_VIBRATO_ON);	// verde_vibrato_on
-				
-				PCA9685_setChannelOff(ROSSO_THIRD_PERCUSSION);	// rosso_third_percussion
-				PCA9685_setChannelOn(VERDE_THIRD_PERCUSSION);	// verde_third_percussion
-				
-				PCA9685_setChannelOff(ROSSO_SECOND_PERCUSSION);	// rosso_second_percussion
-				PCA9685_setChannelOn(VERDE_SECOND_PERCUSSION);	// verde_second_percussion
-				
-				PCA9685_setChannelOff(ROSSO_ORGAN_SOLO);	// rosso_organ_solo
-				PCA9685_setChannelOn(VERDE_ORGAN_SOLO);	// verde_organ_solo
+				LED_VERDE_LESLIE;
+				LED_VERDE_VIBRATO;
+				LED_VERDE_3RD_PERCUSSION;
+				LED_VERDE_2ND_PERCUSSION;
+				LED_VERDE_ORGAN;
 				
 			} 
 			else if(pwm==PCA9685_MID){
 				// accende di giallo
 				pwm = 0;
-				PCA9685_setChannelPWM(ROSSO_LESLIE_FAST,RED_LEVEL);	// rosso_leslie_fast
-				PCA9685_setChannelOn(VERDE_LESLIE_FAST);
-				
-				PCA9685_setChannelPWM(ROSSO_VIBRATO_ON,RED_LEVEL);
-				PCA9685_setChannelOn(VERDE_VIBRATO_ON);
-				
-				PCA9685_setChannelPWM(ROSSO_THIRD_PERCUSSION,RED_LEVEL);
-				PCA9685_setChannelOn(VERDE_THIRD_PERCUSSION);
-				
-				PCA9685_setChannelPWM(ROSSO_SECOND_PERCUSSION,RED_LEVEL);
-				PCA9685_setChannelOn(VERDE_SECOND_PERCUSSION);
-				
-				PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,RED_LEVEL);
-				PCA9685_setChannelOn(VERDE_ORGAN_SOLO);
+				LED_GIALLO_LESLIE;
+				LED_GIALLO_VIBRATO;
+				LED_GIALLO_3RD_PERCUSSION;
+				LED_GIALLO_2ND_PERCUSSION;
+				LED_GIALLO_ORGAN;
 			}
 			else {
 				// accende di rosso
 				pwm = PCA9685_FULL;
-				PCA9685_setChannelPWM(ROSSO_LESLIE_FAST,1600);	// rosso_leslie_fast
-				PCA9685_setChannelOff(VERDE_LESLIE_FAST);
-				
-				PCA9685_setChannelPWM(ROSSO_VIBRATO_ON,1600);
-				PCA9685_setChannelOff(VERDE_VIBRATO_ON);
-				
-				PCA9685_setChannelPWM(ROSSO_THIRD_PERCUSSION,1600);
-				PCA9685_setChannelOff(VERDE_THIRD_PERCUSSION);
-				
-				PCA9685_setChannelPWM(ROSSO_SECOND_PERCUSSION,1600);
-				PCA9685_setChannelOff(VERDE_SECOND_PERCUSSION);
-				
-				PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,1600);
-				PCA9685_setChannelOff(VERDE_ORGAN_SOLO);
+				LED_ROSSO_LESLIE;
+				LED_ROSSO_VIBRATO;
+				LED_ROSSO_3RD_PERCUSSION;
+				LED_ROSSO_2ND_PERCUSSION;
+				LED_ROSSO_ORGAN;
 			}
 			
 			// PCA9685_setAllChannelsPWM(pwm);

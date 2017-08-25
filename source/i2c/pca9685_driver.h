@@ -113,5 +113,71 @@ void LedPoll(void);
 #define RED_LEVEL				700
 
 
+//-----------------Macro per accendere i LED ----VERDE ----------------------------------------
+#define LED_VERDE_LESLIE			PCA9685_setChannelOff(ROSSO_LESLIE_FAST);\
+								PCA9685_setChannelOn(VERDE_LESLIE_FAST)
+
+#define LED_VERDE_VIBRATO 			PCA9685_setChannelOff(ROSSO_VIBRATO_ON);\
+								PCA9685_setChannelOn(VERDE_VIBRATO_ON)
+				
+#define LED_VERDE_3RD_PERCUSSION	PCA9685_setChannelOff(ROSSO_THIRD_PERCUSSION);\
+								PCA9685_setChannelOn(VERDE_THIRD_PERCUSSION)
+				
+#define LED_VERDE_2ND_PERCUSSION	PCA9685_setChannelOff(ROSSO_SECOND_PERCUSSION);\
+								PCA9685_setChannelOn(VERDE_SECOND_PERCUSSION)
+				
+#define LED_VERDE_ORGAN				PCA9685_setChannelOff(ROSSO_ORGAN_SOLO);\
+								PCA9685_setChannelOn(VERDE_ORGAN_SOLO)
+
+//-----GIALLO -----------------------------------------------------------------------------------
+#define LED_GIALLO_LESLIE			PCA9685_setChannelPWM(ROSSO_LESLIE_FAST,RED_LEVEL);\
+								PCA9685_setChannelOn(VERDE_LESLIE_FAST)
+				
+#define LED_GIALLO_VIBRATO			PCA9685_setChannelPWM(ROSSO_VIBRATO_ON,RED_LEVEL);\
+								PCA9685_setChannelOn(VERDE_VIBRATO_ON)
+				
+#define LED_GIALLO_3RD_PERCUSSION	PCA9685_setChannelPWM(ROSSO_THIRD_PERCUSSION,RED_LEVEL);\
+								PCA9685_setChannelOn(VERDE_THIRD_PERCUSSION)
+				
+#define LED_GIALLO_2ND_PERCUSSION	PCA9685_setChannelPWM(ROSSO_SECOND_PERCUSSION,RED_LEVEL);\
+								PCA9685_setChannelOn(VERDE_SECOND_PERCUSSION)
+				
+#define LED_GIALLO_ORGAN			PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,RED_LEVEL);\
+								PCA9685_setChannelOn(VERDE_ORGAN_SOLO)
+
+//--- ROSSO ------------------------------------------------------------------------------------
+#define LED_ROSSO_LESLIE			PCA9685_setChannelPWM(ROSSO_LESLIE_FAST,1600);\
+								PCA9685_setChannelOff(VERDE_LESLIE_FAST)
+				
+#define LED_ROSSO_VIBRATO			PCA9685_setChannelPWM(ROSSO_VIBRATO_ON,1600);\
+								PCA9685_setChannelOff(VERDE_VIBRATO_ON)
+				
+#define LED_ROSSO_3RD_PERCUSSION	PCA9685_setChannelPWM(ROSSO_THIRD_PERCUSSION,1600);\
+								PCA9685_setChannelOff(VERDE_THIRD_PERCUSSION)
+				
+#define LED_ROSSO_2ND_PERCUSSION	PCA9685_setChannelPWM(ROSSO_SECOND_PERCUSSION,1600);\
+								PCA9685_setChannelOff(VERDE_SECOND_PERCUSSION)
+				
+#define LED_ROSSO_ORGAN				PCA9685_setChannelPWM(ROSSO_ORGAN_SOLO,1600);\
+								PCA9685_setChannelOff(VERDE_ORGAN_SOLO)
+//--- OFF  ------------------------------------------------------------------------------------
+#define LED_LESLIE_OFF			PCA9685_setChannelOff(ROSSO_LESLIE_FAST);\
+								PCA9685_setChannelOff(VERDE_LESLIE_FAST)
+
+#define LED_VIBRATO_OFF 		PCA9685_setChannelOff(ROSSO_VIBRATO_ON);\
+								PCA9685_setChannelOff(VERDE_VIBRATO_ON)
+				
+#define LED_3RD_PERCUSSION_OFF	PCA9685_setChannelOff(ROSSO_THIRD_PERCUSSION);\
+								PCA9685_setChannelOff(VERDE_THIRD_PERCUSSION)
+				
+#define LED_2ND_PERCUSSION_OFF	PCA9685_setChannelOff(ROSSO_SECOND_PERCUSSION);\
+								PCA9685_setChannelOff(VERDE_SECOND_PERCUSSION)
+				
+#define LED_ORGAN_OFF			PCA9685_setChannelOff(ROSSO_ORGAN_SOLO);\
+								PCA9685_setChannelOff(VERDE_ORGAN_SOLO)
+
+#define LED_EDIT_ON				PCA9685_setChannelPWM(ROSSO_EDIT,1600)
+#define LED_EDIT_OFF			PCA9685_setChannelOff(ROSSO_EDIT)
+
 #endif
 /* EOF */
