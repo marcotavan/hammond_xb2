@@ -41,13 +41,9 @@
 #define LCD_5x10DOTS 			0x04
 #define LCD_5x8DOTS 			0x00
 
-// flags for backlight control
-#define LCD_BACKLIGHT 			0x08
-#define LCD_NOBACKLIGHT 		0x00
-
-#define Enable_bit 				0x04  // Enable bit
-#define ReadWrite_bit 			0x02  // Read/Write bit
-#define RegisterSelect_bit 		0x01  // Register select bit
+#define Enable_bit 				0x0100  // Enable bit
+#define ReadWrite_bit 			0x0200  // Read/Write bit
+#define RegisterSelect_bit 		0x0400  // Register select bit
 	
 
 	/**
@@ -67,7 +63,7 @@
 	 * @param lcd_rows	Number of rows your LCD display has.
 	 * @param charsize	The size in dots that the display has, use LCD_5x10DOTS or LCD_5x8DOTS.
 	*/
-	void LiquidCrystal_I2C_init(uint8 lcd_addr, uint8 lcd_cols, uint8 lcd_rows, uint8 charsize);
+	void LiquidCrystal_I2C_init(uint8 lcd_cols, uint8 lcd_rows, uint8 charsize);
 	void LCD_PrintString(char uint16[]);
 	void LCD_Position(uint8 col, uint8 row);
 	void Load_Custom_Char(uint8 char_num, uint8 const *rows);

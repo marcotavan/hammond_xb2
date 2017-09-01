@@ -39,6 +39,7 @@ Once in 4-bit mode, character and control data are transferred as pairs of 4-bit
 
 #include "project.h"
 #include "LiquidCrystal_I2C.h"
+#include "PCF8575.h"
 
 // PCF8575: 400-kHz Fast I2C Bus
 // When the display powers up, it is configured as follows:
@@ -57,35 +58,30 @@ Once in 4-bit mode, character and control data are transferred as pairs of 4-bit
 //    S = 0; No shift 
 
 
-uint8 g_addr;
 uint8 g_displayfunction;
 uint8 g_displaycontrol;
 uint8 g_displaymode;
 uint8 g_cols;
 uint8 g_rows;
 uint8 g_charsize;
-uint8 g_backlightval;
 
 void LcdModeInit(void);
-uint8 ExpanderWrite(uint8 _data);
-void Write4bits(uint8 value);
+
 void LCD_command(uint8 value);
 void LcdDisplay_On(void);
 void LcdClearDisplay(void);
 void LCDReturnHome(void);
-void LCD_send(uint8 value, uint8 mode);
+
 void PulseEnable(uint8 _data);
-uint8 I2C_M_write_pcf8574(uint8 addr,uint8 data);
-uint8 I2C_M_write_pcf8575(uint8 addr,uint16 data);
+
 uint8 LCD_IsReady(void); // bloccante
 
-void LiquidCrystal_I2C_init(uint8 lcd_addr, uint8 lcd_cols, uint8 lcd_rows, uint8 charsize)
+//-------------------------------------------------------------------------------------------------
+void LiquidCrystal_I2C_init(uint8 lcd_cols, uint8 lcd_rows, uint8 charsize)
 {
-	g_addr = lcd_addr;
 	g_cols = lcd_cols;
 	g_rows = lcd_rows;
 	g_charsize = charsize;
-	g_backlightval = LCD_BACKLIGHT;
     
 	LcdModeInit();
     return;
@@ -94,7 +90,7 @@ void LiquidCrystal_I2C_init(uint8 lcd_addr, uint8 lcd_cols, uint8 lcd_rows, uint
 void LcdModeInit(void){
 	//Set the LCD display in the correct begin state, must be called before anything else is done.
 
-	g_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
+	g_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
 
 	if (g_rows > 1) {
 		g_displayfunction |= LCD_2LINE;
@@ -110,34 +106,30 @@ void LcdModeInit(void){
 	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
 	CyDelay(50); 
 
-	// Now we pull both RS and R/W low to begin commands
-	ExpanderWrite(g_backlightval);	// reset expanderand turn backlight off (Bit 8 =1)
-	CyDelay(1000);
-
-	//put the LCD into 4 bit mode
+	PCF8575_Write(0x0000);	// reset expander
 	// this is according to the hitachi HD44780 datasheet
-	// figure 24, pg 46
+	// figure 23, pg 45
 
 	// we start in 8bit mode, try to set 4 bit mode
-	Write4bits(0x03 << 4);
+	PCF8575_Write(0x0030);
 	CyDelayUs(4500); // wait min 4.1ms
 
 	// second try
-	Write4bits(0x03 << 4);
+	PCF8575_Write(0x0030);
 	CyDelayUs(4500); // wait min 4.1ms
 
 	// third go!
-	Write4bits(0x03 << 4); 
+	PCF8575_Write(0x0030);
 	CyDelayUs(150);
 
-	// finally, set to 4-bit interface
-	Write4bits(0x02 << 4); 
+	// finally, set to 8-bit interface
+	PCF8575_Write(0x0030);
 
 	// set # lines, font size, etc.
-	LCD_command(LCD_FUNCTIONSET | g_displayfunction);  
+	LCD_command(LCD_FUNCTIONSET | g_displayfunction);  // 0038
 	
 	// turn the display on with no cursor or blinking default
-	g_displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+	g_displaycontrol = /*LCD_DISPLAYCONTROL |*/ LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
 	LcdDisplay_On();
 	
 	// clear it off
@@ -161,7 +153,8 @@ void LcdModeInit(void){
 	*/
 }
 
-/********** high level commands, for the user! */
+
+//-------------------------------------------------------------------------------------------------
 void LcdClearDisplay(void){
     // Remove all the characters currently shown. Next print/write operation will start
 	// from the first position on LCD display.
@@ -297,8 +290,8 @@ void NoAutoscroll(void){
     return;
 }
 
-// Allows us to fill the first 8 CGRAM locations
-// with custom characters
+//-------------------------------------------------------------------------------------------------
+// Allows us to fill the first 8 CGRAM locations with custom characters
 void CreateChar(uint8 location, uint8 const charmap[]){ 
 	uint32 i = 0;
 	
@@ -311,156 +304,51 @@ void CreateChar(uint8 location, uint8 const charmap[]){
     return;
 }
 
-// Turn the (optional) backlight off/on
-void LCD_NoBacklight(void) {
-    g_backlightval=LCD_NOBACKLIGHT;
-	ExpanderWrite(0);
-    return;
-}
-
-void LCD_Backlight(void){
-	g_backlightval=LCD_BACKLIGHT;
-	ExpanderWrite(0);
-    return;
-}
-
-/*********** mid level commands, for sending data/cmds */
-
-void LCD_command(uint8 value){
-    LCD_send(value, 0);
-    return;
-}
+//-------------------------------------------------------------------------------------------------
 
  void LCD_Write(uint8 value){
-	LCD_send(value, RegisterSelect_bit);
-    return;
+	uint16 data = value|RegisterSelect_bit;
+	PCF8575_Write(data);
+	PulseEnable(data);
+	return;
 }
 
-
-/************ low level data pushing commands **********/
-
-// write either command or data
-void LCD_send(uint8 value, uint8 mode){
+void PulseEnable(uint8 data){
     
-	uint8 highnib=value&0xf0;
-	uint8 lownib=(value<<4)&0xf0;
-	
-	// LCD_IsReady(); // qua va assolutamente fatta.
-	
-	Write4bits((highnib)|mode);
-	Write4bits((lownib)|mode); 
-    
-    return;
-}
-
-void Write4bits(uint8 value) {
-    
-	ExpanderWrite(value);
-	PulseEnable(value);
-    
-    return;
-}
-
-uint8 ExpanderWrite(uint8 _data){     
-    uint8 status = 0;
-	// status = I2C_M_write_byte(g_addr,_data | g_backlightval);
-	// status = I2C_M_write_pcf8575(g_addr,_data | g_backlightval);
-    return status;
-}
-
-void PulseEnable(uint8 _data){
-    
-	ExpanderWrite(_data | Enable_bit);	// En high
+	PCF8575_Write(data | Enable_bit);	// En high
 	CyDelayUs(1);		// enable pulse must be >450ns
-	ExpanderWrite(_data & ~Enable_bit);	// En low
+	PCF8575_Write(data & ~Enable_bit);	// En low
 	CyDelayUs(50);		// commands need > 37us to settle
     
     return;
 }
+
+void LCD_command(uint8 value){
+    uint16 data = value;
+	PCF8575_Write(data);
+	PulseEnable(data);
+    return;
+}
+
 
 void Load_Custom_Char(uint8 char_num, uint8 const *rows){
     CreateChar(char_num, rows);
     return;
 }
 
-void SetBacklight(uint8 new_val){
-    
-	if (new_val) {
-		LCD_Backlight();		// turn backlight on
-	} else {
-		LCD_NoBacklight();		// turn backlight off
-	}
-    
-    return;
-}
 
 void LCD_PrintString(char uint16[]){ 
 	uint32 i = 0;
-    
     uint8 size = strlen(uint16);
     
     for (i = 0; i < size; i++){
         LCD_Write(uint16[i]);
     }
-
     return;
 }
 
-uint8 I2C_M_write_pcf8574(uint8 addr,uint8 data){ 
-	// funzione che scrive nell'I2C
-	uint8 status = 0;
-	// provo...
-	status = I2C_LCD_MasterSendStart(addr, 0);
-	if (status != 0) return status;
-	
-	// continuo... 1 byte
-	status = I2C_LCD_MasterWriteByte(data);
-	if (status != 0) return status;
- 
-	// termino
-    status = I2C_LCD_MasterSendStop();
-    return status;
-}
 
-uint8 I2C_M_write_pcf8575(uint8 addr,uint16 data){ 
-	// funzione che scrive nell'I2C
-/*	
-	The first data byte in every pair refers to Port 0
-	(P07 to P00), whereas the second data byte in every pair
-	refers to Port 1 (P17 to P10), see Fig.11
-*/
-	uint8 status = 0;
-	// provo...
-	status = I2C_LCD_MasterSendStart(addr, 0);
-	if (status != 0) return status;
-	
-	// continuo... 1 byte LSB
-	status = I2C_LCD_MasterWriteByte(data);
-	if (status != 0) return status;
-	
-	// continuo... 2 byte MSB
-	status = I2C_LCD_MasterWriteByte(data>>8);
-	if (status != 0) return status;
-	
-	// termino
-    status = I2C_LCD_MasterSendStop();
-	
-    return status;
-}
-
-uint16 I2C_M_Read_pcf8575(uint8 addr){
-	/*
-	Reading from a port (input mode):
-	All ports programmed as input should be set to logic 1.
-	To read, the master (microcontroller) first addresses the slave device after it receives the interrupt. 
-	By setting the last bit of the byte containing the slave address to logic 1 the read mode is entered. T
-	he data bytes that follow on the SDA are the values on the ports. 
-	If the data on the input port changes faster than the master can read, this data may be lost.
-	*/
-	
-	
-	return 0;
-}
+//-------------------------------------------------------------------------------------------------
 
 uint8 LCD_IsReady(void) {
 	uint8 value = 0;

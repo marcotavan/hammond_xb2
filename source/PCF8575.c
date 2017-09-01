@@ -17,6 +17,7 @@
 #include "debug.h"
 #include "tick.h"
 #include "common.h"
+#include "LiquidCrystal_I2C.h"
 
 volatile uint8 PCF8575_Read_Input_flag = 0;
 
@@ -221,15 +222,19 @@ void PCF8575_ApplicationPoll(void){
 		HAL_I2C_PCF8575_Address_Finder();
 			
 		PCF8575_Init(PCF8575_I2C_ADDRESS);
+		
+		LiquidCrystal_I2C_init(16,2,0);
 		isInitialized = 1;
 	}
 	
 	if(tick_100ms(TICK_PCF8575)) {
 		applicationDivider++; // rallenta
-		if(applicationDivider == 2) {
+		if(applicationDivider == 10) {
 			applicationDivider = 0;
 			
 			// PCF8575_Write(BIT0 << portCounter); // scrive un'uscita alla volta
+			
+			LCD_PrintString("dai che stavolta funziona");
 			
 			portCounter++;	// incrementa l'usicta da scrivere
 			if (portCounter == 12){

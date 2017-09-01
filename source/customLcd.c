@@ -378,14 +378,12 @@ void LCD_splashScreen(uint8 mex)
     // alternateTextCounter = time;    // in 100ms
     static uint8 isLcdInit = 0;
     alternateTextCounter = 20;
-    if(isLcdInit == 0)
+    
+	if(isLcdInit == 0)
     {
         DBG_PRINTF("wait for LCD\n");
 
-    	I2C_LCD_Start();
-    	LiquidCrystal_I2C_init(0x3F,20,2,0);
-    
-	    LCD_PrintString("PSoC 5LP");
+        LCD_PrintString("PSoC 5LP");
 	    LCD_Position(0,1);
 	    LCD_PrintString("Prima fila");
 	
