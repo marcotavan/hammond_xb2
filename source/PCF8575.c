@@ -50,18 +50,19 @@ const char *I2C_ERROR_MESSAGE[] = {
 void PCF8575_Init(uint8 address) {
 	DBG_PRINTF("[%s] Address:0x%2X \n",__func__,address);
 	
+	#if (0)
 	isr_pcf8575_StartEx(PCF8575_INPUT_INTERRUPT);
-
 	isr_pcf8575_ClearPending();
     isr_pcf8575_Enable();
-
+	#endif
+	
 	PCF8575_Write(PCF8575_INPUT_PORT_CFG); // prima volta mette a 1 le porte in ingresso
 }
-
-void PCF8575_ButtonManager(uint8 *input) {
+/*
+void PCF8575_ButtonManager(uint16 input) {
 	static uint16 tastoAttivo[MAX_TASTI] = {0,0,0,0};
 	
-	if ((input[1] & BIT7) == 0) { 
+	if ((input & BIT15) == 0) { 
 		DBG_PRINTF("tasto 1 premuto\n");
 		tastoAttivo[0]++;
 	} else {
@@ -71,7 +72,7 @@ void PCF8575_ButtonManager(uint8 *input) {
 		}
 	}
 
-	if ((input[1] & BIT6) == 0) { 
+	if ((input & BIT14) == 0) { 
 		DBG_PRINTF("tasto 2 premuto\n");
 		tastoAttivo[1]++;
 	} else {
@@ -81,7 +82,7 @@ void PCF8575_ButtonManager(uint8 *input) {
 		}
 	}
 		
-	if ((input[1] & BIT5) == 0) { 
+	if ((input & BIT13) == 0) { 
 		DBG_PRINTF("tasto 3 premuto\n");
 		tastoAttivo[2]++;
 	} else {
@@ -91,7 +92,7 @@ void PCF8575_ButtonManager(uint8 *input) {
 		}
 	}
 			
-	if ((input[1] & BIT4) == 0) { 
+	if ((input & BIT12) == 0) { 
 		DBG_PRINTF("tasto 4 premuto\n");
 		tastoAttivo[3]++;
 	} else {
@@ -101,13 +102,11 @@ void PCF8575_ButtonManager(uint8 *input) {
 		}
 	}
 }
-
+*/
 uint16 PCF8575_Read(void) {
 	uint8 input[2] = {0,0};
 
 	HAL_I2C_Master_Receive(PCF8575_I2C_ADDRESS, input, 2, 1000);	
-	
-	PCF8575_ButtonManager(input);
 				
 	// DBG_PRINTF("[%s]  0x%02X 0x%02X\n",__func__,input[1],input[0]);
 	return ((input[1] << 8) | input[0]);
@@ -250,7 +249,7 @@ void PCF8575_ApplicationPoll(void){
 	// CyDelay(100);
 	
 	if(PCF8575_Read_Input_flag) {
-		// PCF8575_Read();
+		// PCF8575_ButtonManager(PCF8575_Read());
 		PCF8575_Read_Input_flag = 0;
 	}
 }

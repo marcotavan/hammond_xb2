@@ -74,85 +74,6 @@ void LCDReturnHome(void);
 
 void PulseEnable(uint8 _data);
 
-uint8 LCD_IsReady(void); // bloccante
-
-//-------------------------------------------------------------------------------------------------
-void LiquidCrystal_I2C_init(uint8 lcd_cols, uint8 lcd_rows, uint8 charsize)
-{
-	g_cols = lcd_cols;
-	g_rows = lcd_rows;
-	g_charsize = charsize;
-    
-	LcdModeInit();
-    return;
-}
-
-void LcdModeInit(void){
-	//Set the LCD display in the correct begin state, must be called before anything else is done.
-
-	g_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
-
-	if (g_rows > 1) {
-		g_displayfunction |= LCD_2LINE;
-	}
-
-	// for some 1 line displays you can select a 10 pixel high font
-	if ((g_charsize != 0) && (g_rows == 1)) {
-		g_displayfunction |= LCD_5x10DOTS;
-	}
-
-	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
-	// according to datasheet, we need at least 40ms after power rises above 2.7V
-	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-	CyDelay(50); 
-
-	PCF8575_Write(0x0000);	// reset expander
-	// this is according to the hitachi HD44780 datasheet
-	// figure 23, pg 45
-
-	// we start in 8bit mode, try to set 4 bit mode
-	PCF8575_Write(0x0030);
-	CyDelayUs(4500); // wait min 4.1ms
-
-	// second try
-	PCF8575_Write(0x0030);
-	CyDelayUs(4500); // wait min 4.1ms
-
-	// third go!
-	PCF8575_Write(0x0030);
-	CyDelayUs(150);
-
-	// finally, set to 8-bit interface
-	PCF8575_Write(0x0030);
-
-	// set # lines, font size, etc.
-	LCD_command(LCD_FUNCTIONSET | g_displayfunction);  // 0038
-	
-	// turn the display on with no cursor or blinking default
-	g_displaycontrol = /*LCD_DISPLAYCONTROL |*/ LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
-	LcdDisplay_On();
-	
-	// clear it off
-	LcdClearDisplay();
-	
-	// Initialize to default text direction (for roman languages)
-	g_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
-	
-	// set the entry mode
-	LCD_command(LCD_ENTRYMODESET | g_displaymode);
-	
-	LCDReturnHome();
-    
-    return;
-	/*	8 bit data setup.
-        send_command(0x38); // 8 bit mode
-        send_command(0x0E); // clear the screen
-        send_command(0x01); // display on cursor on
-        send_command(0x06);// increment cursor
-        send_command(0x80);// cursor position
-	*/
-}
-
 
 //-------------------------------------------------------------------------------------------------
 void LcdClearDisplay(void){
@@ -298,19 +219,109 @@ void CreateChar(uint8 location, uint8 const charmap[]){
     location &= 0x7; // we only have 8 locations 0-7
 	LCD_command(LCD_SETCGRAMADDR | (location << 3));
 	for (i=0; i<8; i++) {
-		LCD_Write(charmap[i]);
+		if(LCD_Write(charmap[i])) {
+			i--; // display busy
+		}
 	}
-    
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------
 
- void LCD_Write(uint8 value){
+//-------------------------------------------------------------------------------------------------
+void LiquidCrystal_I2C_init(uint8 lcd_cols, uint8 lcd_rows, uint8 charsize)
+{
+	g_cols = lcd_cols;
+	g_rows = lcd_rows;
+	g_charsize = charsize;
+    
+	LcdModeInit();
+	LCD_Position(0,0);
+    LCD_PrintString("ciao ciao");
+	LCD_Position(1,0);
+    LCD_PrintString("zoe tavan");
+}
+
+void LcdModeInit(void){
+	//Set the LCD display in the correct begin state, must be called before anything else is done.
+
+	g_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
+
+	if (g_rows > 1) {
+		g_displayfunction |= LCD_2LINE;
+	}
+
+	// for some 1 line displays you can select a 10 pixel high font
+	if ((g_charsize != 0) && (g_rows == 1)) {
+		g_displayfunction |= LCD_5x10DOTS;
+	}
+
+	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
+	// according to datasheet, we need at least 40ms after power rises above 2.7V
+	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
+	CyDelay(50); 
+
+	PCF8575_Write(0x0000);	// reset expander
+	// this is according to the hitachi HD44780 datasheet
+	// figure 23, pg 45
+
+	// we start in 8bit mode, try to set 4 bit mode
+	PCF8575_Write(0x0030);
+	CyDelayUs(4500); // wait min 4.1ms
+
+	// second try
+	PCF8575_Write(0x0030);
+	CyDelayUs(4500); // wait min 4.1ms
+
+	// third go!
+	PCF8575_Write(0x0030);
+	CyDelayUs(150);
+
+	// finally, set to 8-bit interface
+	PCF8575_Write(0x0030);
+
+	// set # lines, font size, etc.
+	LCD_command(LCD_FUNCTIONSET | g_displayfunction);  // 0038
+	
+	// turn the display on with no cursor or blinking default
+	g_displaycontrol = /*LCD_DISPLAYCONTROL |*/ LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+	LcdDisplay_On();
+	
+	// clear it off
+	LcdClearDisplay();
+	
+	// Initialize to default text direction (for roman languages)
+	g_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+	
+	// set the entry mode
+	LCD_command(LCD_ENTRYMODESET | g_displaymode);
+	
+	LCDReturnHome();
+
+	/*	8 bit data setup.
+        send_command(0x38); // 8 bit mode
+        send_command(0x0E); // clear the screen
+        send_command(0x01); // display on cursor on
+        send_command(0x06);// increment cursor
+        send_command(0x80);// cursor position
+	*/
+}
+
+
+ uint8 LCD_Write(uint8 value){
+	// va fatta macchina a stati nel poll
+	// prima bisogna leggere BusyFlag
+	PCF8575_Write(ReadWrite_bit | BusyFlag_bit); // abilito la lettura del busy flag su DB7
+	if(PCF8575_Read() & BusyFlag_bit) {
+		// leggo il dato. display è busy, ritorna
+		// questo potrebbe essere un while(PCF8575_Read() & BusyFlag_bit)
+		return 1;
+	}
+	
+	// display not busy
 	uint16 data = value|RegisterSelect_bit;
 	PCF8575_Write(data);
 	PulseEnable(data);
-	return;
+	return 0;
 }
 
 void PulseEnable(uint8 data){
@@ -319,21 +330,17 @@ void PulseEnable(uint8 data){
 	CyDelayUs(1);		// enable pulse must be >450ns
 	PCF8575_Write(data & ~Enable_bit);	// En low
 	CyDelayUs(50);		// commands need > 37us to settle
-    
-    return;
 }
 
 void LCD_command(uint8 value){
     uint16 data = value;
 	PCF8575_Write(data);
 	PulseEnable(data);
-    return;
 }
 
 
 void Load_Custom_Char(uint8 char_num, uint8 const *rows){
     CreateChar(char_num, rows);
-    return;
 }
 
 
@@ -342,105 +349,13 @@ void LCD_PrintString(char uint16[]){
     uint8 size = strlen(uint16);
     
     for (i = 0; i < size; i++){
-        LCD_Write(uint16[i]);
+        if(LCD_Write(uint16[i])) {
+			// display busy, aspetta
+			i--;
+		}
     }
-    return;
 }
 
 
-//-------------------------------------------------------------------------------------------------
-
-uint8 LCD_IsReady(void) {
-	uint8 value = 0;
-	uint32 timeout;
-	
-	#define LCD_LONGEST_CMD_US           (0x651u)
-	#define LCD_WAIT_CYCLE               (0x10u)
-	#define LCD_READY_DELAY              ((LCD_LONGEST_CMD_US * 4u)/(LCD_WAIT_CYCLE))
-	
-	timeout = LCD_READY_DELAY;
-	
-	/*
-	Busy Flag (BF)
-	When the busy flag is set at a logical "1", the LCD
-	unit is executing an internal operation, and no in-
-	struction will be accepted. The state of the busy flag
-	is output on data line DB 7 in response to the register
-	selection signals RS = 0, R/W = 1 as shown in Table
-	3. The next instruction may be entered after the
-	busy flag is reset to logical "0". */
-	
-	/* Make sure RS is low */
-	//    LCD_PORT_DR_REG &= ((uint8)(~LCD_RS));
-
-	    /* Set R/W high to read */
-	//    LCD_PORT_DR_REG |= LCD_RW;
-
-	    do
-	    {
-	        /* 40 ns delay required before rising Enable and 500ns between neighbour Enables */
-	        CyDelayUs(0u);
-
-	        /* Set E high */
-//	        LCD_PORT_DR_REG |= LCD_E;
-
-	        /* 360 ns delay setup time for data pins */
-	        CyDelayUs(1u);
-
-	        /* Get port state */
-//	        value = LCD_PORT_PS_REG;
-
-	        /* Set enable low */
-//	        LCD_PORT_DR_REG &= ((uint8)(~LCD_E));
-
-	        /* This gives true delay between disabling Enable bit and polling Ready bit */
-	        CyDelayUs(0u);
-
-	        /* Extract ready bit */
-//	        value &= LCD_READY_BIT;
-
-	        /* Set E high as we in 4-bit interface we need extra operation */
-//	        LCD_PORT_DR_REG |= LCD_E;
-
-	        /* 360 ns delay setup time for data pins */
-	        CyDelayUs(1u);
-
-	        /* Set enable low */
-//	        LCD_PORT_DR_REG &= ((uint8)(~LCD_E));
-
-	        /* If LCD is not ready make a delay */
-	        if (value == 0u)
-	        {
-	            CyDelayUs(10u);
-	        }
-
-	        /* Repeat until bit 4 is not zero or until timeout. */
-	        timeout--;
-
-	    } while ((value != 0u) && (timeout > 0u));
-
-	    /* Set R/W low to write */
-//	    LCD_PORT_DR_REG &= ((uint8)(~LCD_RW));
-
-	    /* Clear LCD port*/
-//	    LCD_PORT_DR_REG &= ((uint8)(~LCD_PORT_MASK));
-
-        /* Change Port to Output (Strong) on data pins */
-        /* Mask off data pins to clear high z values out. Configure data pins 
-        * to Strong Drive, others unchanged.
-        */
-//	        LCD_PORT_DM0_REG &= ((uint8)(~LCD_DATA_MASK));
-        /* Mask off data pins to clear high z values out */
-//	        value = LCD_PORT_DM1_REG & ((uint8)(~LCD_DATA_MASK));
-        /* Configure data pins to Strong Drive, others unchanged */
-//	        LCD_PORT_DM1_REG = value | (LCD_STRONG_DM1 & LCD_DATA_MASK);
-
-        /* Mask off data pins to clear high z values out */
-//	        value = LCD_PORT_DM2_REG & ((uint8)(~LCD_DATA_MASK));
-        /* Configure data pins to Strong Drive, others unchanged */
-//	        LCD_PORT_DM2_REG = value | (LCD_STRONG_DM2 & LCD_DATA_MASK);
-		
-	return 0;
-}
 
 /* EOP */ 

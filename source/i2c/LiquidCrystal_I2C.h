@@ -45,7 +45,8 @@
 #define ReadWrite_bit 			0x0200  // Read/Write bit
 #define RegisterSelect_bit 		0x0400  // Register select bit
 	
-
+#define BusyFlag_bit			0x0080	// DB7
+	
 	/**
 	 * This is the driver for the Liquid Crystal LCD displays that use the I2C bus.
 	 *
@@ -67,5 +68,5 @@
 	void LCD_PrintString(char uint16[]);
 	void LCD_Position(uint8 col, uint8 row);
 	void Load_Custom_Char(uint8 char_num, uint8 const *rows);
-	void LCD_Write(uint8 value);
+	uint8 LCD_Write(uint8 value);
 #endif  //  FDB_LIQUID_CRYSTAL_I2C_H

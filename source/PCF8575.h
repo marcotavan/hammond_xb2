@@ -19,8 +19,8 @@
  
 /* I2C Address*/
 #define PCF8575_I2C_ADDRESS 	0x20
-#define PCF8575_INPUT_PORT_CFG	0xF000
-#define MAX_TASTI				4
+#define PCF8575_INPUT_PORT_CFG	0x0000
+// #define MAX_TASTI				4
 #define STATUS_LED_MASK 		0x0F00
 
 /*******************************************************************************
