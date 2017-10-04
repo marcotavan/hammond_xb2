@@ -30,13 +30,19 @@
 #include "customLcd.h"
 #include "tick.h"
 #include "debug.h"
-#include "LiquidCrystal_I2C.h"
 
 char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
 
 static uint8 lcdMessageStates = 0;
 
+void LCD_Position(uint8 a, uint8 b) {
+	
+}
+
+void LCD_PrintString(char data[]){
+
+}
 
 char8 *lcdTextMessage[10] =
 {

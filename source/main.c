@@ -22,7 +22,6 @@
 #include "ButtonScanner.h"
 #include "EepromManager.h"
 #include "pca9685_driver.h"
-#include "PCF8575.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -192,8 +191,6 @@ int main()
 		
         // LCD_Poll(1);
         
-		PCF8575_ApplicationPoll();
-		
         AnalogPoll();
       
         if(flag_500us_ISR)
