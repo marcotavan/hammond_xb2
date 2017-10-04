@@ -27,10 +27,11 @@
 * the software package with which this file was provided.
 *******************************************************************************/
 
+#include "LCD_Driver.h"
 #include "customLcd.h"
 #include "tick.h"
 #include "debug.h"
-#include "LiquidCrystal_I2C.h"
+// #include "LiquidCrystal_I2C.h"
 
 char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
@@ -187,12 +188,22 @@ uint8 const CYCODE LCD_VerticalBar[] = \
 *******************************************************************************/
 void LCD_LoadCustomFonts(uint8 const customData[]) 
 {
-	uint8 char_num;
-	uint8 shiftIndex = 0;
-	for(char_num = 0; char_num < 8; char_num++) {
-		shiftIndex = char_num * 8; // 0,8,16,...
-		Load_Custom_Char(char_num, &customData[shiftIndex]);
-	}
+    uint8 indexU8;
+
+    LCD_IsReady();
+    /* Set starting address in the LCD Module */
+    /* Optionally: Read the current address to restore at a later time */
+    LCD_WriteControl(LCD_CGRAM_0);
+
+    /* Load in the 64 bytes of CustomChar Data */
+    for(indexU8 = 0u; indexU8 < LCD_CUSTOM_CHAR_SET_LEN; indexU8++)
+    {
+        /* Delay between each write */
+        LCD_WriteData(customData[indexU8]);
+    }
+
+    LCD_IsReady();
+    LCD_WriteControl(LCD_DDRAM_0);
 }
 
 
@@ -322,7 +333,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
         while(count8 < fullChars)
         {
 			// DBG_PRINTF("LCD_WriteData(LCD_CUSTOM_7)\n");
-            LCD_Write(LCD_CUSTOM_7);
+            LCD_WriteData(LCD_CUSTOM_7);
 
             count8++;
 
@@ -344,12 +355,12 @@ void LCD_LoadCustomFonts(uint8 const customData[])
             if(remainingPixels == 0u)
             {
 				// DBG_PRINTF("LCD_WriteData(\' \')\n");
-                LCD_Write((uint8) ' ');
+                LCD_WriteData((uint8) ' ');
             }
             else
             {
 				// DBG_PRINTF("LCD_WriteData(remainingPixels-1 %d)\n",remainingPixels - 1u);
-                LCD_Write(remainingPixels - 1u);
+                LCD_WriteData(remainingPixels - 1u);
             }
 
             currentRow = ((int8) row) - ((int8) count8) - 1;
@@ -362,7 +373,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 					// DBG_PRINTF("r:%d, c:%d\n",currentRow, column);
                     LCD_Position((uint8)currentRow, column);
 					// DBG_PRINTF("LCD_WriteData(\' \')\n");
-                    LCD_Write((uint8) ' ');
+                    LCD_WriteData((uint8) ' ');
                     currentRow --;
                 }
             }
@@ -382,10 +393,7 @@ void LCD_splashScreen(uint8 mex)
 	if(isLcdInit == 0)
     {
         DBG_PRINTF("wait for LCD\n");
-
-        LCD_PrintString("PSoC 5LP");
-	    LCD_Position(0,1);
-	    LCD_PrintString("Prima fila");
+		LCD_Start();    // write
 	
         DBG_PRINTF("LCD READY\n");
         isLcdInit = 1;

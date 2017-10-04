@@ -190,9 +190,9 @@ int main()
         }
 		#endif
 		
-        // LCD_Poll(1);
+        LCD_Poll(1);
         
-		PCF8575_ApplicationPoll();
+		// PCF8575_ApplicationPoll();
 		
         AnalogPoll();
       
