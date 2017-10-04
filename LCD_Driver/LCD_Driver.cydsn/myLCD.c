@@ -56,7 +56,7 @@ uint8 myLCD_initVar = 0u;
 *******************************************************************************/
 void myLCD_Init(void) 
 {
-    DBG_PRINTF("[%s]INIT CODE \n",__func__);
+    DBG_PRINTF("[%s]: INIT CODE...\n",__func__);
     CyDelay(40u);                                                        /* Delay 40 ms */
     myLCD_WriteControl(myLCD_DISPLAY_8_BIT_INIT);    /* Selects 8-bit mode */
     CyDelay(5u);                                                         /* Delay 5 ms */

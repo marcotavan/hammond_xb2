@@ -12,7 +12,7 @@
 #include <project.h>
 #include "cytypes.h"
 #include "debug.h"
-#include "D:\progetti C\cypress\Psoc5\git/usr.h" // -> see usr.h.sample into firmware directory
+// #include "D:\progetti C\cypress\Psoc5\git/usr.h" // -> see usr.h.sample into firmware directory
 
 char string[256];
 
@@ -250,7 +250,7 @@ void Debug_Init(void)
     // DBG_PRINTF      ("=           Product type: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_ID,0));
     // DBG_PRINTF      ("=            App Version: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_VERSION,0));   
     // DBG_PRINTF      ("=     Custom App Version: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_CUST_ID,0));   
-    DBG_PRINTF      ("=     PSOC CREATOR 4.1.1: %s @ %s, %s    \r\n", __DATE__,__TIME__,USRMAIL);
+    DBG_PRINTF      ("=     PSOC CREATOR 4.1.1: %s @ %s, %s    \r\n", __DATE__,__TIME__,"marco.tavan@gmail.com");
 	printStarLine();
     DBG_PRINT_TEXT  ("\r\n"); 
 }
