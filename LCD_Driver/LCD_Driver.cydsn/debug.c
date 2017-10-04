@@ -1,6 +1,6 @@
 /* ========================================
  *
- * Copyright MARCO TAVAN, 2017-01-15
+ * Copyright YOUR COMPANY, THE YEAR
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
@@ -9,13 +9,12 @@
  *
  * ========================================
 */
-
 #include <project.h>
 #include "cytypes.h"
 #include "debug.h"
+#include "D:\progetti C\cypress\Psoc5\git/usr.h" // -> see usr.h.sample into firmware directory
 
 char string[256];
-
 
 uint8 cc_configuration_data[10];    // array di 10 elementi della cc configuration
 uint8 cc_configuration_data_index;
@@ -92,390 +91,178 @@ size_t __write(int handle, const unsigned char * buffer, size_t size)
 #else  /* (__GNUC__)  GCC */
 
 /* For GCC compiler revise _write() function for printf functionality */
-        int _write(int file, char *ptr, int len)
-        {
-            
+        int _write(int file, char *ptr, int len) {
             int i;
             file = file;
-            if (verbose_Mode != 0)
-            {
-
-                // spif_on();
-                for (i = 0; i < len; i++)
-                {
+            // if (verbose_Mode != 0) {
+                for (i = 0; i < len; i++) {
                     UART_DBG_PutChar(*ptr++);
                 }
-				
-                // spif_off();
-                
-                /*
-                memcpy(syslog[logIndex.in].str,ptr,len);
-                syslog[logIndex.in].len = len;
-                
-                logIndex.in++; // incremento per la prossima volta in ingresso
-                if(logIndex.in == MAXLOG) logIndex.in = 0; // circolare grazie
-                
-                // start se posso 
-                // if (logIndex.out != logIndex.in)
-                if (canaleLibero)
-                {
-                    canaleLibero = 0;
-                    UART_PutChar(syslog[logIndex.out].str[0]); // butto fuori il primo carattere
-                    // e alscio che sia l'isr a getire l'uscita di tutto il mondo
-                }
-                */
-
-
-            }
-            
+			// }
             return len;
         }
-
     #endif  /* (__ARMCC_VERSION) */
-
 #endif /* (DEBUG_UART_ENABLED == YES) */
 
 /**********************************************************************************************************************************/
 
-void sprintfWrite(void)
-{
+void sprintfWrite(void) {
     uint8 i;
-    
-    for (i = 0; i <= 255; i++)
-    {
+    for (i = 0; i <= 255; i++) {
         if (string[i] == '\0') break;   // EOS     
         UART_DBG_PutChar(string[i]);
-
     }
 }
 
-void CommandParser(uint8 *data, uint8 len)
-{
-    uint8 command = data[0];
-    len--;
-    
-    uint8 parameter[len];
-    memcpy(parameter,&data[1],len);
-    
-    DBG_PRINTF("%s: len:%d\n",__func__,len);
-    
-    switch(command)    {
-        case 0xFF: {
-            switch (parameter[0]) {
-                case 1: {
-                    CySoftwareReset();
-                } break;
-                
-                case 0xA5: {
-                } break;
-            }
-        } break;
-            
-        case 0xF0: {
-            // relativi alla memoria
-            switch (parameter[0]) {
-                case 1: {
-                }
-                break;
-            }
-        } break;
-            
-        case 0xF1: {
-        } break;
-                
-        case 0xC0: {
-        } break;
-        
-        case 0xB0: {
-        // button test
-        } break;
-        
-        case 0xB1: {
-        // button test
-            switch (parameter[0]) {
-                case 1: {
-
-                }
-                break;
-            }
-        } break;
-            
-        default:
-            break;
-    }
-}
-
-#if 0
 /*****************************************************************************\
 *  Funzione:     UART0_PARSER_Task(void)                                      *
 *  Argomenti:    				      				                          *
 *  Restituisce:  Nessuno                                                      *
 *  Scopo:  UART0_PARSER_Task fa qualcosa ricevendo caratteri dalla seriale    *
 \*****************************************************************************/
-void UART_DEBUG_PARSER_Task( void )
+void UART0_PARSER_Task( void )
 {
-    uint8 i;
-    // uint8 *ps;
-    // ps = (uint8 *) &clock;
-    
-	/* questo TASK conta esattamente TIME_DELAY ms */
-	/*
-	 * 01 05 C0 AD 28 F0 02 EE	// Filter: SOF LEN PAYLOAD CHM C0 comando AD address 28 F0 02
-	 * 01 03 C0 AD 00 EE 		// Filter: SOF LEN PAYLOAD CHM C0 comando free
-	 * 01 03 C0 AD 28 EE		// Filter: SOF LEN PAYLOAD CHM C0 comando AD address 28
-	 */
+    //controlla lo stato del buffer di ricezione
 
-	// uint16_t delay;
-    
-    /*
-    if (UART_ReadRxStatus() & (UART_RX_STS_PAR_ERROR|UART_RX_STS_STOP_ERROR|UART_RX_STS_OVERRUN|UART_RX_STS_SOFT_BUFF_OVER))
-    {
-        spif_n8(UART_ReadRxStatus());   
-    }
-    */
-    
-/*
-	DBG_PRINTF("\r\n");
-	DBG_PRINTF("\r\n");
-	DBG_PRINTF("===============================================================================\r\n");
-	DBG_PRINTF("NO FRAMEs. Comandi disponibili:\n");
-	DBG_PRINTF("\r\n");
-	DBG_PRINTF("Filter: SOF LEN PAYLOAD CHM C0 comando AD address 28\n");
-	DBG_PRINTF("\t01 03 C0 AD 28 EE\n");
-	DBG_PRINTF("\r\n");
-
-	DBG_PRINTF("Filter: SOF LEN PAYLOAD CHM C0 comando AD address 28 F0 Funzione 02\n");
-	DBG_PRINTF("\t01 05 C0 AD 28 F0 02 EE\n");
-	DBG_PRINTF("\r\n");
-	DBG_PRINTF("Filter: SOF LEN PAYLOAD CHM C0 comando 00 non filtrare\n");
-	DBG_PRINTF("\t01 03 C0 AD 00 EE\n");
-	DBG_PRINTF("\r\n");
-	DBG_PRINTF("===============================================================================\r\n");
-*/
-    
-        //controlla lo stato del buffer di ricezione
-    
-	#ifndef PRODUCTION_TEST
-    if(UART_DBG_GetRxBufferSize() > 0u)
-    {
+	if(UART_DBG_GetRxBufferSize() > 0u)    {
         fifo[UART0].rxBuf[fifo[UART0].in++] = UART_DBG_GetChar();    /* Get it */
     }
-	#endif // PRODUCTION_TEST
 
-
-	if (fifo[UART0].in != fifo[UART0].out) // hasdata
-	{
+	if (fifo[UART0].in != fifo[UART0].out) { // hasdata
 		fifo[UART0].c = fifo[UART0].rxBuf[fifo[UART0].out++];
 
         // DBG_PRINTF("echo carattere ricevuto %c\n",fifo[UART0].c);
         fifo[UART0].timeout = 50; // mezzo secondo di timeout ricaricato ad ogni pacchetto
         
-		switch(fifo[UART0].rxStatus)
-		{
+		switch(fifo[UART0].rxStatus) {
 			case PARSE_SOF:	// 01
-			//sof
-			if (fifo[UART0].c == 1)
-			{
-                
-				fifo[UART0].rxStatus = PARSE_LEN;
-			}
-			break;
+				if (fifo[UART0].c == 1)	{
+					fifo[UART0].rxStatus = PARSE_LEN;
+				}
+				break;
 
 			case PARSE_LEN:	// LEN
-            {
-				fifo[UART0].length = fifo[UART0].c;
-				fifo[UART0].rxStatus = PARSE_CMD;
-            }				
-            break;
+					fifo[UART0].length = fifo[UART0].c;
+					fifo[UART0].rxStatus = PARSE_CMD;
+	            break;
 
 			case PARSE_CMD:	// C0
-			{
-                if (fifo[UART0].length)
-				{
+                if (fifo[UART0].length)	{
 					fifo[UART0].length--;
 					fifo[UART0].checksum ^= fifo[UART0].c;
-					if (fifo[UART0].c == 0xC0)
-					{
+					if (fifo[UART0].c == 0xC0) {
 						fifo[UART0].rxStatus = PARSE_SUBCMD;
 					}
-					else
-					{
+					else {
 						fifo[UART0].rxStatus = PARSE_IDLE;
 					}
 				}
-            }
-			break;
-
+	 			break;
 
 			case PARSE_SUBCMD:	// AD
-            {
-                // DBG_PRINTF("PARSE_SUBCMD\n");
-				if (fifo[UART0].length)
-				{
+				if (fifo[UART0].length) {
 					fifo[UART0].length--;
 					fifo[UART0].checksum ^= fifo[UART0].c;
-					if (fifo[UART0].c == 0xAD)
-					{
+					if (fifo[UART0].c == 0xAD) {
 						fifo[UART0].rxStatus = PARSE_ADD;
 					}
-                    else if (fifo[UART0].c == 0xC1)
-					{
+                    else if (fifo[UART0].c == 0xC1) {
 						fifo[UART0].rxStatus = PARSE_CONFIGURATION;
                         cc_configuration_data_index = 0;
 					}
-					else
-					{
+					else {
 						fifo[UART0].rxStatus = PARSE_IDLE;
 					}
 				}
-            }
-			break;
+				break;
 
-            case PARSE_CONFIGURATION:
-            {
-                // DBG_PRINTF("length: %d, *: %d\n",fifo[UART0].length, cc_configuration_data_index);
-                
-                // checksum
-                fifo[UART0].checksum ^= fifo[UART0].c;
-                
-                // colleziono
-                cc_configuration_data[cc_configuration_data_index] = fifo[UART0].c;  
-                
-                // vado un po' avanti
-                cc_configuration_data_index++;     
-                
-                if (fifo[UART0].length)
-			    {
-                    fifo[UART0].length--;
-                }                   
-                
-				if(fifo[UART0].length != 0)
-				{	// ce altro da parsare
-					fifo[UART0].rxStatus = PARSE_CONFIGURATION; // resto qua
-				}
-                else
-				{	// il pacchetto [ finito
-                    DBG_PRINTF("Scrivo l'array ricevuto per CONFIGURATION: ");
-                    // DBG_PRINT_ARRAY(cc_configuration_data,cc_configuration_data_index);
-                    
-                    for(i=0;i<cc_configuration_data_index;i++)
-                    {
-                        DBG_PRINTF("%02X ",cc_configuration_data[i]);
-                    }
-                    
-                    DBG_PRINTF("\n");
-					fifo[UART0].rxStatus = PARSE_CHM;
-				}
-            }
-            break;
-            
 			case PARSE_ADD:
-            {
-				if (fifo[UART0].length)
-				{
+				if (fifo[UART0].length) {
 					fifo[UART0].length--;
 					fifo[UART0].checksum ^= fifo[UART0].c;
 
-					if(fifo[UART0].length == 0)
-					{	// il pacchetto [ finito
+					if(fifo[UART0].length == 0) {	// il pacchetto [ finito
 						fifo[UART0].rxStatus = PARSE_CHM;
 					}
-					else
-					{	// ce altro da parsare
+					else {	// ce altro da parsare
 						fifo[UART0].rxStatus = PARSE_CHM;
 					}
 
-					if (fifo[UART0].c !=0)
-					{
-//    						DBG_PRINTF("Filtro l'indirizzo %02X all'indice %d\n",c,filtro.indice);
+					if (fifo[UART0].c !=0) {
+						// DBG_PRINTF("Filtro l'indirizzo %02X all'indice %d\n",c,filtro.indice);
                         // DBG_PRINTF("carattere ricevuto: %c\n",fifo[UART0].c);
-                        
-                        switch(fifo[UART0].c)
-                        {   
-                            default:
-                            break;
-                        }
-                        
 					}
-					else
-					{
-
-                    }
 				}
-            }
-			break;
+				break;
             
-			case PARSE_CHM:
-			{
-				if (fifo[UART0].c == fifo[UART0].checksum)
-				{
+            
+			case PARSE_CHM: 
+				if (fifo[UART0].c == fifo[UART0].checksum) {
 					// ok
 					// DBG_PRINTF("checkusum torna\n");
-                    // esegui
-                    
 				}
-				else
-				{
+				else {
 					// DBG_PRINTF("il checksum NON torna\n");
 				}
 
 				// fai lo stesso quello che ti si [ detto
-                CommandParser(cc_configuration_data,cc_configuration_data_index);
 
                 fifo[UART0].timeout = 0;
 				fifo[UART0].rxStatus = PARSE_IDLE;
-			}
 			// break;
 
 			default:
-
 				fifo[UART0].in = 0;
 				fifo[UART0].out = 0;
 				fifo[UART0].rxStatus = PARSE_SOF;
-
-			break;
+				break;
 		}
 	}
- 
 }
-#endif
 
 /**********************************************************************************************************************************/
 
-void Debug_Start(void)
+void Debug_Init(void)
 {
+    // ISR_RX_UART_StartEx(ISR_RX_UART_InterruptHandler);
+    // ISR_TX_UART_StartEx(ISR_TX_UART_InterruptHandler);
     
-    // Rx_1_Write(1); // attiva internal PullUp per evitare che la macchina seriale si incarti 
+/* 
+    logIndex.in = 0;
+    logIndex.out = 0;
+*/
     
-    // qui settare il pin in |RESISTIVE PULLUP 
+    // Rx_DBG_0_SetDriveMode(GPIO_0_DM_STRONG);  // imposta la porta in uscita
+    
+    // qui settare il pin in |RESISTIVE OPULLUP 
     UART_DBG_Start();
     
     fifo[UART0].checksum = 0xff;
     fifo[UART0].in = 0;
 	fifo[UART0].out = 0;
 	fifo[UART0].rxStatus = PARSE_SOF;
+	
+	DBG_PRINT_TEXT  ("\r\n");
     DBG_PRINT_TEXT  ("\r\n");
-    DBG_PRINT_TEXT  ("\r\n");    
-    DBG_PRINTF("[%s]\n",__func__);
     printStarLine();
-    DBG_PRINT_TEXT  ("=            HAMMOND XB2 LCD DRIVER\r\n");
-    // DBG_PRINTF      ("=     bootloader version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDR_APP_VERSION,0));
-    // DBG_PRINTF      ("=           Product type: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_ID,0));
-    // DBG_PRINTF      ("=            App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_VERSION,0));   
-    // DBG_PRINTF      ("=     Custom App Version: 0x%04X   \r\n", Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_CUST_ID,0));   
-    DBG_PRINTF      ("=  Compile Date and Time: %s %s    \r\n", __DATE__,__TIME__);
-    printStarLine();
+    DBG_PRINT_TEXT  ("=             Evaluation Board 001: CSxxxx.xxx  \r\n");
+    // DBG_PRINTF      ("=     bootloader version: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDR_APP_VERSION,0));
+    // DBG_PRINTF      ("=           Product type: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_ID,0));
+    // DBG_PRINTF      ("=            App Version: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_VERSION,0));   
+    // DBG_PRINTF      ("=     Custom App Version: 0x%04X   \r\n", (uint16)Bootloader_GetMetadata(Bootloader_GET_BTLDB_APP_CUST_ID,0));   
+    DBG_PRINTF      ("=     PSOC CREATOR 4.1.1: %s @ %s, %s    \r\n", __DATE__,__TIME__,USRMAIL);
+	printStarLine();
     DBG_PRINT_TEXT  ("\r\n"); 
 }
 
 void printLine(void)
 {
-    DBG_PRINTF      ("--------------------------------------------------------------------------------\r\n");  
+    DBG_PRINTF      ("-----------------------------------------------------------------------------------------\r\n");  
 }
 
 void printStarLine(void)
 {
-    DBG_PRINT_TEXT  ("********************************************************************************\r\n");
+    DBG_PRINT_TEXT  ("*****************************************************************************************\r\n");
 }
 
 /* [] END OF FILE */

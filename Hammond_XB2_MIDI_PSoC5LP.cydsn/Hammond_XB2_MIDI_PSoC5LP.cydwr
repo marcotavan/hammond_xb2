@@ -393,6 +393,7 @@
       <Data key="3b8ce73a-fa3b-4929-a2e2-542f3318aa1d" value="Pin_Line_Select_3" />
       <Data key="3babfb54-cb6a-48a0-9c0f-4f344cca2b20" value="SDA_2" />
       <Data key="3d9c9db3-62bd-4150-8043-8c5d11b064ad" value="Pin_Line_Select_7" />
+      <Data key="3f6196bb-4d73-46e1-b08b-7375f5c3e757" value="SS_2" />
       <Data key="4d73715b-ace2-412d-b562-dcd0da779265" value="DWB_Input_6" />
       <Data key="5e92a984-3b11-44ae-9f60-7d92fa6d9c1e" value="SW1" />
       <Data key="6ac27697-3101-4821-a2c6-a860f3f383ec" value="DWB_Input_5" />
@@ -1295,6 +1296,11 @@
     <Group key="3d9c9db3-62bd-4150-8043-8c5d11b064ad">
       <Group key="0">
         <Data key="Port Format" value="12,1" />
+      </Group>
+    </Group>
+    <Group key="3f6196bb-4d73-46e1-b08b-7375f5c3e757">
+      <Group key="0">
+        <Data key="Port Format" value="2,2" />
       </Group>
     </Group>
     <Group key="4d73715b-ace2-412d-b562-dcd0da779265">

@@ -187,7 +187,7 @@ void MatrixScanner(void)
         // qui ci vorrebbe un minimo delay
         CyDelayUs(DELAY_US_DEBOUNCE_KEYSCANNER); // 16*10us sta qui dentro. con tiziano abbiamo visto che va bene 1uS
         // DBG_PRINTF("sel line %02d ",line);
-        var = KeyInputPort_Read(); // leggi lo stato dei tasti 8 per volta
+        var = KeyInputPortReg_Read(); // leggi lo stato dei tasti 8 per volta
         
         // if (line == 0) DBG_PRINTF("var : %02x\n",var);
         for(bank=0;bank<4;bank++)
