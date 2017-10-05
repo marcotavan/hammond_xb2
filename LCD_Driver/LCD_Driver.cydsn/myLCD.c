@@ -772,7 +772,7 @@ void LCD_Application_Poll(void) {
 	if(isInitialized == 0) {
 		myLCD_Start();
 		myLCD_Position(0,0);  
-		myLCD_PrintString("Eval.Board TEST ");
+		myLCD_PrintString("Old Display TEST");
 		
 		sprintf(str,"%s",__TIME__);
 	    myLCD_Position(1,0);  
