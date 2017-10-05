@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "myLCD.h"
 #include "tick.h"
+#include "M2M_SPI_Slave.h"
 
 int main(void)
 {
@@ -26,6 +27,7 @@ int main(void)
     {
         /* Place your application code here. */
 		LCD_Application_Poll();
+		M2M_SPI_Slave_ApplicationPoll();
     }
 }
 

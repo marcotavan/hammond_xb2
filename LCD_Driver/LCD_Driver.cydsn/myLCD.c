@@ -790,9 +790,9 @@ void LCD_Application_Poll(void) {
 	}
 	
 	if(tick_100ms(TICK_LCD)) {
-		myLCD_Position(1,13);  
-		sprintf(str,"%d",lcdCounter++);
-		myLCD_PrintString(str);
+		// myLCD_Position(1,13);  
+		// sprintf(str,"%d",lcdCounter++);
+		// myLCD_PrintString(str);
 	}
 }
 
