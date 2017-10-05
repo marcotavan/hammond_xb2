@@ -12,13 +12,14 @@
 #include "project.h"
 #include "debug.h"
 #include "myLCD.h"
-
+#include "tick.h"
 
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+	SysTick_Start();
 	PWM_LED_Start();
 	Debug_Init();
     for(;;)

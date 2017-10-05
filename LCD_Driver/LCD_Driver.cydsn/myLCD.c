@@ -788,6 +788,12 @@ void LCD_Application_Poll(void) {
 */
 		isInitialized = 1;
 	}
+	
+	if(tick_100ms(TICK_LCD)) {
+		myLCD_Position(1,13);  
+		sprintf(str,"%d",lcdCounter++);
+		myLCD_PrintString(str);
+	}
 }
 
 
