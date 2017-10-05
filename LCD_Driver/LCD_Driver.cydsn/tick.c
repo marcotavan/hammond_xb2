@@ -182,7 +182,7 @@ uint8 tick_1s(uint8 from)
 // CY_ISR(SysTick_ISR)
 void System1ms(void) { // CY_ISR(SysTick_ISR)   
     // a 1 ms 
-	Pin_SPIF_Write(1);
+	// Pin_SPIF_Write(1);
     upCounter++;
 
     now1ms[0] = FLAG_TICK_TIME_SET;
@@ -225,7 +225,7 @@ void System1ms(void) { // CY_ISR(SysTick_ISR)
                 
         upCounter = 0;  // resetta qui dentro dato che non serve piu di un secondo anche se sinceramente questo lo toglierei
     }
-	Pin_SPIF_Write(0);
+	// Pin_SPIF_Write(0);
 } // CY_ISR(SysTick_ISR)
 
 
