@@ -144,33 +144,41 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		ptrOut %= DIM_QUEUE; 
 		memcpy(LcdData.data,rawData[ptrOut],MAX_DATA);
 		
-		DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
-		DBG_PRINT_ARRAY(LcdData.data,MAX_DATA);
-		DBG_PRINTF("\n");
+		// parser 
+		
+		// Pin_SPIF_Write(1);	
+		
+		switch(LcdData.displayData.address) {
+			case M2M_SPI_ADDRESS: 	// -indirizzo per me
+				switch(LcdData.displayData.type) {
+					case 0: // caratteri standard 
+						myLCD_Position(LcdData.displayData.val,0);
+						myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
+						
+						// myLCD_Position(0,0);
+						// myLCD_PrintString(LcdData.displayData.data);
+						// myLCD_PrintString("tizianoret123456");
+						/*
+						DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
+						DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,LcdData.displayData.len,LcdData.displayData.type,LcdData.displayData.val);
+						DBG_PRINT_ARRAY(LcdData.displayData.data,16);
+						DBG_PRINTF("\n");
+						*/
+						// queste due funzioni a seguire impiegano circa 2ms
 
-		if(LcdData.displayData.address == M2M_SPI_ADDRESS) {
-			// -indirizzo per me
-			myLCD_Position(LcdData.displayData.val,0);
-			
-			myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
-			
-			// myLCD_Position(0,0);
-			// myLCD_PrintString(LcdData.displayData.data);
-			// myLCD_PrintString("tizianoret123456");
-			/*
-			DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
-			DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,LcdData.displayData.len,LcdData.displayData.type,LcdData.displayData.val);
-			DBG_PRINT_ARRAY(LcdData.displayData.data,16);
-			DBG_PRINTF("\n");
-			*/
-		// queste due funzioni a seguire impiegano circa 2ms
-		//Pin_SPIF_Write(1);	
-		// myLCD_Position(0,0);  
-		// myLCD_PrintString(rawData[ptrOut]);
-		// Pin_SPIF_Write(0);	
-		}
-	}
+						// myLCD_Position(0,0);  
+						// myLCD_PrintString(rawData[ptrOut]);
 	
-}
+						break;
+					
+					case 1: // caratteri custom	
+						break;
+				} // switch(LcdData.displayData.type)
+			break;
+		} //switch(LcdData.displayData.address)
+		
+		// Pin_SPIF_Write(0);
+	} // hasElements
+} // M2M_SPI_Slave_ApplicationPoll
 
 /* [] END OF FILE */
