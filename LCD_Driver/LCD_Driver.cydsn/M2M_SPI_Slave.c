@@ -52,16 +52,18 @@ CY_ISR_PROTO(SS_ISR);
 
 CY_ISR(SS_ISR) { 
 	uint8 idx = 0;
-	// decidere al posizione di ptrIn
+	// questo blocco costa 50uS
+	// Pin_SPIF_Write(1);	
 	if(isQueueNotFull(ptrIn)) {
-		Pin_SPIF_Write(1);	
+	
 		// accoda il dato all'indice  -> ptrIn 
 		for(idx = 0;idx<16;idx++) {
 			displayData[ptrIn].data[idx] = SPIS_M2M_ReadRxData();
 		}
-		Pin_SPIF_Write(0);	
+		SPIS_M2M_ClearRxBuffer();
+		SPIS_M2M_ClearFIFO();
 	}
-	
+	// Pin_SPIF_Write(0);		
     Pin_SS_ClearInterrupt();
 }
 
@@ -106,9 +108,15 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		ptrOut++;	// primo elemento da prelevare
 		ptrOut %= DIM_QUEUE; 
 		
-		DBG_PRINTF("%2d: ",ptrOut); // posizione del rpimo elemento
+		DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
 		DBG_PRINT_ARRAY(displayData[ptrOut].data,16);
 		DBG_PRINTF("\n");
+
+		// queste due funzioni a seguire impiegano circa 2ms
+		//Pin_SPIF_Write(1);	
+		myLCD_Position(0,0);  
+		myLCD_PrintString(displayData[ptrOut].data);
+		// Pin_SPIF_Write(0);	
 	}
 	
 }
