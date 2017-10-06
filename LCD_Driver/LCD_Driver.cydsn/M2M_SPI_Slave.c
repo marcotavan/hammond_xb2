@@ -78,6 +78,9 @@ uint8 isQueueNotFull(uint8 pIn) {
 CY_ISR(SS_ISR) { 
 	uint8 idx = 0;
 	// questo blocco costa 50uS
+	
+	/* al master mettere un ritardo di CyDelayUs(100); tra una transazione SPI e l'altra. non meno di 100us altrimenti non prendo il dato.*/
+	
 	Pin_SPIF_Write(1);	
 	if(isQueueNotFull(ptrIn)) {
 		// accoda il dato ricevuto alla struttura di indice -> ptrIn 

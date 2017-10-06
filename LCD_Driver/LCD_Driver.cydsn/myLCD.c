@@ -830,7 +830,7 @@ static void myLCD_WrCntrl8bit(uint8 data)
 
 
 
-#if (LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG)
+#if (0)
 
     /*******************************************************************************
     *  Function Name: LCD_DrawVerticalBG
@@ -932,14 +932,39 @@ void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
     static uint16 cnt = 0;
 	static char prev_bargraph[MAX_CHARS] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
     // if (alternateTextCounter) return;  // non scrive niente
-    
-    // for (i=0;i<MAX_CHARS;i++) 
+	
+    // myLCD_LoadCustomFonts(LCD_InvertedVerticalBar);	
+    for (i=0;i<8;i++) 
 	{
 		if(prev_bargraph[i] != str_bargraph[i]) {
 			prev_bargraph[i] = str_bargraph[i];
-			// LCD_Position(0,i);
-			// LCD_PrintNumber(str_bargraph[ROW_0][i]);
-        	myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]%8);
+			str_bargraph[i]%=8;
+			
+			
+			// myLCD_Position(0,i);
+			// myLCD_PrintNumber(str_bargraph[i]);
+			myLCD_Position(1,i);
+			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
+			
+        	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
+			// DBG_PRINTF("riscrivo barre %d\n",i);
+		}
+    }
+	
+	// myLCD_LoadCustomFonts(LCD_VerticalBar);	
+	for (i=8;i<16;i++) 
+	{
+		if(prev_bargraph[i] != str_bargraph[i]) {
+			prev_bargraph[i] = str_bargraph[i];
+			str_bargraph[i]%=8;
+			
+			
+			// myLCD_Position(0,i);
+			// myLCD_PrintNumber(str_bargraph[i]);
+			myLCD_Position(1,i);
+			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
+			
+        	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
 			// DBG_PRINTF("riscrivo barre %d\n",i);
 		}
     }
