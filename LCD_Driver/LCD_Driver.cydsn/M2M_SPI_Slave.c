@@ -78,7 +78,7 @@ uint8 isQueueNotFull(uint8 pIn) {
 CY_ISR(SS_ISR) { 
 	uint8 idx = 0;
 	// questo blocco costa 50uS
-	// Pin_SPIF_Write(1);	
+	Pin_SPIF_Write(1);	
 	if(isQueueNotFull(ptrIn)) {
 		// accoda il dato ricevuto alla struttura di indice -> ptrIn 
 		for(idx = 0;idx<MAX_DATA;idx++) {
@@ -87,7 +87,7 @@ CY_ISR(SS_ISR) {
 		SPIS_M2M_ClearRxBuffer();
 		SPIS_M2M_ClearFIFO();
 	}
-	// Pin_SPIF_Write(0);		
+	Pin_SPIF_Write(0);		
     Pin_SS_ClearInterrupt();
 }
 
@@ -144,26 +144,30 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		ptrOut %= DIM_QUEUE; 
 		memcpy(LcdData.data,rawData[ptrOut],MAX_DATA);
 		
+		
+		DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
+		DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,
+			LcdData.displayData.len,
+			LcdData.displayData.type,
+			LcdData.displayData.val);
+		DBG_PRINT_ARRAY(LcdData.displayData.data,16);
+		
 		// parser 
 		
 		// Pin_SPIF_Write(1);	
+		// DBG_PRINTF("%d\n",LcdData.displayData.type);
 		
 		switch(LcdData.displayData.address) {
 			case M2M_SPI_ADDRESS: 	// -indirizzo per me
 				switch(LcdData.displayData.type) {
 					case 0: // caratteri standard 
+					 	DBG_PRINTF("caratteri standard ");
 						myLCD_Position(LcdData.displayData.val,0);
 						myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
-						
+					
 						// myLCD_Position(0,0);
 						// myLCD_PrintString(LcdData.displayData.data);
-						// myLCD_PrintString("tizianoret123456");
-						/*
-						DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
-						DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,LcdData.displayData.len,LcdData.displayData.type,LcdData.displayData.val);
-						DBG_PRINT_ARRAY(LcdData.displayData.data,16);
-						DBG_PRINTF("\n");
-						*/
+
 						// queste due funzioni a seguire impiegano circa 2ms
 
 						// myLCD_Position(0,0);  
@@ -172,10 +176,14 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 						break;
 					
 					case 1: // caratteri custom	
+						DBG_PRINTF("caratteri custom ");
+						Write_BarGraphs(LcdData.displayData.val,LcdData.displayData.data);
 						break;
 				} // switch(LcdData.displayData.type)
 			break;
 		} //switch(LcdData.displayData.address)
+		
+DBG_PRINTF("\n");
 		
 		// Pin_SPIF_Write(0);
 	} // hasElements

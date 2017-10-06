@@ -31,6 +31,92 @@ uint8 myLCD_initVar = 0u;
 
 #define LCD_READY_BIT	BIT7
 
+uint8 const CYCODE LCD_InvertedVerticalBar[] = \
+{
+    /* Character LCD_CUSTOM_0   */
+        0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_1   */
+        0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_2   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_3   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_4   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_5   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u, \
+    /* Character LCD_CUSTOM_6   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u, \
+    /* Character LCD_CUSTOM_7   */
+        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu \
+ };
+
+
+uint8 const CYCODE LCD_VerticalBar[] = \
+{
+    /* Character LCD_CUSTOM_0   */
+    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu, \
+    /* Character LCD_CUSTOM_1   */
+    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_2   */
+    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_3   */
+    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_4   */
+    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_5   */
+    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_6   */
+    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
+    /* Character LCD_CUSTOM_7   */
+    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu \
+};
+
+
+/*******************************************************************************
+* Function Name: myLCD_LoadCustomFonts
+********************************************************************************
+*
+* Summary:
+*  Loads 8 custom font characters into the LCD Module for use.  Cannot use
+*  characters from two different font sets at once, but font sets can be
+*  switched out during runtime.
+*
+* Parameters:
+*  customData:  pointer to a constant array of 64 bytes representing 8 custom
+*               font characters.
+* Return:
+*  None.
+*
+* Theory:
+*  Prior to using this function user need to import the pointer to custom
+*  font array to your project by writting the following in the source code file
+*  where custom font will be used:
+*       extern uint8 const CYCODE LCD_Char_customFonts[];
+*  This function is not automatically called by the Start() routine and must be
+*  called manually by the user.
+*******************************************************************************/
+void myLCD_LoadCustomFonts(uint8 const customData[]) 
+{
+    uint8 indexU8;
+
+    myLCD_IsReady();
+    /* Set starting address in the LCD Module */
+    /* Optionally: Read the current address to restore at a later time */
+    myLCD_WriteControl(myLCD_CGRAM_0);
+
+    /* Load in the 64 bytes of CustomChar Data */
+    for(indexU8 = 0u; indexU8 < myLCD_CUSTOM_CHAR_SET_LEN; indexU8++)
+    {
+        /* Delay between each write */
+        myLCD_WriteData(customData[indexU8]);
+    }
+
+    myLCD_IsReady();
+    myLCD_WriteControl(myLCD_DDRAM_0);
+}
+
+
 /*******************************************************************************
 * Function Name: myLCD_Init
 ********************************************************************************
@@ -85,6 +171,8 @@ void myLCD_Init(void)
     #if(myLCD_CUSTOM_CHAR_SET != myLCD_NONE)
         myLCD_LoadCustomFonts(myLCD_customFonts);
     #endif /* myLCD_CUSTOM_CHAR_SET != myLCD_NONE */
+	
+	myLCD_LoadCustomFonts(LCD_InvertedVerticalBar);	
 }
 
 
@@ -736,6 +824,139 @@ static void myLCD_WrCntrl8bit(uint8 data)
     
 #endif /* myLCD_CONVERSION_ROUTINES == 1u */
 
+
+
+
+
+
+
+#if (LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG)
+
+    /*******************************************************************************
+    *  Function Name: LCD_DrawVerticalBG
+    ********************************************************************************
+    *
+    * Summary:
+    *  Draws the vertical bargraph.
+    *
+    * Parameters:
+    *  row:            The row in which the bar graph starts.
+    *  column:         The column in which the bar graph starts.
+    *  maxCharacters:  The max height of the graph in whole characters.
+    *  value:          The current length or height of the graph in pixels.
+    *
+    * Return:
+    *  void.
+    *
+    *******************************************************************************/
+    void myLCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value) \
+                                                            
+    {
+        /* 8-bit Counter */
+        uint8 count8 = 0u;
+        /* Current Row Tracker */
+        int8 currentRow;
+        uint8 fullChars;
+        uint8 remainingPixels;
+		
+		DBG_PRINTF("%d,%d,%d,%d ",row,column,maxCharacters,value);
+
+        /* Number of full characters to draw */
+        fullChars = value / myLCD_CHARACTER_HEIGHT;
+
+        /* Number of remaining pixels to draw */
+        remainingPixels = value % myLCD_CHARACTER_HEIGHT;
+
+        /* Put Cursor at start position */
+        myLCD_Position(row, column);
+
+        /* Make sure the bar graph fits inside the space allotted */
+        if(fullChars >= maxCharacters)
+        {
+            fullChars = maxCharacters;
+        }
+
+        /*  Write full characters */
+        while(count8 < fullChars)
+        {
+            myLCD_WriteData(myLCD_CUSTOM_0);
+
+            count8++;
+
+            /* Each pass through, move one row higher */
+            if((((int8) row) - ((int8) count8)) >= 0)
+            {
+                myLCD_Position(row - count8, column);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if(((((int8) row) - ((int8) count8)) >= 0) && (fullChars < maxCharacters))
+        {
+            /* Write remaining pixels */
+            if(remainingPixels == 0u)
+            {
+                myLCD_WriteData((uint8) ' ');
+            }
+            else
+            {
+                myLCD_WriteData(remainingPixels - 1u);
+            }
+
+            currentRow = ((int8) row) - ((int8) count8) - 1;
+
+            if(currentRow >= 0)
+            {
+                /* Move up one row and fill with whitespace till top of bar graph */
+                for(count8 = 0u; count8 < (maxCharacters - fullChars - 1u); count8++)
+                {
+                    myLCD_Position((uint8)currentRow, column);
+                    myLCD_WriteData((uint8) ' ');
+                    currentRow --;
+                }
+            }
+        }
+    }
+
+#endif /* LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG */
+
+
+
+// char str_bargraph[MAX_CHARS]; // contiene le barre
+
+void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
+    uint8 i = 0;
+    static uint16 cnt = 0;
+	static char prev_bargraph[MAX_CHARS] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    // if (alternateTextCounter) return;  // non scrive niente
+    
+    // for (i=0;i<MAX_CHARS;i++) 
+	{
+		if(prev_bargraph[i] != str_bargraph[i]) {
+			prev_bargraph[i] = str_bargraph[i];
+			// LCD_Position(0,i);
+			// LCD_PrintNumber(str_bargraph[ROW_0][i]);
+        	myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]%8);
+			// DBG_PRINTF("riscrivo barre %d\n",i);
+		}
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /***************************************************************************************************
                void LCD_ScrollMessage(uint8_t var_lineNumber_u8, char *ptr_msgPointer_u8)
  ***************************************************************************************************
@@ -795,6 +1016,7 @@ void LCD_Application_Poll(void) {
 	
 	if(isInitialized == 0) {
 		myLCD_Start();
+		
 		myLCD_Position(0,0);  
 		myLCD_PrintString("Old Display TEST");
 		

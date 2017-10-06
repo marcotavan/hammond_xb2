@@ -35,7 +35,11 @@
 #define myLCD_VERTICAL_BG              (2u)    /* Vertical Bar Graph   */
 #define myLCD_USER_DEFINED             (3u)    /* User Defined Fonts   */
 
-
+#define MAX_CHARS   16
+#define MAX_ROWS    2
+#define ROW_0       0
+#define ROW_1       1    
+	
 /***************************************
 *        Function Prototypes
 ***************************************/
@@ -56,7 +60,8 @@ void myLCD_Sleep(void) ;
 void myLCD_Wakeup(void) ;
 void LCD_Application_Poll(void);
 void myLCD_WriteDisplayLcd(uint8 *data, uint8 len);
-
+// void myLCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value);
+void Write_BarGraphs(uint8 row, uint8 *str_bargraph);
 
 #if((myLCD_CUSTOM_CHAR_SET == myLCD_VERTICAL_BG) || \
                 (myLCD_CUSTOM_CHAR_SET == myLCD_HORIZONTAL_BG))

@@ -126,81 +126,6 @@ char8 *lcdAlternateTextMessage[100] =
 	"ALT_USR_Preset_8", // 
 }; // Max Array Size 50
 
-uint8 const CYCODE LCD_InvertedVerticalBar[] = \
-{
-    /* Character LCD_CUSTOM_0   */
-        0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_1   */
-        0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_2   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_3   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_4   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_5   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u,    0x00u, \
-    /* Character LCD_CUSTOM_6   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x00u, \
-    /* Character LCD_CUSTOM_7   */
-        0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu \
- };
-
-
-uint8 const CYCODE LCD_VerticalBar[] = \
-{
-    /* Character LCD_CUSTOM_0   */
-    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu, \
-    /* Character LCD_CUSTOM_1   */
-    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_2   */
-    0x00u,    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_3   */
-    0x00u,    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_4   */
-    0x00u,    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_5   */
-    0x00u,    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_6   */
-    0x00u,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu, \
-    /* Character LCD_CUSTOM_7   */
-    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu,    0x1Fu \
-};
-
-
-/*******************************************************************************
-* Function Name: LCD_LoadCustomFonts
-********************************************************************************
-*
-* Summary:
-*  Loads 8 custom font characters into the LCD Module for use.  Cannot use
-*  characters from two different font sets at once, but font sets can be
-*  switched out during runtime.
-*
-* Parameters:
-*  customData:  pointer to a constant array of 64 bytes representing 8 custom
-*               font characters.
-* Return:
-*  None.
-*
-* Theory:
-*  Prior to using this function user need to import the pointer to custom
-*  font array to your project by writting the following in the source code file
-*  where custom font will be used:
-*       extern uint8 const CYCODE LCD_Char_customFonts[];
-*  This function is not automatically called by the Start() routine and must be
-*  called manually by the user.
-*******************************************************************************/
-void LCD_LoadCustomFonts(uint8 const customData[]) 
-{
-	uint8 char_num;
-	uint8 shiftIndex = 0;
-	for(char_num = 0; char_num < 8; char_num++) {
-		shiftIndex = char_num * 8; // 0,8,16,...
-		Load_Custom_Char(char_num, &customData[shiftIndex]);
-	}
-}
-
 
 #if (0 /*LCD_CUSTOM_CHAR_SET == LCD_HORIZONTAL_BG*/ )
 
@@ -270,7 +195,7 @@ void LCD_LoadCustomFonts(uint8 const customData[])
 #endif /* LCD_CUSTOM_CHAR_SET == LCD_HORIZONTAL_BG */
 
 
-#if (1) // LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG)
+#if (0) // LCD_CUSTOM_CHAR_SET == LCD_VERTICAL_BG)
 
     /*******************************************************************************
     *  Function Name: LCD_DrawVerticalBG
