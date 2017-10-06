@@ -23,9 +23,13 @@ int main(void)
 	SysTick_Start();
 	PWM_LED_Start();
 	Debug_Init();
+	
+	CyWdtStart(CYWDT_1024_TICKS, CYWDT_LPMODE_NOCHANGE); // 2.048 - 3.072 s
+	
     for(;;)
     {
         /* Place your application code here. */
+		CyWdtClear(); 
 		LCD_Application_Poll();
 		M2M_SPI_Slave_ApplicationPoll();
     }

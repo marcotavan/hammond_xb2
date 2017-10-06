@@ -30,7 +30,7 @@
         TICK_IS_VST_READY,          		// 7
 		TICK_PWM_LED,                       // 8
         //----------------------------------------
-		TICK_PCF8575,     		            // 9
+		TICK_M2M_SPI,     		            // 9
 		TICK_EEPROM_BUSY,                   // 10
         TICK_LED_SCENE_TIMEOUT,             // 11
         TICK_CLIMA,                         // 12

@@ -18,10 +18,11 @@
 #include "keyboardScanner.h"
 #include "VB3_midi_map.h"
 #include "analog.h"
-#include "customLcd.h"
+// #include "customLcd.h"
 #include "ButtonScanner.h"
 #include "EepromManager.h"
 #include "pca9685_driver.h"
+#include "M2M_SPI_Master.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -101,7 +102,7 @@ int main()
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
     
-    LCD_splashScreen(0);
+    // LCD_splashScreen(0);
                 
     // SysTick_Start();  
     TimerTick_Start();
@@ -208,6 +209,8 @@ int main()
         //isVSTReady();
 		
 		LedPoll();	
+		
+		M2M_SPI_Master_ApplicationPoll();
     }
 }
 

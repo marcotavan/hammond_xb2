@@ -355,7 +355,7 @@ void ManageButton_Leslie (uint8 status)
 /*****************************************************************************\
 *  gestisce la funzione Vibrato Scanner
 \*****************************************************************************/
-void ManageButton_Vibrato(status)
+void ManageButton_Vibrato(uint8 status)
 {
     if (SHIFT_Button_on_Hold() == FALSE)
     {
@@ -462,7 +462,7 @@ void ManageButton_Vibrato(status)
 /*****************************************************************************\
 *  gestisce la funzione Percussion Level
 \*****************************************************************************/
-void ManageButton_PercussionLevel(status) 
+void ManageButton_PercussionLevel(uint8 status) 
 {
     switch (status) 
     {
