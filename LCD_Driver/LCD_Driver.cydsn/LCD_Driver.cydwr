@@ -249,6 +249,12 @@
   </Group>
   <Data key="DataVersionKey" value="2" />
   <Group key="DWRInstGuidMapping">
+    <Group key="Interrupt">
+      <Data key="3fc17135-316f-4194-929b-e76f29761101" value="isr_ss_1" />
+      <Data key="679cb2a1-8b4e-4b53-90e1-1b0fb40af32d/82cccc38-8c45-468a-b125-4c75c368b3d0" value="SPIS_M2M_RxInternalInterrupt" />
+      <Data key="679cb2a1-8b4e-4b53-90e1-1b0fb40af32d/ed9783cb-55ad-4276-9386-1713db02b5fd" value="SPIS_M2M_TxInternalInterrupt" />
+      <Data key="b0162966-0060-4af5-82d1-fcb491ad7619/0758f7e0-b58c-4a6b-bb59-e7d003cac7de" value="UART_DBG_TXInternalInterrupt" />
+    </Group>
     <Group key="Pin">
       <Data key="3f3d42cb-6f70-4a60-b975-a698de089f5d" value="Pin_Button" />
       <Data key="8d318d8b-cf7b-4b6b-b02c-ab1c5c49d0ba" value="Pin_MOSI" />
@@ -3343,6 +3349,15 @@
       </Group>
       <Group key="1024">
         <Data key="LevelKey" value="00" />
+      </Group>
+    </Group>
+  </Group>
+  <Group key="Interrupt">
+    <Group key="3fc17135-316f-4194-929b-e76f29761101">
+      <Group key="CortexM3">
+        <Data key="Assigned" value="True" />
+        <Data key="Priority" value="5" />
+        <Data key="Vector" value="-1" />
       </Group>
     </Group>
   </Group>
