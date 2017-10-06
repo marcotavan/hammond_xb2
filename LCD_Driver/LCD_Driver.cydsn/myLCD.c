@@ -929,7 +929,7 @@ static void myLCD_WrCntrl8bit(uint8 data)
 
 void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
     uint8 i = 0;
-    static uint16 cnt = 0;
+    // static uint16 cnt = 0;
 	static char prev_bargraph[MAX_CHARS] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
     // if (alternateTextCounter) return;  // non scrive niente
 	
@@ -943,7 +943,7 @@ void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
 			
 			// myLCD_Position(0,i);
 			// myLCD_PrintNumber(str_bargraph[i]);
-			myLCD_Position(1,i);
+			myLCD_Position(row,i);
 			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
 			
         	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
@@ -961,7 +961,7 @@ void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
 			
 			// myLCD_Position(0,i);
 			// myLCD_PrintNumber(str_bargraph[i]);
-			myLCD_Position(1,i);
+			myLCD_Position(row,i);
 			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
 			
         	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
