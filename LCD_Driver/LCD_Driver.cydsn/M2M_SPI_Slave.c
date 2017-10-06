@@ -15,6 +15,8 @@
 #include "myLCD.h"
 #include "M2M_SPI_Slave.h"
 
+#define M2M_SPI_ADDRESS 0xC0
+
 CY_ISR_PROTO(SS_ISR);
 #define MAX_DATA 20
 #define DIM_QUEUE 100
@@ -138,7 +140,6 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 	*/
 	
 	if(hasElements()) { // ci sono elementi in coda
-
 		ptrOut++;	// primo elemento da prelevare
 		ptrOut %= DIM_QUEUE; 
 		memcpy(LcdData.data,rawData[ptrOut],MAX_DATA);
@@ -147,13 +148,27 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		DBG_PRINT_ARRAY(LcdData.data,MAX_DATA);
 		DBG_PRINTF("\n");
 
-		
-		
+		if(LcdData.displayData.address == M2M_SPI_ADDRESS) {
+			// -indirizzo per me
+			myLCD_Position(LcdData.displayData.val,0);
+			
+			myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
+			
+			// myLCD_Position(0,0);
+			// myLCD_PrintString(LcdData.displayData.data);
+			// myLCD_PrintString("tizianoret123456");
+			/*
+			DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
+			DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,LcdData.displayData.len,LcdData.displayData.type,LcdData.displayData.val);
+			DBG_PRINT_ARRAY(LcdData.displayData.data,16);
+			DBG_PRINTF("\n");
+			*/
 		// queste due funzioni a seguire impiegano circa 2ms
 		//Pin_SPIF_Write(1);	
 		// myLCD_Position(0,0);  
 		// myLCD_PrintString(rawData[ptrOut]);
 		// Pin_SPIF_Write(0);	
+		}
 	}
 	
 }

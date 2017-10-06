@@ -266,6 +266,30 @@ void myLCD_PrintString(char8 const string[])
 }
 
 
+
+
+/*******************************************************************************
+* Function Name: myLCD_WriteDisplayLcd
+********************************************************************************
+*
+* Summary:
+*  Writes to the LCD.
+*
+* Parameters:
+*  string: Pointer to head of char8 array to be written to the LCD module
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
+void myLCD_WriteDisplayLcd(uint8 *data, uint8 len) 
+{
+    uint8 i;
+
+    for(i=0; i<len; i++) {
+        myLCD_WriteData(data[i]);
+    }
+}
 /*******************************************************************************
 *  Function Name: myLCD_PutChar
 ********************************************************************************

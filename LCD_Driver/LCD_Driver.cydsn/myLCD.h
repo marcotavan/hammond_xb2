@@ -55,6 +55,8 @@ void myLCD_RestoreConfig(void) ;
 void myLCD_Sleep(void) ;
 void myLCD_Wakeup(void) ;
 void LCD_Application_Poll(void);
+void myLCD_WriteDisplayLcd(uint8 *data, uint8 len);
+
 
 #if((myLCD_CUSTOM_CHAR_SET == myLCD_VERTICAL_BG) || \
                 (myLCD_CUSTOM_CHAR_SET == myLCD_HORIZONTAL_BG))
@@ -157,7 +159,13 @@ extern uint8 const CYCODE myLCD_customFonts[64u];
 #define myLCD_NIBBLE_SHIFT             (0x04u)
 #define myLCD_NIBBLE_MASK              (0x0Fu)
 
-/* LCD Module Address Constants */
+/* LCD Module Address Constants per 4 righe contigue */
+// #define myLCD_ROW_0_START              (0x80u)
+// #define myLCD_ROW_1_START              (0xC0u)
+// #define myLCD_ROW_2_START              (0x94u)
+// #define myLCD_ROW_3_START              (0xD4u)
+
+/* LCD Module Address Constants per 4 righe alternate*/
 #define myLCD_ROW_0_START              (0x00u)
 #define myLCD_ROW_1_START              (0x40u)
 #define myLCD_ROW_2_START              (0x10u)
