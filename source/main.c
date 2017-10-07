@@ -107,7 +107,9 @@ int main()
     // SysTick_Start();  
     TimerTick_Start();
     
-    MOD_SysLog_Init(); 
+	MOD_SysLog_Init(); 
+	
+	M2M_SPI_Init();
 	
 	PCA9685_init(0,Mode_register_1,Mode_register_2);
     PCA9685_setPWMFrequency(1600);
@@ -206,7 +208,7 @@ int main()
         
         UART_DEBUG_PARSER_Task();
         
-        //isVSTReady();
+        // isVSTReady();
 		
 		LedPoll();	
 		
@@ -217,12 +219,16 @@ int main()
 void isVSTReady(void)
 {
 	static uint8 isVSTReadyToPlay = 0;
-	#define len 6
+	// #define len 6
 	//uint8 data[len] = {0xf0,0x7F,0x7F,0x06,0x02,0xF7};
 	
-	if(tick_1s(TICK_IS_VST_READY))
+	if(tick_100ms(TICK_IS_VST_READY))
 	{
-		//DBG_PRINTF("A");
+		// Pin_MOSI_M2M_Write(~Pin_MOSI_M2M_Read());
+		// Pin_SCLK_M2M_Write(~Pin_SCLK_M2M_Read());
+		// Pin_SS_M2M_Write(~Pin_SS_M2M_Read());
+		
+		DBG_PRINTF("A");
 		if(isVSTReadyToPlay == 0)
 		{
 			// sendSysEx(len,data,1);

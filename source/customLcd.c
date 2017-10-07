@@ -31,7 +31,7 @@
 #include "tick.h"
 #include "debug.h"
 
-char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
+// char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
 
 static uint8 lcdMessageStates = 0;
@@ -187,7 +187,7 @@ void LCD_Poll(uint8 status)
     
     if(isModuleNotInitialized)
     {
-        memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
+       // memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
         // LCD_bootlogo(50);
         
         isModuleNotInitialized = 0;
@@ -236,7 +236,7 @@ void LCD_Poll(uint8 status)
             }
         }
 		
-		Write_BarGraphs();
+		/*Write_BarGraphs(); origimale */
     }
 	
 	if (tick_10ms(TICK_LCD)) {

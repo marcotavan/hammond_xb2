@@ -12,10 +12,11 @@
 #ifndef M2M_SPI_MASTER_H
 #define M2M_SPI_MASTER_H
     
-    
+#include "cytypes.h"
+	
 void M2M_SPI_Master_ApplicationPoll(void);
-    
-
+    void M2M_SPI_Init(void);
+void Write_BarGraphs(uint8 *data);
     
 #endif 
     /* [] END OF FILE */

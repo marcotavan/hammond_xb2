@@ -21,6 +21,7 @@
 #include "customLcd.h"
 #include "FiltroMediano.h"
 #include "ButtonScanner.h"
+#include "M2M_SPI_Master.h"
 
 #define MAX_SAMPLE  1
 #define DELTA_DRAWBARS		 3
@@ -29,6 +30,8 @@ volatile uint8 adcConversionDone = 0;
 static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
 
 #define DEBUG_UART_ATTIVO (0)
+
+uint8 str_bargraph[MAX_ROWS][MAX_CHARS];
 
 enum rotarySpeed
 {
@@ -87,7 +90,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			sendControlChange(UM_SET_B_DRAWBAR_16+channel,scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
-            barGraph = ((scaledData>>4) + 1) & 0x7F;
+            barGraph = ((scaledData>>4) /*+ 1*/) & 0x7F;
             str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
             if (scaledData >= 126) offset = 0;
@@ -402,7 +405,11 @@ void AnalogPoll(void)
             }
             adcConversionDone = 0;   
         }
-   }
+   } // tick 1ms
+	
+	if(tick_100ms(TICK_ANALOG)) {
+		Write_BarGraphs(str_bargraph[ROW_0]);
+	}
 }
 
 uint8 GetOverallVolumeLevel(void) {

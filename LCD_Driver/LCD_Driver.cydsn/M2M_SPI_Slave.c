@@ -116,6 +116,7 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 	static uint8 isInitialized = 0;
 	uint8 len = 0;
 	uint8 dataIndex = 0;
+	static uint8 lastPosition = 0;
 //    static uint8 spiByteCounter = 0;
 //   static uint8 spiMaxByte = 0;
 //    static uint8 spiData[100];
@@ -151,8 +152,8 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
 		DBG_PRINTF("%02X %02X %02X %02X ",LcdData.displayData.address,
 			LcdData.displayData.len,
-			LcdData.displayData.type,
-			LcdData.displayData.val);
+			LcdData.displayData.type, // tipo carattere
+			LcdData.displayData.val); // posizione
 		DBG_PRINT_ARRAY(LcdData.displayData.data,16);
 		
 		// parser 
@@ -162,27 +163,35 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 		
 		switch(LcdData.displayData.address) {
 			case M2M_SPI_ADDRESS: 	// -indirizzo per me
-				switch(LcdData.displayData.type) {
-					case 0: // caratteri standard 
-					 	DBG_PRINTF("caratteri standard ");
-						myLCD_Position(LcdData.displayData.val,0);
-						myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
-					
-						// myLCD_Position(0,0);
-						// myLCD_PrintString(LcdData.displayData.data);
+				switch(LcdData.displayData.val) {
+					case 0:  // riga 0
+					case 1:  // riga 1
+						switch(LcdData.displayData.type) {
+							case 0: // caratteri standard 
+							 	DBG_PRINTF("caratteri standard ");
+								if(lastPosition != LcdData.displayData.val) {
+									myLCD_Position(LcdData.displayData.val,0);
+									lastPosition = LcdData.displayData.val;
+								}
+								myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
+							
+								// myLCD_Position(0,0);
+								// myLCD_PrintString(LcdData.displayData.data);
 
-						// queste due funzioni a seguire impiegano circa 2ms
+								// queste due funzioni a seguire impiegano circa 2ms
 
-						// myLCD_Position(0,0);  
-						// myLCD_PrintString(rawData[ptrOut]);
-	
-						break;
-					
-					case 1: // caratteri custom	
-						DBG_PRINTF("caratteri custom ");
-						Write_BarGraphs(LcdData.displayData.val,LcdData.displayData.data);
-						break;
-				} // switch(LcdData.displayData.type)
+								// myLCD_Position(0,0);  
+								// myLCD_PrintString(rawData[ptrOut]);
+			
+								break;
+							
+							case 1: // caratteri custom	
+								DBG_PRINTF("caratteri custom ");
+								Write_BarGraphs(LcdData.displayData.val,LcdData.displayData.data);
+								break;
+						} // switch(LcdData.displayData.type)
+					break;	
+				} // switch posizioni valide
 			break;
 		} //switch(LcdData.displayData.address)
 		

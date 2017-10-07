@@ -17,7 +17,7 @@
 
 void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value);
 void LCD_Poll(uint8 status);
-void Write_BarGraphs(void);
+
 void LCD_splashScreen(uint8 mex);
 void Display_Alternate_Text(uint8 where, uint8 what);
 
@@ -39,8 +39,6 @@ void Display_Alternate_Text(uint8 where, uint8 what);
 #define LCD_CUSTOM_5                 (0x05u)
 #define LCD_CUSTOM_6                 (0x06u)
 #define LCD_CUSTOM_7                 (0x07u)
-
-extern char str_bargraph[MAX_ROWS][MAX_CHARS];
 
 enum alternative_text {
     ALT_ROTARY_FAST		= 0,		// 0	

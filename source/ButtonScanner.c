@@ -37,7 +37,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "customLcd.h"
 #include "EepromManager.h"
 #include "analog.h"
-#include "midilibrary.h"
+#include "midiLibrary.h"
 #include "userPreset.h"
 
 #define MIN_DEBOUNCE 5      // * 8ms
