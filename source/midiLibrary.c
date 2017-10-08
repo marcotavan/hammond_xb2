@@ -27,6 +27,17 @@ byte genstatus(const enum kMIDIType inType,const byte inChannel);
 void sendRealTime(enum kMIDIType Type);
 void SendUartMidiOut(uint8 len, uint8 *midiMsg);
 
+volatile uint8 MIDI_TX_STS_COMPLETE = 0;
+
+uint8 GetMIDI_TX_STS(uint8 bitField) {
+	uint8 retVal = MIDI_TX_STS_COMPLETE;
+	MIDI_TX_STS_COMPLETE &=~ bitField;
+	return retVal;
+}
+
+CY_ISR(isr_midi_tx_status_InterruptHandler) {
+	MIDI_TX_STS_COMPLETE = 0xFF;
+}
 
 const char *noteNamearray[] = {
             "C",
@@ -458,7 +469,7 @@ void sendRealTime(enum kMIDIType Type)
 void UART_MIDI_Init(void) {
 /* Start UART block */
 	MIDI1_UART_Start();
-	
+	isr_midi_tx_StartEx(isr_midi_tx_status_InterruptHandler);
     #define MIDI_UART_RX_PRIOR_NUM   (0x02u)
     #define MIDI_UART_TX_PRIOR_NUM   (0x04u)
 	

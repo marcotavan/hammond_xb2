@@ -125,6 +125,8 @@ void sendSysEx(int length,
 					bool ArrayContainsBoundaries);
 
 void UART_MIDI_Init(void);
+
+uint8 GetMIDI_TX_STS(uint8 bitField);
 #endif // _MIDI_LIBRARY_H_
 
 /* [] END OF FILE */

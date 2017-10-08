@@ -13,7 +13,7 @@
 #include "project.h"
 #include "analog.h"
 #include "stdio.h"
-// #include "string.h"
+#include "common.h"
 #include "tick.h"
 #include "debug.h"
 #include "midiLibrary.h"
@@ -414,7 +414,9 @@ void AnalogPoll(void)
         }
    } // tick 1ms
 	
-	if(MIDI1_UART_ReadTxStatus() & MIDI1_UART_TX_STS_COMPLETE) {
+	// if(MIDI1_UART_ReadTxStatus() & MIDI1_UART_TX_STS_COMPLETE) {
+	// if(GetMIDI_TX_STS(BIT0) ^ BIT0) {
+	{
 		if(tick_100ms(TICK_ANALOG)) {
 			Write_BarGraphs(str_bargraph[ROW_0]);
 		}
