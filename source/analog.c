@@ -310,6 +310,8 @@ void AnalogPoll(void)
     static uint8 analogChannel = 0;
 
 	static uint16 validData=0;
+	
+	static uint8 divider = 5;
     
     if (isAnalogPollNotInitialized)
     {
@@ -335,8 +337,14 @@ void AnalogPoll(void)
         ADC_StartConvert();
     }
     
-	if(tick_100ms(TICK_ANALOG)) {
-		Write_BarGraphs(str_bargraph[ROW_0]);
+	if(tick_10ms(TICK_ANALOG)) {
+		if(divider) {
+			divider--;
+			if(divider == 0) {
+				Write_BarGraphs(str_bargraph[ROW_0]);
+				divider = 20;
+			}
+		}
 	}
 		
 	if(tick_1ms(TICK_ANALOG))
@@ -377,6 +385,7 @@ void AnalogPoll(void)
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);
                             analogVal[analogChannel] = validData;
+							divider = 1;
                         }
                     }
                     break;
@@ -391,6 +400,7 @@ void AnalogPoll(void)
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(analogChannel,analogChannel, validData);
                             analogVal[analogChannel] = validData;
+							divider = 1;
                         }
                     }
                     break;
@@ -402,6 +412,7 @@ void AnalogPoll(void)
                             // c'è una valida differenza con il campione precedente?
                             AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);
                             analogVal[analogChannel] = validData;
+							divider = 1;
                         }
                     }
                     break;
