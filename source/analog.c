@@ -69,6 +69,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
     static uint8 pitchWheelData = 0;
 	uint16 scaledData = 0;
 	static uint8 isRefreshTime  = 1;
+	
     switch(event)
     {
         case EVENT_DRAWBAR_GENERIC:
@@ -99,6 +100,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             } else {
 				isRefreshTime = 1; // mi serve per ricaricare i drawbars la prima volta che rientro
 			}
+			
+			DBG_PRINTF("%2x %2x ",lcdColPosition,barGraph);
+			DBG_PRINT_ARRAY(str_bargraph[ROW_0],16);
+			DBG_PRINTF("\n");
         } 
         break;
         
@@ -120,7 +125,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                 sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
                 
                 lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-                barGraph = ((data>>4) + 1) & 0x7F;
+                barGraph = ((data>>4) /*+ 1*/) & 0x7F;
                 str_bargraph[ROW_0][lcdColPosition] =  barGraph;
                 
                 if (data >= 126) offset = 0;
@@ -211,7 +216,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             sendControlChange(CC_Expression_Pedal,scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-            barGraph = ((scaledData>>4) + 1) & 0x7F;
+            barGraph = ((scaledData>>4) /*+ 1*/) & 0x7F;
             str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
             if (scaledData >= 126) offset = 0;
@@ -229,7 +234,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             sendControlChange(CC_Reverb,data,MIDI_CHANNEL_1);
             
             lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-            barGraph = ((data>>4) + 1) & 0x7F;
+            barGraph = ((data>>4) /*+ 1*/) & 0x7F;
             str_bargraph[ROW_0][lcdColPosition] =  barGraph;
             
             if (data >= 126) offset = 0;
@@ -252,7 +257,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 		            sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
 		            
 		            lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
-		            barGraph = ((data>>4) + 1) & 0x7F;
+		            barGraph = ((data>>4) /*+ 1*/) & 0x7F;
 		            str_bargraph[ROW_0][lcdColPosition] =  barGraph;
 
 		            if (data >= 126) offset = 0;
@@ -310,6 +315,8 @@ void AnalogPoll(void)
     {
         /* Start ADC and start conversion */
         memset(analogVal,0xff,sizeof(analogVal));
+		memset(str_bargraph[0],0,16);
+		memset(str_bargraph[1],0,16);
         adcConversionDone = 0;
         AMux_Start();
         ADC_Start();

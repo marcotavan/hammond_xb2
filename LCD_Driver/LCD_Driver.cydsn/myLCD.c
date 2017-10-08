@@ -938,13 +938,13 @@ void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
 	{
 		if(prev_bargraph[i] != str_bargraph[i]) {
 			prev_bargraph[i] = str_bargraph[i];
-			str_bargraph[i]%=8;
+			//str_bargraph[i]%=8;
 			
 			
 			// myLCD_Position(0,i);
 			// myLCD_PrintNumber(str_bargraph[i]);
 			myLCD_Position(row,i);
-			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
+			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]%8);
 			
         	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
 			// DBG_PRINTF("riscrivo barre %d\n",i);
@@ -956,13 +956,13 @@ void Write_BarGraphs(uint8 row, uint8 *str_bargraph) {
 	{
 		if(prev_bargraph[i] != str_bargraph[i]) {
 			prev_bargraph[i] = str_bargraph[i];
-			str_bargraph[i]%=8;
+			//str_bargraph[i]%=8;
 			
 			
 			// myLCD_Position(0,i);
 			// myLCD_PrintNumber(str_bargraph[i]);
 			myLCD_Position(row,i);
-			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]);
+			myLCD_WriteData(myLCD_CUSTOM_0+str_bargraph[i]%8);
 			
         	// myLCD_DrawVerticalBG(row, i, 8,str_bargraph[i]);
 			// DBG_PRINTF("riscrivo barre %d\n",i);
