@@ -414,8 +414,10 @@ void AnalogPoll(void)
         }
    } // tick 1ms
 	
-	if(tick_100ms(TICK_ANALOG)) {
-		Write_BarGraphs(str_bargraph[ROW_0]);
+	if(MIDI1_UART_ReadTxStatus() & MIDI1_UART_TX_STS_COMPLETE) {
+		if(tick_100ms(TICK_ANALOG)) {
+			Write_BarGraphs(str_bargraph[ROW_0]);
+		}
 	}
 }
 
