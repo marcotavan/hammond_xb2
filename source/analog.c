@@ -335,7 +335,11 @@ void AnalogPoll(void)
         ADC_StartConvert();
     }
     
-    if(tick_1ms(TICK_ANALOG))
+	if(tick_100ms(TICK_ANALOG)) {
+		Write_BarGraphs(str_bargraph[ROW_0]);
+	}
+		
+	if(tick_1ms(TICK_ANALOG))
     {
         
 #if ADC_ISR_ENABLE
@@ -408,19 +412,17 @@ void AnalogPoll(void)
                     analogChannel = 0;
                 }
                 
+				/*
+				if(tick_100ms(TICK_ANALOG)) {
+					Write_BarGraphs(str_bargraph[ROW_0]);
+				}
+				*/
+				
                 AMux_FastSelect(analogChannel);
             }
             adcConversionDone = 0;   
         }
    } // tick 1ms
-	
-	// if(MIDI1_UART_ReadTxStatus() & MIDI1_UART_TX_STS_COMPLETE) {
-	// if(GetMIDI_TX_STS(BIT0) ^ BIT0) {
-	{
-		if(tick_100ms(TICK_ANALOG)) {
-			Write_BarGraphs(str_bargraph[ROW_0]);
-		}
-	}
 }
 
 uint8 GetOverallVolumeLevel(void) {

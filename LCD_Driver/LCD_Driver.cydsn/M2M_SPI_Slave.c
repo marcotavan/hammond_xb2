@@ -92,7 +92,7 @@ CY_ISR(SS_ISR) {
 			rawData[ptrIn][idx] = SPIS_M2M_ReadRxData();
 		}
 		SPIS_M2M_ClearRxBuffer();
-		SPIS_M2M_ClearFIFO();
+		// SPIS_M2M_ClearFIFO();
 	}
 	Pin_SPIF_Write(0);		
     Pin_SS_ClearInterrupt();

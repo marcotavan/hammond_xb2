@@ -76,6 +76,20 @@ uint8 M2MSpiWriteData(uint8 address, uint8 *data, uint8 len) {
 	return 0;
 }
 
+void M2M_Write_command(uint8 type) {
+    uint8 spiData[MAX_DATA];
+	uint16 crc;
+	
+	spiData[0] = M2M_SPI_ADDRESS+1;
+	spiData[1] = 0;		// dataLen
+	spiData[2] = type;		// type write data
+
+	crc = crc16ccitt_1d0f(spiData,3);
+	spiData[3] = (crc >> 8) & 0xff;
+	spiData[4] = crc & 0xff;
+	M2MSpiWriteData(0,spiData,5);		// spedisce 20
+}
+
 void M2M_Write_LCD(uint8 type, uint8 position, uint8*data) {
     uint8 spiData[MAX_DATA];
 	uint16 crc;
@@ -102,9 +116,9 @@ void M2M_SPI_Master_ApplicationPoll(void){
 	
 	if(isInitialized == 0) {
 		M2M_SPI_Init();
-		spiByteCounter = 0b00100000;
+		// spiByteCounter = 0b00100000;
 	}
-	
+	/*
 	if(tick_100ms(TICK_M2M_SPI)) {
         
     } // tick_10ms
@@ -129,6 +143,7 @@ void M2M_SPI_Master_ApplicationPoll(void){
 			// counter++;
 		}
 	}
+	*/
 }
 
 void Write_BarGraphs(uint8 *data)
@@ -136,7 +151,7 @@ void Write_BarGraphs(uint8 *data)
     uint8 i;
     static uint16 cnt = 0;
 	static char prev_bargraph[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-	uint8 flagWrite = 1;
+	uint8 flagWrite = 1; // MANDA IN CONTINUO
     // if (alternateTextCounter) return;  // non scrive niente
     
     // DBG_PRINTF("riscrivo barre %d\n",cnt++);
