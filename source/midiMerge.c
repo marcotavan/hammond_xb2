@@ -26,8 +26,9 @@
 struct midimsg	mMessageMerge;
 
 void MidiMergePoll(void) {
-	
-	if(MIDI1_UART_GetRxBufferSize())
+	uint8 rxDataLen = MIDI1_UART_GetRxBufferSize();
+	if(rxDataLen != 0) {
+	}
 }
 
 
