@@ -23,6 +23,7 @@
 #include "EepromManager.h"
 #include "pca9685_driver.h"
 #include "M2M_SPI_Master.h"
+#include "midiMerge.h"
 
 #define BUTT1	                (0x01u)
 #define BUTT2	                (0x02u)
@@ -213,6 +214,8 @@ int main()
 		LedPoll();	
 		
 		M2M_SPI_Master_ApplicationPoll();
+		
+		MidiMergePoll();
     }
 }
 
