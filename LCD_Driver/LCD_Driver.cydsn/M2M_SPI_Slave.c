@@ -16,6 +16,7 @@
 #include "M2M_SPI_Slave.h"
 #include "crc16_ccitt.h"
 
+#define M2M_SPI_ADDRESS_SYSTEM 0x5A
 #define M2M_SPI_ADDRESS 0xC0
 
 CY_ISR_PROTO(SS_ISR);
@@ -108,6 +109,7 @@ CY_ISR(SS_ISR) {
 void M2M_SPI_Init(void) {
 	DBG_PRINTF("[%s]\n",__func__);
 	SPIS_M2M_Start();
+	SPIS_M2M_WriteByteZero(0);
 	isr_ss_1_StartEx(SS_ISR);
 }
 
@@ -156,9 +158,10 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 				ptrOut %= DIM_QUEUE; 
 				memcpy(LcdData.data,rawData[ptrOut],MAX_DATA);
 				
-				/*
+				#ifdef DEBUG_VERBOSE
 				DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
-				DBG_PRINTF("%02X %02X %02X %02X |%02X %02X ",LcdData.displayData.address,
+				DBG_PRINTF("%02X %02X %02X %02X |%02X %02X ",
+					LcdData.displayData.address,
 					LcdData.displayData.len,
 					LcdData.displayData.type, // tipo carattere
 					LcdData.displayData.val,
@@ -166,8 +169,9 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 					LcdData.displayData.crc2
 				); // posizione
 				DBG_PRINT_ARRAY(LcdData.displayData.data,16);
-				*/
+				DBG_PRINTF("\n");
 				// parser 
+				#endif
 				
 				crc=crc16ccitt_1d0f(LcdData.data,20);
 				
@@ -206,6 +210,20 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 								break;	
 							} // switch posizioni valide
 						break;
+							
+						case  M2M_SPI_ADDRESS_SYSTEM:
+							switch(LcdData.displayData.type) {
+								case 0xA0: 
+									switch(LcdData.displayData.val) {
+										case 1:
+										// DBG_PRINTF("pronto per un reset\n");
+										// CyDelay(100);
+										CySoftwareReset();
+										break;
+									}
+								break;
+							}
+							break;
 					} //switch(LcdData.displayData.address)
 				} else {
 					crcErrorCounter++;

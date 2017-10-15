@@ -23,6 +23,7 @@
 #define ADDRESS_1 	2
 #define ADDRESS_2 	3
 
+#define M2M_SPI_ADDRESS_SYSTEM 0x5A
 #define M2M_SPI_ADDRESS 0xC0
 #define MAX_DATA 		22
 
@@ -47,10 +48,27 @@ enum fontType_e {
 	LCD_CUSTOM
 };
 	
+void SendResetToDisplayBoard(void) {
+    uint8 spiData[MAX_DATA];
+	uint16 crc;
+	
+	spiData[0] = M2M_SPI_ADDRESS_SYSTEM;
+	spiData[1] = 16;		// dataLen
+	spiData[2] = 0xA0;		// type write data
+	spiData[3] = 1;			// pos = val
+
+	memset(&spiData[4],0,16);	// filla 16
+	crc = crc16ccitt_1d0f(spiData,20);
+	spiData[20] = (crc >> 8) & 0xff;
+	spiData[21] = crc & 0xff;
+	M2MSpiWriteData(0,spiData,MAX_DATA);		// spedisce 20
+}
+
 void M2M_SPI_Init(void) {
 	DBG_PRINTF("[%s]\n",__func__);
     Pin_SS_M2M_Write(1);
 	SPIM_M2M_Start();
+	SendResetToDisplayBoard();
 	isInitialized = 1;
 }
 	

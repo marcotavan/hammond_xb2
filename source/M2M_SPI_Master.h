@@ -15,8 +15,9 @@
 #include "cytypes.h"
 	
 void M2M_SPI_Master_ApplicationPoll(void);
-    void M2M_SPI_Init(void);
+void M2M_SPI_Init(void);
 void Write_BarGraphs(uint8 *data);
-    
+uint8 M2MSpiWriteData(uint8 address, uint8 *data, uint8 len);
+
 #endif 
     /* [] END OF FILE */

@@ -551,7 +551,7 @@ void myLCD_IsReady(void)
         /* Repeat until bit 4 is not zero or until timeout. */
         timeout--;
 		
-    } while ((value != 0u) /*&& (timeout > 0u)*/);
+    } while ((value != 0u) && (timeout > 0u));
 
     /* Set R/W low to write */
     LCD_Pin_RW_Write(0);
