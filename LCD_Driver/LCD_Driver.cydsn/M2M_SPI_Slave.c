@@ -23,6 +23,9 @@ CY_ISR_PROTO(SS_ISR);
 #define MAX_DATA 22
 #define DIM_QUEUE 100
 
+#define ACK 0x06
+#define NAK 0x15
+
 uint8 rawData[DIM_QUEUE][MAX_DATA];
 volatile uint8 ptrIn = 0;
 uint8 ptrOut = 0;
@@ -177,7 +180,9 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 				
 		
 				if (crc == (LcdData.displayData.crc1<<8|LcdData.displayData.crc2)) {
-					//dati ricevuti validi
+					//dati ricevuti validi, invia ack al master
+					SPIS_M2M_WriteTxData(ACK);
+					
 					switch(LcdData.displayData.address) {
 						case M2M_SPI_ADDRESS: 	// -indirizzo per me
 							switch(LcdData.displayData.val) {
@@ -226,6 +231,7 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 							break;
 					} //switch(LcdData.displayData.address)
 				} else {
+					SPIS_M2M_WriteTxData(NAK);
 					crcErrorCounter++;
 					DBG_PRINTF("| %02X%02X %04X |",LcdData.displayData.crc1,
 					LcdData.displayData.crc2, crc);

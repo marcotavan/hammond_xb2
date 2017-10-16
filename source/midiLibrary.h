@@ -120,10 +120,21 @@ uint8 sendControlChange(byte ControlNumber,
 								   byte ControlValue,
 								   byte Channel);
 
+void sendAfterTouch(byte Pressure, byte Channel);
+
+void sendPolyPressure(byte NoteNumber,
+								  byte Pressure,
+								  byte Channel);
+
 void sendSysEx(int length, 
 					const byte *const array,
 					bool ArrayContainsBoundaries);
 
+uint8 sendMidiMessage(enum kMIDIType type,
+					  byte data1,
+					  byte data2,
+					  byte channel);
+	
 void UART_MIDI_Init(void);
 
 // uint8 GetMIDI_TX_STS(uint8 bitField);

@@ -256,8 +256,7 @@ void sendPolyPressure(byte NoteNumber,
  \param Pressure		The amount of AfterTouch to apply to all notes.
  \param Channel			The channel on which the message will be sent (1 to 16). 
  */
-void sendAfterTouch(byte Pressure,
-								byte Channel)
+void sendAfterTouch(byte Pressure, byte Channel)
 {
     #if VERBOSE_SEND_MIDI
 	DBG_PRINTF("[%s]\n",__func__);

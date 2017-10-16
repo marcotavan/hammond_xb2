@@ -6,7 +6,7 @@ The MIDI protocol consists of 'messages' which are designed to allow synthesizer
 
 Let's start with an example to illustrate a few concepts. Suppose the musician presses the middle-C key on a keyboard. The keyboard would send a 'note-on' message like this:
 
-	9n    kk    vv
+	    9n    kk    vv
 example:
         90    3C    40
 	-----------------> time
