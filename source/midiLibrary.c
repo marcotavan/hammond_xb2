@@ -90,7 +90,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
 #if USE_RUNNING_STATUS	
 		mRunningStatus_TX = InvalidType;
 #endif 
-		DBG_PRINTF("Don't send anything!\n");
+		DBG_PRINTF("Channel Error. Don't send anything!\n");
 		return 0xFF; // Don't send anything
 	}
 	

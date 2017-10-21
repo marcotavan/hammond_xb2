@@ -100,10 +100,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             } else {
 				isRefreshTime = 1; // mi serve per ricaricare i drawbars la prima volta che rientro
 			}
+			/* // print bargraph data
 			
 			DBG_PRINTF("%2x %2x ",lcdColPosition,barGraph);
 			DBG_PRINT_ARRAY(str_bargraph[ROW_0],16);
 			DBG_PRINTF("\n");
+			*/
         } 
         break;
         
