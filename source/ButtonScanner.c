@@ -39,6 +39,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "analog.h"
 #include "midiLibrary.h"
 #include "userPreset.h"
+#include "midiMerge.h"
 
 #define MIN_DEBOUNCE 5      // * 8ms
 #define MAX_DEBOUNCE 100     // * 8ms  
@@ -248,6 +249,7 @@ void InitSwitchButtons(void)
     
 	RefreshAllButtonElements();
 	
+	StartMidiMerge();
 	// aggiungere lo SPLIT ON
     // Display_Alternate_Text(ROW_1,ALT_InitSwitchButtons_Done);
  }

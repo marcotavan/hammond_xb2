@@ -16,6 +16,7 @@
 #include "project.h"
 
 void MidiMergePoll(void);
+void StartMidiMerge(void);
 
 #endif // _MIDI_MERGE_H_
 /* [] END OF FILE */
