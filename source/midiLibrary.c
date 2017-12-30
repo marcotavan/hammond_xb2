@@ -17,7 +17,7 @@
 #include "common.h"
 
 /*****************************************************/
-#define VERBOSE_SEND_MIDI (1)
+#define VERBOSE_SEND_MIDI (0)
 #define VERBOSE_SEND_MIDI_MESSAGE (0)
 /*****************************************************/
 
@@ -128,7 +128,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
             // DBG_PRINTF("%02x %02x %02x\n",midiMsg[0],midiMsg[1],midiMsg[2]);
 			SendUartMidiOut(MIDI_3BYTE_COMMON, midiMsg);
 			
-			#if defined USB_MIDI_INTERCACE
+			#if defined USB_MIDI_INTERFACE
 			err = USB_PutUsbMidiIn(USB_3BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 			#endif	
 		}
@@ -137,7 +137,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
             // DBG_PRINTF("USB_2BYTE_COMMON\n");
 			SendUartMidiOut(MIDI_2BYTE_COMMON, midiMsg);
 			
-			#if defined USB_MIDI_INTERCACE
+			#if defined USB_MIDI_INTERFACE
             err = USB_PutUsbMidiIn(USB_2BYTE_COMMON, midiMsg, USB_MIDI_CABLE_00);
 			#endif
         }

@@ -52,11 +52,28 @@ CY_ISR( ADC_ISR )
     adcConversionDone = 1;
 }
 #endif
+
+uint8 const PresetKorgCx3Drawbars[9] = {16,17,18,19,20,21,21,23,24};
+uint8 const PresetVb3Drawbars[9]     = {12,13,14,15,16,17,18,19,20};
+
+uint8 DrawbarCC(uint8 channel) {
+	// in base al tipo di set impostato restituisce il valore del drawbar corretto
+
+	uint8 drawbar = 0;
+	
+	// switch (settings) 
+	// case KORG_CX3:
+	// case VB3: 
+	
+	drawbar = PresetKorgCx3Drawbars[channel];
+	
+	return drawbar;
+}
+
 /***************************************************************************
 * invia il dato di Control Change e prepara la stringa da scrivere nel display
 * chiamta solo se isValidDifference()
 ****************************************************************************/
-
 void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 {
     // static char displayStr[15] = {'\0'};
@@ -88,7 +105,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			DBG_PRINTF("EVENT_DRAWBAR_GENERIC %d->%d\n",data,scaledData);
             #endif 
 			
-			sendControlChange(UM_SET_B_DRAWBAR_16+channel,scaledData,MIDI_CHANNEL_1);
+			sendControlChange(DrawbarCC(channel),scaledData,MIDI_CHANNEL_1);
             
             lcdColPosition = channel+7;
             barGraph = ((scaledData>>4) /*+ 1*/) & 0x7F;

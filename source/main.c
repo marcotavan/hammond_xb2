@@ -76,7 +76,7 @@ void isVSTReady();
 CY_ISR(SleepIsr)
 {
     /* Check USB activity */
-	#if defined USB_MIDI_INTERCACE
+	#if defined USB_MIDI_INTERFACE
     if(USB_CheckActivity()) {
         usbActivityCounter = USB_ACTIVITY_TIMEOUT;
     } else {
@@ -107,7 +107,7 @@ int main()
                 
     // SysTick_Start();  
     TimerTick_Start();
-    
+	
 	MOD_SysLog_Init(); 
 	
 	M2M_SPI_Init();
@@ -115,7 +115,7 @@ int main()
 	PCA9685_init(0,Mode_register_1,Mode_register_2);
     PCA9685_setPWMFrequency(1600);
     
-	#if defined USB_MIDI_INTERCACE
+	#if defined USB_MIDI_INTERFACE
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
     #endif
@@ -131,7 +131,7 @@ int main()
     
     while(1u)
     {
-		#if defined USB_MIDI_INTERCACE
+		#if defined USB_MIDI_INTERFACE
         if(0u != USB_IsConfigurationChanged()) {
             // DBG_PRINTF("Initialize IN endpoints when device configured\n");
             if(0u != USB_GetConfiguration())   {

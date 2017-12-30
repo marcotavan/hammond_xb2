@@ -43,7 +43,7 @@
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
 	
-// #define USB_MIDI_INTERCACE
+// #define USB_MIDI_INTERFACE
 		
 #endif
 

@@ -30,6 +30,7 @@ enum upperManualDrawbarSetA
     UM_SET_A_DRAWBAR_1
 };
 
+/*
 enum upperManualDrawbarSetB
 {
     UM_SET_B_DRAWBAR_16     = 12,
@@ -42,6 +43,7 @@ enum upperManualDrawbarSetB
     UM_SET_B_DRAWBAR_1_13,
     UM_SET_B_DRAWBAR_1
 };
+*/
 
 #define CC_Lower_Manual_Drawbars_AB_Switch        59  // switch
 enum lowerManualDrawbarSetA
@@ -92,7 +94,7 @@ enum pedalManualDrawbar
 #define CC_Tube_Overdrive_Drive                     76 // level
 #define CC_Tube_Overdrive_Edge                      78 // level    
     
-#define CC_Reverb                                   84 // level
+#define CC_Reverb	                                84 // level
 
 #define CC_Rotary_Speaker_Bypass                    85 // switch 
 #define CC_Rotary_Speaker_Speed_Fast_Slow           1  // switch
