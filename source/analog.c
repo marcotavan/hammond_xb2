@@ -65,7 +65,9 @@ uint8 DrawbarCC(uint8 channel) {
 	// case KORG_CX3:
 	// case VB3: 
 	
-	drawbar = PresetKorgCx3Drawbars[channel];
+	// drawbar = PresetKorgCx3Drawbars[channel];
+	
+	drawbar = PresetVb3Drawbars[channel];
 	
 	return drawbar;
 }

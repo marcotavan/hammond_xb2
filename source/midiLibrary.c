@@ -495,9 +495,10 @@ void SendUartMidiOut(uint8 len, uint8 *midiMsg) {
 	}
 	while (i < len);
 	*/
-	
 	MIDI1_UART_PutArray(midiMsg,len);
-	
+	if(0u != USB_GetConfiguration()) {
+		USB_PutUsbMidiIn(len, midiMsg, USB_MIDI_CABLE_00);
+	}
 }
 
 

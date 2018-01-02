@@ -31,7 +31,7 @@
 // #define USB_SUSPEND_TIMEOUT     (2u)
 #define USB_ACTIVITY_TIMEOUT	2
 
-volatile uint8 usbActivityCounter = 0u;
+// volatile uint8 usbActivityCounter = 0u;
 
 uint8 csButtStates = 0u;
 uint8 csButtStatesOld = 0u;
@@ -89,6 +89,63 @@ CY_ISR(SleepIsr)
     SleepTimer_GetStatus();
 }
 
+void USB_Poll(void){
+	static uint8 isPresent = 0;
+	if(0u != USB_IsConfigurationChanged()) {
+        // DBG_PRINTF("Initialize IN endpoints when device configured\n");
+        if(0u != USB_GetConfiguration())   {
+			DBG_PRINTF("\nUSB_MIDI_Init\n\n");
+			/* Power ON CY8CKIT-044 board */
+            
+            /* Start ISR to determine sleep condition */		
+           //  Sleep_isr_StartEx(SleepIsr);
+            
+            /* Start SleepTimer's operation */
+            // SleepTimer_Start();
+            
+        	/* Enable output endpoint */
+            USB_MIDI_Init();
+			isPresent = 1;
+        } 
+	}   
+
+    if(0u != USB_GetConfiguration()) {
+		// Service USB MIDI when device is configured 
+		
+      	/* Call this API from UART RX ISR for Auto DMA mode */
+        #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
+            USB_MIDI_IN_Service();
+        #endif
+        /* In Manual EP Memory Management mode OUT_EP_Service() 
+        *  may have to be called from main foreground or from OUT EP ISR
+        */
+   		 /*
+        #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
+            USB_MIDI_OUT_Service();
+        #endif
+		*/
+        /* Sending Identity Reply Universal System Exclusive message 
+         * back to computer */
+		/*
+        if(0u != (USB_MIDI1_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
+        {
+            USB_PutUsbMidiIn(sizeof(MIDI_IDENTITY_REPLY), \
+                        (uint8 *)MIDI_IDENTITY_REPLY, USB_MIDI_CABLE_00);
+            USB_MIDI1_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
+        }
+		*/
+        #if (USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF)
+            if(0u != (USB_MIDI2_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
+            {
+                USB_PutUsbMidiIn(sizeof(MIDI_IDENTITY_REPLY), \
+                        (uint8 *)MIDI_IDENTITY_REPLY, USB_MIDI_CABLE_01);
+                USB_MIDI2_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
+            }
+        #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
+
+        // Check_if_host_requested_USB_Suspend();
+    } 
+}
 
 /*******************************************************************************
 * Function Name: main
@@ -115,10 +172,10 @@ int main()
 	PCA9685_init(0,Mode_register_1,Mode_register_2);
     PCA9685_setPWMFrequency(1600);
     
-	#if defined USB_MIDI_INTERFACE
+	// #if defined USB_MIDI_INTERFACE
     /* Start USBFS device 0 with VDDD operation */
     USB_Start(DEVICE, USB_DWR_VDDD_OPERATION); 
-    #endif
+    // #endif
 	
     eeprom_init();
     
@@ -131,67 +188,7 @@ int main()
     
     while(1u)
     {
-		#if defined USB_MIDI_INTERFACE
-        if(0u != USB_IsConfigurationChanged()) {
-            // DBG_PRINTF("Initialize IN endpoints when device configured\n");
-            if(0u != USB_GetConfiguration())   {
-				DBG_PRINTF("USB_MIDI_Init\n");
-				/* Power ON CY8CKIT-044 board */
-                
-                /* Start ISR to determine sleep condition */		
-                Sleep_isr_StartEx(SleepIsr);
-                
-                /* Start SleepTimer's operation */
-                SleepTimer_Start();
-                
-            	/* Enable output endpoint */
-                USB_MIDI_Init();
-            }
-            else
-            {
-				DBG_PRINTF("SleepTimer_Stop\n");
-                SleepTimer_Stop();
-            }    
-        }        
-  
-        
-        if(0u != USB_GetConfiguration()) {
-			// Service USB MIDI when device is configured 
-			
-          	/* Call this API from UART RX ISR for Auto DMA mode */
-            #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
-                USB_MIDI_IN_Service();
-            #endif
-            /* In Manual EP Memory Management mode OUT_EP_Service() 
-            *  may have to be called from main foreground or from OUT EP ISR
-            */
-       		 /*
-            #if(!USB_EP_MANAGEMENT_DMA_AUTO) 
-                USB_MIDI_OUT_Service();
-            #endif
-    		*/
-            /* Sending Identity Reply Universal System Exclusive message 
-             * back to computer */
-			/*
-            if(0u != (USB_MIDI1_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
-            {
-                USB_PutUsbMidiIn(sizeof(MIDI_IDENTITY_REPLY), \
-                            (uint8 *)MIDI_IDENTITY_REPLY, USB_MIDI_CABLE_00);
-                USB_MIDI1_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
-            }
-			*/
-            #if (USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF)
-                if(0u != (USB_MIDI2_InqFlags & USB_INQ_IDENTITY_REQ_FLAG))
-                {
-                    USB_PutUsbMidiIn(sizeof(MIDI_IDENTITY_REPLY), \
-                            (uint8 *)MIDI_IDENTITY_REPLY, USB_MIDI_CABLE_01);
-                    USB_MIDI2_InqFlags &= ~USB_INQ_IDENTITY_REQ_FLAG;
-                }
-            #endif /* End USB_MIDI_EXT_MODE >= USB_TWO_EXT_INTRF */
-
-            Check_if_host_requested_USB_Suspend();
-        }
-		#endif
+		USB_Poll();
 		
         // LCD_Poll(1);
         
@@ -514,7 +511,7 @@ void  TestVB3Drawbars(void)
 void Check_if_host_requested_USB_Suspend(void)
 {
 	
-    if( usbActivityCounter == 0 ) 
+    //if( usbActivityCounter == 0 ) 
     {
         DBG_PRINTF("Prepares system for sleep mode\n");
 //        DBG_PRINTF("MIDI_UART_Sleep\n");
