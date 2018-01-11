@@ -39,6 +39,8 @@ static uint8 pca9685_i2cAddress = PCA9685_I2C_BASE_ADDRESS;
 static uint8 pca9685_lastI2CError = 0;         // Last i2c error
 PCA9685_PhaseBalancer _phaseBalancer; // Phase balancer scheme to distribute load
 
+#define VERBOSE_DEBUG 1
+
 uint8 lowByte(uint16 data) {
 	// verificare
 	return (data & 0xFF);
@@ -470,30 +472,39 @@ uint8 menuLed(void) {
 	return 1;
 }
 
-#define MAX_REFRESH_TIMEOUT 10
-#define FAST_BLINK	6
+#define MAX_REFRESH_TIMEOUT 50
+#define FAST_BLINK	BIT0
+#define MID_BLINK	BIT1
+#define SLOW_BLINK	BIT2
+
+uint8 BlinkTime(uint8 blink, uint8 vel) {
+	if(blink & vel) return 1;
+	else return 0;
+}
 
 void LeslieFastButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 fastBlink = 0;
-
+	static uint8 oneShot = 0;
+	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_01_LESLIE) {
-			fastBlink++;
 			
-			if(fastBlink == (FAST_BLINK >> 1)) {
-				LED_ROSSO_LESLIE;
-			} else if (fastBlink == FAST_BLINK) {
-				LED_LESLIE_OFF;
-				fastBlink = 0;
+			if(BlinkTime(blink, MID_BLINK)) {
+				if(oneShot) {
+					LED_ROSSO_LESLIE;
+					oneShot = 0; 
+				}
+			} else {
+				if(!oneShot) {
+					LED_LESLIE_OFF;
+					oneShot = 1; 
+				}
 			}
 			 
 			refresh = 0;
 			return;
 		}
-	} else {
-		fastBlink = 0;
 	}
 	
 	if(refresh) refresh--;		
@@ -509,61 +520,71 @@ void LeslieFastButtonLed(uint8 blink) {
 				break;
 			
 			case ROTARY_FAST:
-				LED_GIALLO_LESLIE;
+				LED_ROSSO_LESLIE;
 				break;
 		}
 		
 		prev = switchType.rotarySpeaker_HalfMoon;
 		refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+		
+		#if VERBOSE_DEBUG
 		DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+		#endif
 	}
 }
 	
 void VibratoOnButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 fastBlink = 0;
+	static uint8 oneShot = 0;
 
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_00_VIBRATO) {
-			fastBlink++;
-			
-			if(fastBlink == (FAST_BLINK >> 1)) {
-				LED_ROSSO_VIBRATO;
-			} else if (fastBlink == FAST_BLINK) {
-				LED_VIBRATO_OFF;
-				fastBlink = 0;
+			if(BlinkTime(blink, MID_BLINK)) {
+				if(oneShot) {
+					LED_ROSSO_VIBRATO;
+					oneShot = 0;
+				}
+			} else {
+				if(!oneShot) {
+					LED_VIBRATO_OFF;
+					oneShot = 1;
+				}
 			}
-			 
+
 			refresh = 0;
 			return;
 		}
-	} else {
-		fastBlink = 0;
-	}
+	} 
 	
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
-		if(blink) {
-			switch(switchType.Vibrato_Lower_Switch) {
-				case SWITCH_ON:
-					LED_VERDE_VIBRATO;
-					break;
-				
-				case SWITCH_OFF:
-					LED_ROSSO_VIBRATO;
-					break;
+		if(BlinkTime(blink, MID_BLINK)) {
+			if(oneShot) {
+				switch(switchType.Vibrato_Lower_Switch) {
+					case SWITCH_ON:
+						LED_GIALLO_VIBRATO;
+						break;
+					
+					case SWITCH_OFF:
+						LED_ROSSO_VIBRATO;
+						break;
+				}
+				oneShot = 0;
 			}
 		} else {
-			LED_VIBRATO_OFF;
+			if(!oneShot) {
+				LED_VIBRATO_OFF;
+				oneShot = 1;
+			}
 		}
 		refresh = 0; // al rilascio risistema il led
 	} else {
 		if(prev != switchType.Vibrato_Upper_Switch || refresh == 0) {
 			switch(switchType.Vibrato_Upper_Switch) {
 				case SWITCH_ON:
-					LED_GIALLO_VIBRATO;
+					LED_VERDE_VIBRATO;
 					break;
 				
 				case SWITCH_OFF:
@@ -572,7 +593,9 @@ void VibratoOnButtonLed(uint8 blink) {
 			}
 			prev = switchType.Vibrato_Upper_Switch;
 			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			#if VERBOSE_DEBUG
 			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+			#endif
 		}
 	}
 }	
@@ -580,30 +603,31 @@ void VibratoOnButtonLed(uint8 blink) {
 void Percussion3rdButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 fastBlink = 0;
-
+	static uint8 oneShot = 0;
+	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_04_PERC_3RD) {
-			fastBlink++;
-			
-			if(fastBlink == (FAST_BLINK >> 1)) {
-				LED_ROSSO_3RD_PERCUSSION;
-			} else if (fastBlink == FAST_BLINK) {
-				LED_3RD_PERCUSSION_OFF;
-				fastBlink = 0;
+			if(BlinkTime(blink, MID_BLINK)) {
+				if(oneShot) {
+					LED_ROSSO_3RD_PERCUSSION;
+					oneShot = 0;
+				}
+			} else {
+				if(oneShot == 0) {
+					LED_3RD_PERCUSSION_OFF;
+					oneShot = 1;
+				}	
 			}
 			 
 			refresh = 0;
 			return;
 		}
-	} else {
-		fastBlink = 0;
 	}
 	
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
-		if(blink) {
+		if(BlinkTime(blink, MID_BLINK)) {
 			switch(switchType.percussionLevel_Switch) {
 				case PERC_SOFT:
 					LED_ROSSO_3RD_PERCUSSION;
@@ -630,7 +654,9 @@ void Percussion3rdButtonLed(uint8 blink) {
 			}
 			prev = switchType.percussionHarmonics_Switch;
 			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			#if VERBOSE_DEBUG
 			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+			#endif
 		}
 	}
 }
@@ -638,30 +664,25 @@ void Percussion3rdButtonLed(uint8 blink) {
 void Percussion2ndButtonLed(uint8 blink){
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 fastBlink = 0;
 
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_08_PERC_2ND) {
-			fastBlink++;
 			
-			if(fastBlink == (FAST_BLINK >> 1)) {
+			if(BlinkTime(blink, MID_BLINK)) {
 				LED_ROSSO_2ND_PERCUSSION;
-			} else if (fastBlink == FAST_BLINK) {
+			} else {
 				LED_2ND_PERCUSSION_OFF;
-				fastBlink = 0;
 			}
 			 
 			refresh = 0;
 			return;
 		}
-	} else {
-		fastBlink = 0;
 	}
 
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
-		if(blink) {
+		if(BlinkTime(blink, MID_BLINK)) {
 			switch(switchType.percussionDecay_Switch) {
 				case PERC_FAST:
 					LED_ROSSO_2ND_PERCUSSION;
@@ -688,32 +709,29 @@ void Percussion2ndButtonLed(uint8 blink){
 			}
 			prev = switchType.percussionHarmonics_Switch;
 			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			#if VERBOSE_DEBUG
 			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+			#endif
 		}
 	}
 }
 
 void OrganSoloButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
-	static uint8 fastBlink = 0;
 
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_12_SOLO) {
-			fastBlink++;
-			
-			if(fastBlink == (FAST_BLINK >> 1)) {
+						
+			if(BlinkTime(blink, MID_BLINK)) {
 				LED_ROSSO_ORGAN;
-			} else if (fastBlink == FAST_BLINK) {
+			} else {
 				LED_ORGAN_OFF;
-				fastBlink = 0;
 			}
 			 
 			refresh = 0;
 			return;
 		}
-	} else {
-		fastBlink = 0;
-	}
+	} 
 	
 	if(refresh) refresh--;	
 
@@ -722,12 +740,14 @@ void OrganSoloButtonLed(uint8 blink) {
 			if(refresh == 0) {
 				LED_ORGAN_OFF;
 				refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+				#if VERBOSE_DEBUG
 				DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);	
+				#endif
 			}
 			break;
 		
 		default:
-			if(blink) {
+			if(BlinkTime(blink, MID_BLINK)) {
 				LED_ROSSO_ORGAN; 
 			} else {
 				LED_ORGAN_OFF;
@@ -739,7 +759,8 @@ void OrganSoloButtonLed(uint8 blink) {
 
 void EditButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
-
+	static uint8 oneShot = 0;
+	
 	if(refresh) refresh--;	
 	
 	switch(GetEditMode()) {
@@ -747,15 +768,23 @@ void EditButtonLed(uint8 blink) {
 			if(refresh == 0) {
 				LED_EDIT_OFF;
 				refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+				#if VERBOSE_DEBUG
 				DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+				#endif
 			}
 			break;
 			
 		default:
-			if(blink) {
-				LED_EDIT_ON;
+			if(BlinkTime(blink, MID_BLINK)) {
+				if(oneShot){
+					LED_EDIT_ON;
+					oneShot = 0; 
+				}
 			} else {
-				LED_EDIT_OFF;
+				if(!oneShot) {
+					LED_EDIT_OFF;
+					oneShot = 1; 
+				}
 			}
 			refresh = 0;
 			break;
@@ -766,14 +795,9 @@ void LedPoll(void)
 {
 	static uint16 pwm = 0;
 	static uint8 toggle = 0;
-	static uint8 div = 0;
 	
 	if(tick_100ms(TICK_PWM_LED)){
-		div++;
-		if (div == 5) {
-			div = 0;
-			toggle ^= BIT0;
-		}
+		toggle++;
 		
 		switch(menuLed()) {
 			case 0xff:
