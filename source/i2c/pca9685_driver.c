@@ -466,16 +466,37 @@ void PWM_setPin(uint8_t num, uint16_t val)
 
 
 uint8 menuLed(void) {
+	// TODO da completare
 	return 1;
 }
 
 #define MAX_REFRESH_TIMEOUT 10
+#define FAST_BLINK	6
 
 void LeslieFastButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
+	static uint8 fastBlink = 0;
 
-	if(refresh) refresh--;	
+	if(GetEditMode() == EDIT_MODE_ON) {
+		if(GetEditFunction() == BUTTON_01_LESLIE) {
+			fastBlink++;
+			
+			if(fastBlink == (FAST_BLINK >> 1)) {
+				LED_ROSSO_LESLIE;
+			} else if (fastBlink == FAST_BLINK) {
+				LED_LESLIE_OFF;
+				fastBlink = 0;
+			}
+			 
+			refresh = 0;
+			return;
+		}
+	} else {
+		fastBlink = 0;
+	}
+	
+	if(refresh) refresh--;		
 	
 	if(prev != switchType.rotarySpeaker_HalfMoon || refresh == 0) {
 		switch(switchType.rotarySpeaker_HalfMoon) {
@@ -501,7 +522,26 @@ void LeslieFastButtonLed(uint8 blink) {
 void VibratoOnButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
+	static uint8 fastBlink = 0;
 
+	if(GetEditMode() == EDIT_MODE_ON) {
+		if(GetEditFunction() == BUTTON_00_VIBRATO) {
+			fastBlink++;
+			
+			if(fastBlink == (FAST_BLINK >> 1)) {
+				LED_ROSSO_VIBRATO;
+			} else if (fastBlink == FAST_BLINK) {
+				LED_VIBRATO_OFF;
+				fastBlink = 0;
+			}
+			 
+			refresh = 0;
+			return;
+		}
+	} else {
+		fastBlink = 0;
+	}
+	
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
@@ -540,7 +580,26 @@ void VibratoOnButtonLed(uint8 blink) {
 void Percussion3rdButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
+	static uint8 fastBlink = 0;
 
+	if(GetEditMode() == EDIT_MODE_ON) {
+		if(GetEditFunction() == BUTTON_04_PERC_3RD) {
+			fastBlink++;
+			
+			if(fastBlink == (FAST_BLINK >> 1)) {
+				LED_ROSSO_3RD_PERCUSSION;
+			} else if (fastBlink == FAST_BLINK) {
+				LED_3RD_PERCUSSION_OFF;
+				fastBlink = 0;
+			}
+			 
+			refresh = 0;
+			return;
+		}
+	} else {
+		fastBlink = 0;
+	}
+	
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
@@ -579,6 +638,25 @@ void Percussion3rdButtonLed(uint8 blink) {
 void Percussion2ndButtonLed(uint8 blink){
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
+	static uint8 fastBlink = 0;
+
+	if(GetEditMode() == EDIT_MODE_ON) {
+		if(GetEditFunction() == BUTTON_08_PERC_2ND) {
+			fastBlink++;
+			
+			if(fastBlink == (FAST_BLINK >> 1)) {
+				LED_ROSSO_2ND_PERCUSSION;
+			} else if (fastBlink == FAST_BLINK) {
+				LED_2ND_PERCUSSION_OFF;
+				fastBlink = 0;
+			}
+			 
+			refresh = 0;
+			return;
+		}
+	} else {
+		fastBlink = 0;
+	}
 
 	if(refresh) refresh--;	
 	
@@ -617,7 +695,26 @@ void Percussion2ndButtonLed(uint8 blink){
 
 void OrganSoloButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
+	static uint8 fastBlink = 0;
 
+		if(GetEditMode() == EDIT_MODE_ON) {
+			if(GetEditFunction() == BUTTON_12_SOLO) {
+				fastBlink++;
+				
+				if(fastBlink == (FAST_BLINK >> 1)) {
+					LED_ROSSO_ORGAN;
+				} else if (fastBlink == FAST_BLINK) {
+					LED_ORGAN_OFF;
+					fastBlink = 0;
+				}
+				 
+				refresh = 0;
+				return;
+			}
+		} else {
+			fastBlink = 0;
+		}
+	
 	if(refresh) refresh--;	
 
 	switch(GetVolumeSolo()) {

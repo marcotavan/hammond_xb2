@@ -1106,4 +1106,9 @@ uint8 GetButtonStatus(uint8 numTasto) {
 uint8 GetEditMode(void) {
 	return EditMode;
 }
+
+uint8 GetEditFunction(void) {
+	// TODO
+	return BUTTON_01_LESLIE;
+}
 /* [] END OF FILE */

@@ -126,5 +126,6 @@ enum ButtonScanner_t {
 
 uint8 GetButtonStatus(uint8 numTasto);
 uint8 GetEditMode(void);
+uint8 GetEditFunction(void);
 #endif    
 /* [] END OF FILE */
