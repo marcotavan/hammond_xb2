@@ -697,23 +697,23 @@ void OrganSoloButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
 	static uint8 fastBlink = 0;
 
-		if(GetEditMode() == EDIT_MODE_ON) {
-			if(GetEditFunction() == BUTTON_12_SOLO) {
-				fastBlink++;
-				
-				if(fastBlink == (FAST_BLINK >> 1)) {
-					LED_ROSSO_ORGAN;
-				} else if (fastBlink == FAST_BLINK) {
-					LED_ORGAN_OFF;
-					fastBlink = 0;
-				}
-				 
-				refresh = 0;
-				return;
+	if(GetEditMode() == EDIT_MODE_ON) {
+		if(GetEditFunction() == BUTTON_12_SOLO) {
+			fastBlink++;
+			
+			if(fastBlink == (FAST_BLINK >> 1)) {
+				LED_ROSSO_ORGAN;
+			} else if (fastBlink == FAST_BLINK) {
+				LED_ORGAN_OFF;
+				fastBlink = 0;
 			}
-		} else {
-			fastBlink = 0;
+			 
+			refresh = 0;
+			return;
 		}
+	} else {
+		fastBlink = 0;
+	}
 	
 	if(refresh) refresh--;	
 
@@ -772,9 +772,8 @@ void LedPoll(void)
 		div++;
 		if (div == 5) {
 			div = 0;
-			toggle ^= 0xFF;
+			toggle ^= BIT0;
 		}
-		
 		
 		switch(menuLed()) {
 			case 0xff:

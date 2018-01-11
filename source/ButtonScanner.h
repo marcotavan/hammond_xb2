@@ -67,7 +67,8 @@ enum num_button_t {
     BUTTON_12_SOLO,
     BUTTON_13_SHIFT_CANCEL,
     BUTTON_14_KEY_1,
-    BUTTON_15_KEY_5    
+    BUTTON_15_KEY_5,
+	BUTTON_NONE = 0xFF
 };
 
 enum button_states_t {

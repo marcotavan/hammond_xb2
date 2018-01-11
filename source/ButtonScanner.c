@@ -78,6 +78,7 @@ enum {
 
 static uint8 presetStatus = PRESET_FREE;
 static uint8 EditMode = 0;
+static uint8 EditFunction = BUTTON_NONE;
 
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
@@ -790,7 +791,8 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     // 3 rilascio veloce, 
     // 2 pressione prlungata, 
     // 4 riolascio da pressione prolungata
-    
+    EditFunction = numTasto;
+	
     switch(numTasto)
     {
         case BUTTON_00_VIBRATO:
@@ -1109,6 +1111,6 @@ uint8 GetEditMode(void) {
 
 uint8 GetEditFunction(void) {
 	// TODO
-	return BUTTON_01_LESLIE;
+	return EditFunction;
 }
 /* [] END OF FILE */
