@@ -273,7 +273,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
             	Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
 			} else {
-				if(getVolumeSolo() == VOLUME_NORMAL) {
+				if(GetVolumeSolo() == VOLUME_NORMAL) {
 					overallVolumeLevel = data; // store per ritorno da solo
 		            sendControlChange(CC_Overall_Volume,data,MIDI_CHANNEL_1);
 		            

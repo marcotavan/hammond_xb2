@@ -27,7 +27,8 @@ int main()
 #include <math.h>
 #include "debug.h"
 #include "tick.h"
-
+#include "common.h" 
+#include "ButtonScanner.h"
 // #define PCA9685_ENABLE_DEBUG_OUTPUT
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -463,58 +464,246 @@ void PWM_setPin(uint8_t num, uint16_t val)
 }
 
 
+uint8 menuLed(void) {
+	return 1;
+}
+
 
 void LedPoll(void)
 {
 	static uint16 pwm = 0;
-	static uint8 toggle = 0;
+	static uint16 toggle = 0;
 	static uint8 div = 0;
 	
 	if(tick_100ms(TICK_PWM_LED)){
 		div++;
 		if (div == 5) {
 			div = 0;
-			toggle ^= 1;
-			if(toggle) {
-				LED_EDIT_ON;
-			} else {
-				LED_EDIT_OFF;
-			}
+			toggle ^= 0xFFFF;
+		}
+		
+		
+		if(toggle & BIT0) {
+			// lampeggia il led rosso
+			LED_EDIT_ON;
+		} else {
+			LED_EDIT_OFF;
+		}
+	
+		switch(menuLed()) {
+			case 0xff:
+				if(pwm==PCA9685_FULL) {
+					// accende di verde
+					pwm = PCA9685_MID;
+					LED_VERDE_LESLIE;
+					LED_VERDE_VIBRATO;
+					LED_VERDE_3RD_PERCUSSION;
+					LED_VERDE_2ND_PERCUSSION;
+					LED_VERDE_ORGAN;
+					
+				} 
+				else if(pwm==PCA9685_MID){
+					// accende di giallo
+					pwm = 0;
+					LED_GIALLO_LESLIE;
+					LED_GIALLO_VIBRATO;
+					LED_GIALLO_3RD_PERCUSSION;
+					LED_GIALLO_2ND_PERCUSSION;
+					LED_GIALLO_ORGAN;
+				}
+				else {
+					// accende di rosso
+					pwm = PCA9685_FULL;
+					LED_ROSSO_LESLIE;
+					LED_ROSSO_VIBRATO;
+					LED_ROSSO_3RD_PERCUSSION;
+					LED_ROSSO_2ND_PERCUSSION;
+					LED_ROSSO_ORGAN;
+				}
+				break;
 			
-		// PCA9685_setChannelPWM(15, i); // Set PWM to 128/255, but in 4096 land
-			if(pwm==PCA9685_FULL) {
-				// accende di verde
-				pwm = PCA9685_MID;
-				LED_VERDE_LESLIE;
-				LED_VERDE_VIBRATO;
-				LED_VERDE_3RD_PERCUSSION;
-				LED_VERDE_2ND_PERCUSSION;
-				LED_VERDE_ORGAN;
+			case 0:	
+				LED_LESLIE_OFF;
+				LED_VIBRATO_OFF;	
+				LED_3RD_PERCUSSION_OFF;
+				LED_2ND_PERCUSSION_OFF;
+				LED_ORGAN_OFF;
+				break;
 				
-			} 
-			else if(pwm==PCA9685_MID){
-				// accende di giallo
-				pwm = 0;
-				LED_GIALLO_LESLIE;
-				LED_GIALLO_VIBRATO;
-				LED_GIALLO_3RD_PERCUSSION;
-				LED_GIALLO_2ND_PERCUSSION;
-				LED_GIALLO_ORGAN;
-			}
-			else {
-				// accende di rosso
-				pwm = PCA9685_FULL;
-				LED_ROSSO_LESLIE;
-				LED_ROSSO_VIBRATO;
-				LED_ROSSO_3RD_PERCUSSION;
-				LED_ROSSO_2ND_PERCUSSION;
-				LED_ROSSO_ORGAN;
-			}
+			case 1:
+				// funzionamento normale dei led
+				switch(switchType.rotarySpeaker_HalfMoon) {
+					case ROTARY_SLOW:
+					LED_VERDE_LESLIE;
+					break;
+					
+					case ROTARY_STOP:
+					LED_LESLIE_OFF; // LED_ROSSO_LESLIE
+					break;
+					
+					case ROTARY_FAST:
+					LED_GIALLO_LESLIE;
+					break;
+				}
+				
+				/*
+				 	BUTTON_00_VIBRATO,   
+				    BUTTON_01_LESLIE,
+				    BUTTON_02_KEY_4,
+				    BUTTON_03_KEY_8,
+				    BUTTON_04_PERC_3RD,
+				    BUTTON_05_EDIT,
+				    BUTTON_06_KEY_3,
+				    BUTTON_07_KEY_7,
+				    BUTTON_08_PERC_2ND,
+				    BUTTON_09_RECORD,
+				    BUTTON_10_KEY_2,
+				    BUTTON_11_KEY_6,
+				    BUTTON_12_SOLO,
+				    BUTTON_13_SHIFT_CANCEL,
+				    BUTTON_14_KEY_1,
+				    BUTTON_15_KEY_5    
+				*/
+				
+				if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
+					// lampeggia in base allo stato del
+					switch(switchType.Vibrato_Lower_Switch) {
+						case SWITCH_ON:
+							if(toggle & BIT0) {
+								LED_VERDE_VIBRATO;
+							} else {
+								LED_VIBRATO_OFF;
+							}
+						break;
+						
+						case SWITCH_OFF:
+							if(toggle & BIT0)	{
+								LED_ROSSO_VIBRATO;
+							} else {
+								LED_VIBRATO_OFF;
+							}
+						break;
+					}
+				} else {
+					switch(switchType.Vibrato_Upper_Switch) {
+						case SWITCH_ON:
+						LED_GIALLO_VIBRATO;
+						break;
+						
+						case SWITCH_OFF:
+						LED_VIBRATO_OFF; // LED_ROSSO_LESLIE
+						break;
+					}
+				}
+				
+				/*
+				    PERC_FAST = 0x00,
+				    PERC_SLOW = 0x7F
+
+				    PERC_SOFT = 0x00,
+    				PERC_NORM = 0x7F
+				
+					PERC_2ND = 0x00,
+					PERC_OFF = 0x01,
+				    PERC_3RD = 0x7F
+				*/
+				if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
+					// lampeggia in base allo stato del
+					switch(switchType.percussionLevel_Switch) {
+						case PERC_SOFT:
+							if(toggle & BIT0) {
+								LED_ROSSO_3RD_PERCUSSION;
+							} else {
+								LED_3RD_PERCUSSION_OFF;
+							}
+						break;
+						
+						case PERC_NORM:
+							if(toggle & BIT0)	{
+								LED_VERDE_3RD_PERCUSSION;
+							} else {
+								LED_3RD_PERCUSSION_OFF;
+							}
+						break;
+					}
+				} else {
+					switch(switchType.percussionHarmonics_Switch) {
+						case PERC_3RD:
+							LED_GIALLO_3RD_PERCUSSION;
+						break;
+						
+						default:
+							LED_3RD_PERCUSSION_OFF; 
+						break;
+					}
+				}
+				
+				if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
+					// lampeggia in base allo stato del
+					switch(switchType.percussionDecay_Switch) {
+						case PERC_FAST:
+							if(toggle & BIT0) {
+								LED_ROSSO_2ND_PERCUSSION;
+							} else {
+								LED_2ND_PERCUSSION_OFF;
+							}
+						break;
+						
+						case PERC_SLOW:
+							if(toggle & BIT0)	{
+								LED_VERDE_2ND_PERCUSSION;
+							} else {
+								LED_2ND_PERCUSSION_OFF;
+							}
+						break;
+					}
+				} else {
+					switch(switchType.percussionHarmonics_Switch) {
+						case PERC_2ND:
+							LED_GIALLO_2ND_PERCUSSION;
+						break;
+						
+						default:
+							LED_2ND_PERCUSSION_OFF; 
+						break;
+					}
+				}
+				
+				if(GetButtonStatus(BUTTON_12_SOLO) == BUTTON_ON_HOLD) {
+					/*
+					// lampeggia in base allo stato del
+					switch(switchType.percussionDecay_Switch) {
+						case PERC_FAST:
+							if(toggle & BIT0) {
+								LED_ROSSO_2ND_PERCUSSION;
+							} else {
+								LED_2ND_PERCUSSION_OFF;
+							}
+						break;
+						
+						case PERC_SLOW:
+							if(toggle & BIT0)	{
+								LED_VERDE_2ND_PERCUSSION;
+							} else {
+								LED_2ND_PERCUSSION_OFF;
+							}
+						break;
+					}
+					*/
+				} else {
+					switch(GetVolumeSolo()) {
+						case VOLUME_NORMAL:
+							LED_ORGAN_OFF;
+						break;
+						
+						default:
+							LED_ROSSO_ORGAN; 
+						break;
+					}
+				}
+				
+			break; // case 1:
 			
-			// PCA9685_setAllChannelsPWM(pwm);
-			#ifdef PCA9685_ENABLE_DEBUG_OUTPUT
-			DBG_PRINTF("PWM_setPWM up:%d\n",pwm);
-			#endif
 		}
 	}
 }
