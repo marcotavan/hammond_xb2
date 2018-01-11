@@ -518,7 +518,7 @@ void VibratoOnButtonLed(uint8 blink) {
 		} else {
 			LED_VIBRATO_OFF;
 		}
-		refresh = 0; // al rilasio risistema il led
+		refresh = 0; // al rilascio risistema il led
 	} else {
 		if(prev != switchType.Vibrato_Upper_Switch || refresh == 0) {
 			switch(switchType.Vibrato_Upper_Switch) {
@@ -557,7 +557,7 @@ void Percussion3rdButtonLed(uint8 blink) {
 		} else {
 			LED_3RD_PERCUSSION_OFF;
 		}
-		refresh = 0; // al rilasio risistema il led
+		refresh = 0; // al rilascio risistema il led
 	} else {
 		if(prev != switchType.percussionHarmonics_Switch || refresh == 0) {
 			switch(switchType.percussionHarmonics_Switch) {
@@ -596,7 +596,7 @@ void Percussion2ndButtonLed(uint8 blink){
 		} else {
 			LED_2ND_PERCUSSION_OFF;
 		}
-		refresh = 0; // al rilasio risistema il led
+		refresh = 0; // al rilascio risistema il led
 	} else {
 		if(prev != switchType.percussionHarmonics_Switch || refresh == 0) {
 			switch(switchType.percussionHarmonics_Switch) {
@@ -616,24 +616,32 @@ void Percussion2ndButtonLed(uint8 blink){
 }
 
 void OrganSoloButtonLed(uint8 blink) {
-	if(GetButtonStatus(BUTTON_12_SOLO) == BUTTON_ON_HOLD) {
-		;
-	} else {
-		switch(GetVolumeSolo()) {
-			case VOLUME_NORMAL:
+	static uint8 prev = 1;
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	switch(GetVolumeSolo()) {
+		case VOLUME_NORMAL:
+			if(prev != GetVolumeSolo() || refresh == 0) {
 				LED_ORGAN_OFF;
+				prev = GetVolumeSolo();
+				refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+				DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);	
+			}
 			break;
-			
-			default:
+		
+		default:
+			if(blink) {
 				LED_ROSSO_ORGAN; 
+			} else {
+				LED_ORGAN_OFF;
+			}
 			break;
-		}
 	}
 }
 
 void EditButtonLed(uint8 blink) {
 	if(blink) {
-		// lampeggia il led rosso
 		LED_EDIT_ON;
 	} else {
 		LED_EDIT_OFF;
