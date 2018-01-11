@@ -77,6 +77,7 @@ enum {
 };
 
 static uint8 presetStatus = PRESET_FREE;
+static uint8 EditMode = 0;
 
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
@@ -699,6 +700,7 @@ void ManageButton_Edit(uint8 status)
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
 			DBG_PRINTF("ManageButton_Edit BUTTON_SHORT_PRESS\n");
+			EditMode = 0;
 			Display_Alternate_Text(ROW_1,ALT_Edit);
         }
         break;
@@ -706,6 +708,14 @@ void ManageButton_Edit(uint8 status)
         // case BUTTON_LONG_PRESS   // valido al rilascio lungo
         case BUTTON_ON_HOLD:        // valido al mantenimento
         {
+			switch(EditMode) {
+				case 0:
+					EditMode = 1;
+					break;
+				case 1:
+					EditMode = 0;
+					break;
+			}
 			DBG_PRINTF("ManageButton_Edit BUTTON_ON_HOLD\n");
         }
         break;
@@ -1091,5 +1101,9 @@ uint8 GetPresetStatus(void) {
 
 uint8 GetButtonStatus(uint8 numTasto) {
 	return (button[numTasto].status);
+}
+
+uint8 GetEditMode(void) {
+	return EditMode;
 }
 /* [] END OF FILE */

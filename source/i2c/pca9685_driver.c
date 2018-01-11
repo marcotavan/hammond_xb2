@@ -616,15 +616,14 @@ void Percussion2ndButtonLed(uint8 blink){
 }
 
 void OrganSoloButtonLed(uint8 blink) {
-	static uint8 prev = 1;
 	static uint8 refresh = 0;
 
 	if(refresh) refresh--;	
+
 	switch(GetVolumeSolo()) {
 		case VOLUME_NORMAL:
-			if(prev != GetVolumeSolo() || refresh == 0) {
+			if(refresh == 0) {
 				LED_ORGAN_OFF;
-				prev = GetVolumeSolo();
 				refresh = MAX_REFRESH_TIMEOUT + rand()%5;
 				DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);	
 			}
@@ -636,16 +635,34 @@ void OrganSoloButtonLed(uint8 blink) {
 			} else {
 				LED_ORGAN_OFF;
 			}
+			refresh = 0;
 			break;
 	}
 }
 
 void EditButtonLed(uint8 blink) {
-	if(blink) {
-		LED_EDIT_ON;
-	} else {
-		LED_EDIT_OFF;
-	}
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	
+	switch(GetEditMode()) {
+		case EDIT_MODE_OFF:
+			if(refresh == 0) {
+				LED_EDIT_OFF;
+				refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+				DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+			}
+			break;
+			
+		default:
+			if(blink) {
+				LED_EDIT_ON;
+			} else {
+				LED_EDIT_OFF;
+			}
+			refresh = 0;
+			break;
+	} 
 }
 
 void LedPoll(void)

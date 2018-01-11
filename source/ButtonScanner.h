@@ -42,13 +42,16 @@ struct _switchType_ {
 
 uint8 SOLO_Button_on_Hold(void);
 
-enum _Volume_level_ {
+enum Volume_level_t {
 	VOLUME_NORMAL,
 	VOLUME_MAX
 };
 
-
-enum _num_button_ {
+enum Edit_Mode_t {
+	EDIT_MODE_OFF,
+	EDIT_MODE_ON
+};
+enum num_button_t {
     BUTTON_00_VIBRATO,   
     BUTTON_01_LESLIE,
     BUTTON_02_KEY_4,
@@ -67,7 +70,7 @@ enum _num_button_ {
     BUTTON_15_KEY_5    
 };
 
-enum _button_states_ {
+enum button_states_t {
     BUTTON_RELEASED,
     BUTTON_PRESSED,
     BUTTON_ON_HOLD,
@@ -75,18 +78,18 @@ enum _button_states_ {
     BUTTON_LONG_RELEASE
 };
 
-enum _rotary_switch_ {
+enum rotary_switch_t {
     ROTARY_SLOW = 0x00,
     ROTARY_STOP = 0x3F,
     ROTARY_FAST = 0x7F
 };
 
-enum _switch_ {
+enum switch_t {
     SWITCH_OFF = 0x00,
     SWITCH_ON = 0x7F
 };
 
-enum _chorus_type_ { 
+enum chorus_type_t { 
     CHORUS_V1,      // 0
     CHORUS_C1,      // 1
     CHORUS_V2,      // 2
@@ -95,33 +98,33 @@ enum _chorus_type_ {
     CHORUS_C3       // 5    
 };
 
-enum _perc_level_ {
+enum perc_level_t {
     PERC_SOFT = 0x00,
     PERC_NORM = 0x7F
 };
 
-enum _perc_decay_ {
+enum perc_decay_t {
     PERC_FAST = 0x00,
     PERC_SLOW = 0x7F
 };
 
-enum _perc_type_ {
+enum perc_type_t {
 	PERC_2ND = 0x00,
 	PERC_OFF = 0x01,
     PERC_3RD = 0x7F
 };
 
-enum _preset_ {
+enum preset_t {
     PRESET_A,
     PRESET_B  
 };
 
-enum _ButtonScanner_ {
+enum ButtonScanner_t {
     ButtonScanner_SELECT,
     ButtonScanner_READ
 };
 
 uint8 GetButtonStatus(uint8 numTasto);
-
+uint8 GetEditMode(void);
 #endif    
 /* [] END OF FILE */
