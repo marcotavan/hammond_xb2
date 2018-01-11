@@ -29,6 +29,7 @@ int main()
 #include "tick.h"
 #include "common.h" 
 #include "ButtonScanner.h"
+#include "stdlib.h"
 // #define PCA9685_ENABLE_DEBUG_OUTPUT
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -468,28 +469,191 @@ uint8 menuLed(void) {
 	return 1;
 }
 
+#define MAX_REFRESH_TIMEOUT 10
+
+void LeslieFastButtonLed(uint8 blink) {
+	static uint8 prev = 1;
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	
+	if(prev != switchType.rotarySpeaker_HalfMoon || refresh == 0) {
+		switch(switchType.rotarySpeaker_HalfMoon) {
+			case ROTARY_SLOW:
+				LED_VERDE_LESLIE;
+				break;
+			
+			case ROTARY_STOP:
+				LED_LESLIE_OFF; // LED_ROSSO_LESLIE
+				break;
+			
+			case ROTARY_FAST:
+				LED_GIALLO_LESLIE;
+				break;
+		}
+		
+		prev = switchType.rotarySpeaker_HalfMoon;
+		refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+		DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+	}
+}
+	
+void VibratoOnButtonLed(uint8 blink) {
+	static uint8 prev = 1;
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	
+	if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
+		if(blink) {
+			switch(switchType.Vibrato_Lower_Switch) {
+				case SWITCH_ON:
+					LED_VERDE_VIBRATO;
+					break;
+				
+				case SWITCH_OFF:
+					LED_ROSSO_VIBRATO;
+					break;
+			}
+		} else {
+			LED_VIBRATO_OFF;
+		}
+		refresh = 0; // al rilasio risistema il led
+	} else {
+		if(prev != switchType.Vibrato_Upper_Switch || refresh == 0) {
+			switch(switchType.Vibrato_Upper_Switch) {
+				case SWITCH_ON:
+					LED_GIALLO_VIBRATO;
+					break;
+				
+				case SWITCH_OFF:
+					LED_VIBRATO_OFF; // LED_ROSSO_LESLIE
+					break;
+			}
+			prev = switchType.Vibrato_Upper_Switch;
+			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+		}
+	}
+}	
+
+void Percussion3rdButtonLed(uint8 blink) {
+	static uint8 prev = 1;
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	
+	if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
+		if(blink) {
+			switch(switchType.percussionLevel_Switch) {
+				case PERC_SOFT:
+					LED_ROSSO_3RD_PERCUSSION;
+					break;
+				
+				case PERC_NORM:
+					LED_VERDE_3RD_PERCUSSION;
+					break;
+			}
+		} else {
+			LED_3RD_PERCUSSION_OFF;
+		}
+		refresh = 0; // al rilasio risistema il led
+	} else {
+		if(prev != switchType.percussionHarmonics_Switch || refresh == 0) {
+			switch(switchType.percussionHarmonics_Switch) {
+				case PERC_3RD:
+					LED_GIALLO_3RD_PERCUSSION;
+					break;
+				
+				default:
+					LED_3RD_PERCUSSION_OFF; 
+					break;
+			}
+			prev = switchType.percussionHarmonics_Switch;
+			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+		}
+	}
+}
+
+void Percussion2ndButtonLed(uint8 blink){
+	static uint8 prev = 1;
+	static uint8 refresh = 0;
+
+	if(refresh) refresh--;	
+	
+	if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
+		if(blink) {
+			switch(switchType.percussionDecay_Switch) {
+				case PERC_FAST:
+					LED_ROSSO_2ND_PERCUSSION;
+					break;
+				
+				case PERC_SLOW:
+					LED_VERDE_2ND_PERCUSSION;
+					break;
+			}
+		} else {
+			LED_2ND_PERCUSSION_OFF;
+		}
+		refresh = 0; // al rilasio risistema il led
+	} else {
+		if(prev != switchType.percussionHarmonics_Switch || refresh == 0) {
+			switch(switchType.percussionHarmonics_Switch) {
+				case PERC_2ND:
+					LED_GIALLO_2ND_PERCUSSION;
+					break;
+				
+				default:
+					LED_2ND_PERCUSSION_OFF; 
+					break;
+			}
+			prev = switchType.percussionHarmonics_Switch;
+			refresh = MAX_REFRESH_TIMEOUT + rand()%5;
+			DBG_PRINTF("%s next refresh in %dms\n",__func__,refresh*100);
+		}
+	}
+}
+
+void OrganSoloButtonLed(uint8 blink) {
+	if(GetButtonStatus(BUTTON_12_SOLO) == BUTTON_ON_HOLD) {
+		;
+	} else {
+		switch(GetVolumeSolo()) {
+			case VOLUME_NORMAL:
+				LED_ORGAN_OFF;
+			break;
+			
+			default:
+				LED_ROSSO_ORGAN; 
+			break;
+		}
+	}
+}
+
+void EditButtonLed(uint8 blink) {
+	if(blink) {
+		// lampeggia il led rosso
+		LED_EDIT_ON;
+	} else {
+		LED_EDIT_OFF;
+	}
+}
 
 void LedPoll(void)
 {
 	static uint16 pwm = 0;
-	static uint16 toggle = 0;
+	static uint8 toggle = 0;
 	static uint8 div = 0;
 	
 	if(tick_100ms(TICK_PWM_LED)){
 		div++;
 		if (div == 5) {
 			div = 0;
-			toggle ^= 0xFFFF;
+			toggle ^= 0xFF;
 		}
 		
 		
-		if(toggle & BIT0) {
-			// lampeggia il led rosso
-			LED_EDIT_ON;
-		} else {
-			LED_EDIT_OFF;
-		}
-	
 		switch(menuLed()) {
 			case 0xff:
 				if(pwm==PCA9685_FULL) {
@@ -532,180 +696,16 @@ void LedPoll(void)
 				
 			case 1:
 				// funzionamento normale dei led
-				switch(switchType.rotarySpeaker_HalfMoon) {
-					case ROTARY_SLOW:
-					LED_VERDE_LESLIE;
-					break;
-					
-					case ROTARY_STOP:
-					LED_LESLIE_OFF; // LED_ROSSO_LESLIE
-					break;
-					
-					case ROTARY_FAST:
-					LED_GIALLO_LESLIE;
-					break;
-				}
-				
-				/*
-				 	BUTTON_00_VIBRATO,   
-				    BUTTON_01_LESLIE,
-				    BUTTON_02_KEY_4,
-				    BUTTON_03_KEY_8,
-				    BUTTON_04_PERC_3RD,
-				    BUTTON_05_EDIT,
-				    BUTTON_06_KEY_3,
-				    BUTTON_07_KEY_7,
-				    BUTTON_08_PERC_2ND,
-				    BUTTON_09_RECORD,
-				    BUTTON_10_KEY_2,
-				    BUTTON_11_KEY_6,
-				    BUTTON_12_SOLO,
-				    BUTTON_13_SHIFT_CANCEL,
-				    BUTTON_14_KEY_1,
-				    BUTTON_15_KEY_5    
-				*/
-				
-				if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
-					// lampeggia in base allo stato del
-					switch(switchType.Vibrato_Lower_Switch) {
-						case SWITCH_ON:
-							if(toggle & BIT0) {
-								LED_VERDE_VIBRATO;
-							} else {
-								LED_VIBRATO_OFF;
-							}
-						break;
-						
-						case SWITCH_OFF:
-							if(toggle & BIT0)	{
-								LED_ROSSO_VIBRATO;
-							} else {
-								LED_VIBRATO_OFF;
-							}
-						break;
-					}
-				} else {
-					switch(switchType.Vibrato_Upper_Switch) {
-						case SWITCH_ON:
-						LED_GIALLO_VIBRATO;
-						break;
-						
-						case SWITCH_OFF:
-						LED_VIBRATO_OFF; // LED_ROSSO_LESLIE
-						break;
-					}
-				}
-				
-				/*
-				    PERC_FAST = 0x00,
-				    PERC_SLOW = 0x7F
-
-				    PERC_SOFT = 0x00,
-    				PERC_NORM = 0x7F
-				
-					PERC_2ND = 0x00,
-					PERC_OFF = 0x01,
-				    PERC_3RD = 0x7F
-				*/
-				if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
-					// lampeggia in base allo stato del
-					switch(switchType.percussionLevel_Switch) {
-						case PERC_SOFT:
-							if(toggle & BIT0) {
-								LED_ROSSO_3RD_PERCUSSION;
-							} else {
-								LED_3RD_PERCUSSION_OFF;
-							}
-						break;
-						
-						case PERC_NORM:
-							if(toggle & BIT0)	{
-								LED_VERDE_3RD_PERCUSSION;
-							} else {
-								LED_3RD_PERCUSSION_OFF;
-							}
-						break;
-					}
-				} else {
-					switch(switchType.percussionHarmonics_Switch) {
-						case PERC_3RD:
-							LED_GIALLO_3RD_PERCUSSION;
-						break;
-						
-						default:
-							LED_3RD_PERCUSSION_OFF; 
-						break;
-					}
-				}
-				
-				if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
-					// lampeggia in base allo stato del
-					switch(switchType.percussionDecay_Switch) {
-						case PERC_FAST:
-							if(toggle & BIT0) {
-								LED_ROSSO_2ND_PERCUSSION;
-							} else {
-								LED_2ND_PERCUSSION_OFF;
-							}
-						break;
-						
-						case PERC_SLOW:
-							if(toggle & BIT0)	{
-								LED_VERDE_2ND_PERCUSSION;
-							} else {
-								LED_2ND_PERCUSSION_OFF;
-							}
-						break;
-					}
-				} else {
-					switch(switchType.percussionHarmonics_Switch) {
-						case PERC_2ND:
-							LED_GIALLO_2ND_PERCUSSION;
-						break;
-						
-						default:
-							LED_2ND_PERCUSSION_OFF; 
-						break;
-					}
-				}
-				
-				if(GetButtonStatus(BUTTON_12_SOLO) == BUTTON_ON_HOLD) {
-					/*
-					// lampeggia in base allo stato del
-					switch(switchType.percussionDecay_Switch) {
-						case PERC_FAST:
-							if(toggle & BIT0) {
-								LED_ROSSO_2ND_PERCUSSION;
-							} else {
-								LED_2ND_PERCUSSION_OFF;
-							}
-						break;
-						
-						case PERC_SLOW:
-							if(toggle & BIT0)	{
-								LED_VERDE_2ND_PERCUSSION;
-							} else {
-								LED_2ND_PERCUSSION_OFF;
-							}
-						break;
-					}
-					*/
-				} else {
-					switch(GetVolumeSolo()) {
-						case VOLUME_NORMAL:
-							LED_ORGAN_OFF;
-						break;
-						
-						default:
-							LED_ROSSO_ORGAN; 
-						break;
-					}
-				}
-				
+				LeslieFastButtonLed(toggle);
+				VibratoOnButtonLed(toggle);
+				Percussion3rdButtonLed(toggle);
+				Percussion2ndButtonLed(toggle);
+				OrganSoloButtonLed(toggle);
+				EditButtonLed(toggle);
 			break; // case 1:
 			
 		}
-	}
+	} // 100ms
 }
 
 void test_pwm(void) {
