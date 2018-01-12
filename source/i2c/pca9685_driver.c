@@ -485,7 +485,7 @@ uint8 BlinkTime(uint8 blink, uint8 vel) {
 void LeslieFastButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 oneShot = 0;
+	static uint8 oneShot = 1;
 	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_01_LESLIE) {
@@ -536,7 +536,7 @@ void LeslieFastButtonLed(uint8 blink) {
 void VibratoOnButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 oneShot = 0;
+	static uint8 oneShot = 1;
 
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_00_VIBRATO) {
@@ -603,7 +603,7 @@ void VibratoOnButtonLed(uint8 blink) {
 void Percussion3rdButtonLed(uint8 blink) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-	static uint8 oneShot = 0;
+	static uint8 oneShot = 1;
 	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_04_PERC_3RD) {
@@ -613,7 +613,7 @@ void Percussion3rdButtonLed(uint8 blink) {
 					oneShot = 0;
 				}
 			} else {
-				if(oneShot == 0) {
+				if(!oneShot) {
 					LED_3RD_PERCUSSION_OFF;
 					oneShot = 1;
 				}	
@@ -628,17 +628,23 @@ void Percussion3rdButtonLed(uint8 blink) {
 	
 	if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
 		if(BlinkTime(blink, MID_BLINK)) {
-			switch(switchType.percussionLevel_Switch) {
-				case PERC_SOFT:
-					LED_ROSSO_3RD_PERCUSSION;
-					break;
-				
-				case PERC_NORM:
-					LED_VERDE_3RD_PERCUSSION;
-					break;
+			if(oneShot) {
+				switch(switchType.percussionLevel_Switch) {
+					case PERC_SOFT:
+						LED_ROSSO_3RD_PERCUSSION;
+						break;
+					
+					case PERC_NORM:
+						LED_VERDE_3RD_PERCUSSION;
+						break;
+				}
+				oneShot = 0;
 			}
 		} else {
-			LED_3RD_PERCUSSION_OFF;
+			if(!oneShot) {
+				LED_3RD_PERCUSSION_OFF;
+				oneShot = 1;
+			}
 		}
 		refresh = 0; // al rilascio risistema il led
 	} else {
@@ -664,14 +670,21 @@ void Percussion3rdButtonLed(uint8 blink) {
 void Percussion2ndButtonLed(uint8 blink){
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
-
+	static uint8 oneShot = 1;
+	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_08_PERC_2ND) {
 			
 			if(BlinkTime(blink, MID_BLINK)) {
-				LED_ROSSO_2ND_PERCUSSION;
+				if(oneShot) {
+					LED_ROSSO_2ND_PERCUSSION;
+					oneShot = 0;
+				}
 			} else {
-				LED_2ND_PERCUSSION_OFF;
+				if(!oneShot) {
+					LED_2ND_PERCUSSION_OFF;
+					oneShot = 1;
+				}
 			}
 			 
 			refresh = 0;
@@ -683,17 +696,23 @@ void Percussion2ndButtonLed(uint8 blink){
 	
 	if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
 		if(BlinkTime(blink, MID_BLINK)) {
-			switch(switchType.percussionDecay_Switch) {
-				case PERC_FAST:
-					LED_ROSSO_2ND_PERCUSSION;
-					break;
-				
-				case PERC_SLOW:
-					LED_VERDE_2ND_PERCUSSION;
-					break;
+			if(oneShot) {
+				switch(switchType.percussionDecay_Switch) {
+					case PERC_FAST:
+						LED_ROSSO_2ND_PERCUSSION;
+						break;
+					
+					case PERC_SLOW:
+						LED_VERDE_2ND_PERCUSSION;
+						break;
+				}
+				oneShot = 0;
 			}
 		} else {
-			LED_2ND_PERCUSSION_OFF;
+			if(!oneShot) {
+				LED_2ND_PERCUSSION_OFF;
+				oneShot = 1;
+			}
 		}
 		refresh = 0; // al rilascio risistema il led
 	} else {
@@ -718,14 +737,21 @@ void Percussion2ndButtonLed(uint8 blink){
 
 void OrganSoloButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
-
+	static uint8 oneShot = 1;
+	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_12_SOLO) {
 						
 			if(BlinkTime(blink, MID_BLINK)) {
-				LED_ROSSO_ORGAN;
+				if(oneShot) {
+					LED_ROSSO_ORGAN;
+					oneShot = 0;
+				}
 			} else {
-				LED_ORGAN_OFF;
+				if(!oneShot) {
+					LED_ORGAN_OFF;
+					oneShot = 1;
+				}
 			}
 			 
 			refresh = 0;
@@ -748,9 +774,15 @@ void OrganSoloButtonLed(uint8 blink) {
 		
 		default:
 			if(BlinkTime(blink, MID_BLINK)) {
-				LED_ROSSO_ORGAN; 
+				if(oneShot) {
+					LED_ROSSO_ORGAN; 
+					oneShot = 0;
+				}
 			} else {
-				LED_ORGAN_OFF;
+				if(!oneShot) {
+					LED_ORGAN_OFF;
+					oneShot = 1;	
+				}	
 			}
 			refresh = 0;
 			break;
@@ -759,7 +791,7 @@ void OrganSoloButtonLed(uint8 blink) {
 
 void EditButtonLed(uint8 blink) {
 	static uint8 refresh = 0;
-	static uint8 oneShot = 0;
+	static uint8 oneShot = 1;
 	
 	if(refresh) refresh--;	
 	
