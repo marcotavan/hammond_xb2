@@ -907,7 +907,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 								
 									switch(selectedFunction) {
 										case FUNC_Split:
-											DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d",selectedFunction,subMenuParameter);
+											DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 											// DisplayMenu(selectedFunction,MENU_LEVEL_1);
 										break;
 									} // switch(selectedFunction) 
@@ -919,12 +919,12 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 											switch(subMenuParameter) {
 												case 1:
 													subMenuParameter = 2; // pagina principale con EDIT attivo
-													DBG_PRINTF("func:%d, nel display va scritto: SPLIT:OFF  KEY#>C2, (menu level 1), par:%d",selectedFunction,subMenuParameter);
+													DBG_PRINTF("func:%d, nel display va scritto: SPLIT:OFF  KEY#>C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 												break;
 											
 												case 2:
 													subMenuParameter = 1; // pagina principale con EDIT attivo
-													DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d",selectedFunction,subMenuParameter);
+													DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 												break;
 											} // switch(subMenuPage)
 										break;	// case FUNC_Split:
@@ -941,7 +941,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
 											case 1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>ON  KEY#:C2, (menu level 1), par:%d",selectedFunction,subMenuParameter);
+												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>ON  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 											break;
 											
 											case 2:
@@ -961,7 +961,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
 											case 1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d",selectedFunction,subMenuParameter);
+												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 											break; // case 1:
 												
 											case 2:

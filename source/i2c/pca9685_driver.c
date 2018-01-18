@@ -39,7 +39,7 @@ static uint8 pca9685_i2cAddress = PCA9685_I2C_BASE_ADDRESS;
 static uint8 pca9685_lastI2CError = 0;         // Last i2c error
 PCA9685_PhaseBalancer _phaseBalancer; // Phase balancer scheme to distribute load
 
-#define VERBOSE_DEBUG 1
+#define VERBOSE_DEBUG 0
 
 uint8 lowByte(uint16 data) {
 	// verificare
