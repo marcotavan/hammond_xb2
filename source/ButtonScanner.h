@@ -125,6 +125,25 @@ enum ButtonScanner_t {
     ButtonScanner_READ
 };
 
+enum functionList_t {
+	FUNC_vibrato = 1,
+	FUNC_tune,
+	FUNC_percussion,
+	FUNC_footSwitch,
+	FUNC_Drawbar,
+	FUNC_Split,
+	FUNC_Midi,
+	FUNC_Effect,
+	FUNC_Preset,
+	FUNC_Reset
+};
+
+enum menuLevel_t {
+	MENU_LEVEL_0,
+	MENU_LEVEL_1,
+	MENU_LEVEL_2,
+};
+
 uint8 GetButtonStatus(uint8 numTasto);
 uint8 GetEditMode(void);
 uint8 GetEditFunction(void);

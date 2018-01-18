@@ -55,6 +55,7 @@ const char *noteNamearray[] = {
             "A#",
             "B"
         };
+// DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
 
 // Private method for generating a status byte from channel and type
 byte genstatus(const enum kMIDIType inType,

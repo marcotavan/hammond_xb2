@@ -292,5 +292,4 @@ void MatrixScanner(void)
     } // for(line = 0;line < 16;line++)
 } // MatrixScanner
 
-
 /* [] END OF FILE */

@@ -137,6 +137,8 @@ uint8 sendMidiMessage(enum kMIDIType type,
 	
 void UART_MIDI_Init(void);
 
+extern const char *noteNamearray[];
+	
 // uint8 GetMIDI_TX_STS(uint8 bitField);
 #endif // _MIDI_LIBRARY_H_
 
