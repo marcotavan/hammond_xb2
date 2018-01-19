@@ -724,9 +724,11 @@ void ManageButton_Record(uint8 status)
 static uint8 prevKey = 0; // globale...
 
 void EditModeExit(void) {		
+	// WriteDataToEeprom(EEPROM_BUTTON);
+	DBG_PRINTF("salvare in eeprom i parametri modificati\n");
 	EditMode = EDIT_MODE_OFF;
 	prevKey = 0;
-	Display_Alternate_Text(ROW_1,ALT_Edit);
+	Display_Alternate_Text(ROW_1,ALT_Edit); // non so cosa fa questo
 }
 
 void ManageButton_Edit(uint8 status)
@@ -737,7 +739,9 @@ void ManageButton_Edit(uint8 status)
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
 			DBG_PRINTF("ManageButton_Edit BUTTON_SHORT_PRESS\n");
-			EditModeExit();
+			if(EditMode == EDIT_MODE_ON) {
+				EditModeExit();
+			}
         }
         break;
         
@@ -832,11 +836,13 @@ void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
 		case FUNC_Split:
 			switch (subMenuParameter) { // parametro da cambiare
 				case PARAMETER_1:
-					DBG_PRINTF("nel display va scritto: SPLIT>{%d}  KEY#:C2, (menu level 1), func:%d, par:%d\n",tasto,selectedFunction,subMenuParameter);
+					DBG_PRINTF("[%s] nel display va scritto: SPLIT>{%d}  KEY#:C2, (menu level 1), func:%d, par:%d\n",__func__,tasto,selectedFunction,subMenuParameter);
+					DBG_PRINTF("write eeprom	immediatly\n");
 				break;
 				
 				case PARAMETER_2:
-					DBG_PRINTF("press any key to split...\n");
+					DBG_PRINTF("[%s] press any key to split...\n",__func__);
+					DBG_PRINTF("write eeprom	immediatly\n");
 				break;
 			}
 		break; // case FUNC_Split:
@@ -846,7 +852,6 @@ void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
 
 // permette di selezionare una funzione da editare  con i tasti numerici
 uint8 FunctionSelect(uint8 numTasto){
-	
 	static uint8 editFunctionToggle = 0;
 	uint8 selectedFunction = 0;
 	// #if MENU_DEBUG
@@ -1041,7 +1046,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
 								*/
-								doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
+								doAction(selectedFunction,subMenuParameter,1);
 							break; // case MENU_LEVEL_1:
 						} // switch(menuLevel)
 					break; // case 2: // on / +
@@ -1066,7 +1071,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
 								*/
-								doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
+								doAction(selectedFunction,subMenuParameter,0);
 							break; // case 1:
 						} // switch(menuLevel)
 						break; // case 3: // off / -
@@ -1240,8 +1245,9 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     } // switch(numTasto)
     
     // chiamare una scrittura in eeprom
-    WriteDataToEeprom(EEPROM_BUTTON);
-    
+	if(GetEditMode() == 0) {
+    	WriteDataToEeprom(EEPROM_BUTTON);
+    }
 } // ButtonCommand
 
 /*****************************************************************************\
