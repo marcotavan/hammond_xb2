@@ -46,6 +46,7 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #define MAX_PULSANTI 16
 
 #define BUTTON_UART_DEBUG (0)
+#define MENU_DEBUG (0)
 static struct onHold_s {
     uint8 shift;
     uint8 solo;
@@ -771,11 +772,69 @@ void ResetButtonCycle(void) {
 	memset(buttonCycle,0,sizeof(buttonCycle));
 }
 
+void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMenuParameter) {
+	
+	switch(selectedFunction) {
+		case FUNC_vibrato:
+		break;
+		
+		case FUNC_tune:
+		break;
+		
+		case FUNC_percussion:
+		break;
+		
+		case FUNC_footSwitch:
+		break;
+		
+		case FUNC_Drawbar:
+		break;
+		
+		case FUNC_Midi:
+		break;
+		
+		case FUNC_Effect:
+		break;
+		
+		case FUNC_Preset:
+		break;
+		
+		case FUNC_Reset:
+		break;
+		
+		case FUNC_Split:
+			switch(menuLevel) {
+				case MENU_LEVEL_0:
+							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#:C2 | (menu level 0)");
+				break; // case MENU_LEVEL_0:
+				
+				case MENU_LEVEL_1:
+					switch(subMenuParameter) { // select
+						case PARAMETER_1:
+							DBG_PRINTF(" nel display va scritto: | SPLIT>{OFF}  KEY#:C2 | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
+						break; // PARAMETER_1
+							
+						case PARAMETER_2:
+							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#>{C2} | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
+						break; // case PARAMETER_2:
+					}	// switch(subMenuParameter)
+				break; // subMenuParameter
+					
+					
+			} // switch(level)
+		break; // case FUNC_Split:
+	}
+}
+
+
 // permette di selezionare una funzione da editare  con i tasti numerici
 uint8 FunctionSelect(uint8 numTasto){
 	
 	static uint8 editFunctionToggle = 0;
 	uint8 selectedFunction = 0;
+	// #if MENU_DEBUG
+	DBG_PRINTF("[%s] ",__func__);
+	// #endif 
 	
 	if(prevKey != keyTranslator[numTasto]) {
 		prevKey = keyTranslator[numTasto];
@@ -785,7 +844,9 @@ uint8 FunctionSelect(uint8 numTasto){
 	// do something(keyTranslator[numTasto],editFunctionToggle)
 	switch(numTasto) {
 		case 4:
+			#if MENU_DEBUG
 			DBG_PRINTF("vibrato/tune: ");
+			#endif
 			if(editFunctionToggle == 0) {
 				DBG_PRINTF("vibrato");
 				selectedFunction = FUNC_vibrato;
@@ -796,7 +857,9 @@ uint8 FunctionSelect(uint8 numTasto){
 			break;
 
 		case 5:
+			#if MENU_DEBUG
 			DBG_PRINTF("percussion/footSwitch: ");
+			#endif
 			if(editFunctionToggle == 0) {
 				DBG_PRINTF("percussion");
 				selectedFunction = FUNC_percussion;
@@ -807,7 +870,9 @@ uint8 FunctionSelect(uint8 numTasto){
 			break;
 
 		case 6:
+			#if MENU_DEBUG
 			DBG_PRINTF("Drawbar/Split: ");
+			#endif
 			if(editFunctionToggle == 0) {
 				DBG_PRINTF("Drawbar");
 				selectedFunction = FUNC_Drawbar;
@@ -815,18 +880,19 @@ uint8 FunctionSelect(uint8 numTasto){
 				DBG_PRINTF("Split");
 				selectedFunction = FUNC_Split;
 				
-				DBG_PRINTF(" nel display va scritto: SPLIT:OFF  KEY#:C2, (menu level 0)");
 				/*
 					2.premo tasto > e attivo il menu
 					SPLIT>OFF, KEY#:C2
 					DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
 				*/
-				// DisplayMenu(selectedFunction,MENU_LEVEL_0);
+				FunctionViewParameter(selectedFunction,MENU_LEVEL_0, 0);
 			}
 			break;
 		
 		case 7:
+			#if MENU_DEBUG
 			DBG_PRINTF("Midi/Effect: ");
+			#endif
 			if(editFunctionToggle == 0) {
 				DBG_PRINTF("Midi");
 				selectedFunction = FUNC_Midi;
@@ -837,7 +903,9 @@ uint8 FunctionSelect(uint8 numTasto){
 			break;
 		
 		case 8:
+			#if MENU_DEBUG
 			DBG_PRINTF("Preset/Reset: ");
+			#endif
 			if(editFunctionToggle == 0) {
 				DBG_PRINTF("Preset");
 				selectedFunction = FUNC_Preset;
@@ -853,6 +921,7 @@ uint8 FunctionSelect(uint8 numTasto){
 	return selectedFunction;
 }
 
+/*
 uint8 SubMenuPage(uint8 selectedFunction) {
 	static uint8 page = 0;	
 	uint8 maxPages = 0;
@@ -880,6 +949,7 @@ uint8 SubMenuPage(uint8 selectedFunction) {
 	DBG_PRINTF("%s %d\n",__func__,page);
 	return page;
 }
+*/
 
 /*****************************************************************************\
 *  TEMPLATE: gestisce la funzione tasto  Generico
@@ -888,7 +958,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 {
 	static uint8 selectedFunction = 0;  // rimane questa> FUNC_Split
 	static uint8 menuLevel = MENU_LEVEL_0;
-	static uint8 subMenuParameter = 0; // niente da cambiare
+	static uint8 subMenuParameter = PARAMETER_0; // niente da cambiare
 	
 	if (GetEditMode()) {
 		switch (status) {
@@ -897,55 +967,57 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 	        {
 				// tasti validi 4,5,6,7,8
 				switch(keyTranslator[numTasto]) {
-					case 1: // >
+					case TASTO_FRECCIA: // tasto_>
 						if(selectedFunction) {
 							// entro in submenu e blocco tutti i tasti tranne quello che mi interessa
 							switch(menuLevel) {
 								case MENU_LEVEL_0: // pagina principale con EDIT attivo
 									menuLevel = MENU_LEVEL_1;
-									subMenuParameter = 1; // parametro da cambiare
+									subMenuParameter = PARAMETER_1; // parametro da cambiare
 								
-									switch(selectedFunction) {
-										case FUNC_Split:
-											DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
-											// DisplayMenu(selectedFunction,MENU_LEVEL_1);
-										break;
-									} // switch(selectedFunction) 
+									// switch(selectedFunction) {
+									//	case FUNC_Split:
+											FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
+									//	break;
+									// } // switch(selectedFunction) 
 								break; // case MENU_LEVEL_0:
 									
 								case MENU_LEVEL_1: 
 									switch(selectedFunction) {
-										case FUNC_Split:
+										case FUNC_Split: // funzione con 2 parametri
 											switch(subMenuParameter) {
-												case 1:
-													subMenuParameter = 2; // pagina principale con EDIT attivo
-													DBG_PRINTF("func:%d, nel display va scritto: SPLIT:OFF  KEY#>C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												case PARAMETER_1:
+													subMenuParameter = PARAMETER_2; // pagina principale con EDIT attivo
 												break;
 											
-												case 2:
-													subMenuParameter = 1; // pagina principale con EDIT attivo
-													DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												case PARAMETER_2:
+													subMenuParameter = PARAMETER_1; // pagina principale con EDIT attivo
 												break;
 											} // switch(subMenuPage)
 										break;	// case FUNC_Split:
 									} // switch(selectedFunction)
+									
+									FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
+									
 								break; // case MENU_LEVEL_1:
 							} // switch(menuLevel)
 						} // if(selectedFunction) 
 						break; // case 1: // >
 					
-					case 2: // on / +
+					case TASTO_ON_PIU: // on / +
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
-											case 1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>ON  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+											case PARAMETER_1:
+												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{ON}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												// doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
 											break;
 											
-											case 2:
-												DBG_PRINTF("press any key...\n");
+											case PARAMETER_2:
+												DBG_PRINTF("press any key to split...\n");
+												// doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
 											break;
 										}
 									break; // case FUNC_Split:
@@ -954,18 +1026,20 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 						} // switch(menuLevel)
 					break; // case 2: // on / +
 					
-					case 3: // off / -
+					case TASTO_OFF_MENO: // off / -
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
-											case 1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>OFF  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+											case PARAMETER_1:
+												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{OFF}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												// doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
 											break; // case 1:
 												
-											case 2:
-												DBG_PRINTF("press any key...\n");
+											case PARAMETER_2:
+												DBG_PRINTF("press any key to split...\n");
+												// doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
 											break;
 										}
 									break; // case FUNC_Split:
@@ -974,21 +1048,22 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 						} // switch(menuLevel)
 						break; // case 3: // off / -
 					break;
-					
-					case 4: // vibrato/tune
-					case 5: // percussion/footSwitch
-					case 6: // Drawbar/Split
-					case 7: // Midi/Effect
-					case 8: // Preset/Reset
+
+					case TASTO_VIBRATO_TUNE: 	
+					case TASTO_PERCUSSION_FOOTSW: 
+					case TASTO_DRAWBAR_SPLIT: 
+					case TASTO_MIDI_EFFECT: 
+					case TASTO_PRESET_RESET: 
 						switch(menuLevel) {
 							case MENU_LEVEL_0:
+								// seleziono la funzione
 								selectedFunction = FunctionSelect(keyTranslator[numTasto]); // ritorna selectedFunction
-								break;
+							break;
 								
 							case MENU_LEVEL_1:
 								// subMenuPage = SubMenuPage(selectedFunction);
-								DBG_PRINTF("posso cambiare pagina della funzione %d se disponibile\n",selectedFunction);
-								break;
+								DBG_PRINTF("posso cambiare pagina della funzione %d, se disponibile\n",selectedFunction);
+							break;
 						} // switch(menuLevel) 
 						// se torna con una funzione allora attivo il menu (!= 0)
 						break; // casi 4:8
@@ -1000,11 +1075,11 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
         	{
 				// tasti validi 4,5,6,7,8
 				switch(keyTranslator[numTasto]) {
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-					case 8:
+					case TASTO_VIBRATO_TUNE: 	
+					case TASTO_PERCUSSION_FOOTSW: 
+					case TASTO_DRAWBAR_SPLIT: 
+					case TASTO_MIDI_EFFECT: 
+					case TASTO_PRESET_RESET: 
 						// EditFunctionSelect(keyTranslator[numTasto]);
 						break;
 				}
@@ -1018,7 +1093,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 	// resetto per entrare bene la prossima volta.
 	selectedFunction = 0;
 	menuLevel = MENU_LEVEL_0;
-	subMenuParameter = 0;
+	subMenuParameter = PARAMETER_0;
 	
 	uint8 sommatore;
     switch (status) 

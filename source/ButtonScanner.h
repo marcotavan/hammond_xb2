@@ -51,6 +51,18 @@ enum Edit_Mode_t {
 	EDIT_MODE_OFF,
 	EDIT_MODE_ON
 };
+
+enum tasti_t {
+	TASTO_FRECCIA = 1,
+	TASTO_ON_PIU,
+	TASTO_OFF_MENO,
+	TASTO_VIBRATO_TUNE,
+	TASTO_PERCUSSION_FOOTSW,
+	TASTO_DRAWBAR_SPLIT,
+	TASTO_MIDI_EFFECT,
+	TASTO_PRESET_RESET
+};
+
 enum num_button_t {
     BUTTON_00_VIBRATO,   
     BUTTON_01_LESLIE,
@@ -142,6 +154,12 @@ enum menuLevel_t {
 	MENU_LEVEL_0,
 	MENU_LEVEL_1,
 	MENU_LEVEL_2,
+};
+
+enum parameters_t {
+	PARAMETER_0,
+	PARAMETER_1,
+	PARAMETER_2,
 };
 
 uint8 GetButtonStatus(uint8 numTasto);
