@@ -827,6 +827,23 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 }
 
 
+void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
+	switch(selectedFunction) {
+		case FUNC_Split:
+			switch (subMenuParameter) { // parametro da cambiare
+				case PARAMETER_1:
+					DBG_PRINTF("nel display va scritto: SPLIT>{%d}  KEY#:C2, (menu level 1), func:%d, par:%d\n",tasto,selectedFunction,subMenuParameter);
+				break;
+				
+				case PARAMETER_2:
+					DBG_PRINTF("press any key to split...\n");
+				break;
+			}
+		break; // case FUNC_Split:
+	} // switch(selectedFunction) 
+
+}
+
 // permette di selezionare una funzione da editare  con i tasti numerici
 uint8 FunctionSelect(uint8 numTasto){
 	
@@ -1007,6 +1024,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 					case TASTO_ON_PIU: // on / +
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
+								/*
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
@@ -1022,6 +1040,8 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 										}
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
+								*/
+								doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
 							break; // case MENU_LEVEL_1:
 						} // switch(menuLevel)
 					break; // case 2: // on / +
@@ -1029,6 +1049,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 					case TASTO_OFF_MENO: // off / -
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
+								/*
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
@@ -1044,6 +1065,8 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 										}
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
+								*/
+								doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
 							break; // case 1:
 						} // switch(menuLevel)
 						break; // case 3: // off / -
