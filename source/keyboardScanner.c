@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "midiEvents.h"
 #include "math.h"  
+#include "ButtonScanner.h"
 
 #define VERBOSE_MODE 1
 
@@ -40,6 +41,21 @@ struct key_t {
   state_t   state; 
   uint16    counter; 
 };
+
+struct split_point {
+	uint8 point;
+	uint8 lowerMidiChannel;
+	uint8 upperMidiChannel;
+	uint8 getNote;
+} split;
+
+void SplitGetNote (void) {
+	split.getNote = 1;
+}
+
+void SetSplitPoint(uint8 sp) {
+	split.point = sp;	
+}
 
 struct key_t key[MAX_KEYS];
 
@@ -99,7 +115,20 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
     uint8 linearVelocity = 0; 
     
     uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
-
+	uint8 midiChannel = split.upperMidiChannel;
+	
+	if (split.getNote) { 
+		split.point = play_note; // devo prendere lo splitPoint
+		split.getNote = 0;
+		SplitCallbackFunction(split.point);
+	}
+	
+	if(split.point) {
+		if (play_note < split.point ) {
+			midiChannel = split.lowerMidiChannel;
+		}
+	}
+		
     switch (event)
     {
         case KEY_PRESSED:
@@ -108,7 +137,7 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
             logVelocity = LogVelocity(counter);       // 100uS
             // Pin_SPIF_Write(0);
             
-            sendNoteOn(play_note,logVelocity,MIDI_CHANNEL_1);
+            sendNoteOn(play_note,logVelocity,midiChannel);
         }
         break;
         
@@ -118,7 +147,7 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
             // Pin_SPIF_Write(1);
             linearVelocity = LinearVelocity(counter);  // 1uS
             // Pin_SPIF_Write(0);
-            sendNoteOff(play_note,linearVelocity,MIDI_CHANNEL_1);
+            sendNoteOff(play_note,linearVelocity,midiChannel);
         }
         break;
     }
@@ -134,8 +163,13 @@ void KeyScanInit(void)
     // memset(banks, 0xff, sizeof(prev_banks));
     uint8 keyNumber;
 
+	// init split point
+	split.point = 0; // 24 = C5
+	split.upperMidiChannel = MIDI_CHANNEL_1;
+	split.lowerMidiChannel = MIDI_CHANNEL_2;
+	split.getNote = 0;
+	
     // Init keys
-
     for (keyNumber = 0; keyNumber < 88; keyNumber++) 
     {
         // key[keyNumber].midi_note = 21 + keyNumber;

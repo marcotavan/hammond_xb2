@@ -40,7 +40,8 @@ serve un tasto SHIFT tenuto premuto agisce sui singoli comandi.
 #include "midiLibrary.h"
 #include "userPreset.h"
 #include "midiMerge.h"
-
+#include "keyboardScanner.h"
+#include "midiEvents.h"
 #define MIN_DEBOUNCE 5      // * 8ms
 #define MAX_DEBOUNCE 100     // * 8ms  
 #define MAX_PULSANTI 16
@@ -830,19 +831,35 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 	}
 }
 
+void SplitCallbackFunction(uint8 splitPoint) {
+	// numTasto = splitPoint-MIDI_FIRST_NOTE_61;
+	DBG_PRINTF("%s splitpoint %d, write eeprom	immediatly\n",__func__,splitPoint);
+	// exit menu
+}
 
 void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
+	uint8 sp = 0;
+	
 	switch(selectedFunction) {
 		case FUNC_Split:
 			switch (subMenuParameter) { // parametro da cambiare
+				
 				case PARAMETER_1:
-					DBG_PRINTF("[%s] nel display va scritto: SPLIT>{%d}  KEY#:C2, (menu level 1), func:%d, par:%d\n",__func__,tasto,selectedFunction,subMenuParameter);
+					if(tasto == 0) {
+						sp = 0;
+					} else {
+						sp = MIDI_FIRST_NOTE_61+24;
+					}
+					
+					SetSplitPoint(sp);
+
+					// DBG_PRINTF("[%s] nel display va scritto: SPLIT>{%s}  KEY#:%d, (menu level 1), func:%d, par:%d\n",__func__,noteNamearray[(sp%12)],tasto,selectedFunction,subMenuParameter);
 					DBG_PRINTF("write eeprom	immediatly\n");
 				break;
 				
 				case PARAMETER_2:
 					DBG_PRINTF("[%s] press any key to split...\n",__func__);
-					DBG_PRINTF("write eeprom	immediatly\n");
+					SplitGetNote();
 				break;
 			}
 		break; // case FUNC_Split:
@@ -984,8 +1001,8 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 	
 	if (GetEditMode()) {
 		switch (status) {
-	        // case BUTTON_PRESSED:     // valido immediatamente
-	        case BUTTON_SHORT_PRESS:    // valido al rilascio breve
+	        case BUTTON_PRESSED:     // valido immediatamente
+	        // case BUTTON_SHORT_PRESS:    // valido al rilascio breve
 	        {
 				// tasti validi 4,5,6,7,8
 				switch(keyTranslator[numTasto]) {

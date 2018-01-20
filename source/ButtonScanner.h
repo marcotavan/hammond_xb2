@@ -165,5 +165,7 @@ enum parameters_t {
 uint8 GetButtonStatus(uint8 numTasto);
 uint8 GetEditMode(void);
 uint8 GetEditFunction(void);
+void SplitCallbackFunction(uint8 splitPoint);
+void SetSplitPoint(uint8 sp);
 #endif    
 /* [] END OF FILE */

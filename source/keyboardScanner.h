@@ -22,6 +22,7 @@
 	
 void KeyScan_Poll(void);
 void KeyScanInit(void);
+void SplitGetNote (void);
 #endif 
 
 /* [] END OF FILE */
