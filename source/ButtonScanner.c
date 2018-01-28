@@ -147,11 +147,10 @@ void RefreshAllButtonElements(void) {
 \*****************************************************************************/
 void InitSwitchButtons(void)
 {
-    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
-    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
-        
-    // punto all-inizio della struttura
-    memcpy((uint8 *) &switchType,(uint8 *) internal_eeprom.RegPointer,sizeof(switchType));    
+	uint8 pdata[CYDEV_EEPROM_ROW_SIZE];
+	LoadSwitchData(pdata);   
+	
+	memcpy((uint8 *) &switchType,pdata,sizeof(switchType)); 
 
     if (switchType.marker != MARKER_EEPROM_DEFAULT)
     {
@@ -833,28 +832,29 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 
 void SplitCallbackFunction(uint8 splitPoint) {
 	// numTasto = splitPoint-MIDI_FIRST_NOTE_61;
+	WriteDataToEeprom(EEPROM_MIDI);
 	DBG_PRINTF("%s splitpoint %d, write eeprom	immediatly\n",__func__,splitPoint);
 	// exit menu
 }
 
 void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
-	uint8 sp = 0;
+	uint8 splitPoint = 0;
 	
 	switch(selectedFunction) {
 		case FUNC_Split:
 			switch (subMenuParameter) { // parametro da cambiare
 				
 				case PARAMETER_1:
-					if(tasto == 0) {
-						sp = 0;
-					} else {
-						sp = MIDI_FIRST_NOTE_61+24;
+					if(tasto == 0) { // on/off split point in base a tasto off
+						splitPoint = 0;
+					} else { // tasto on
+						splitPoint = MIDI_FIRST_NOTE_61+24;
 					}
 					
-					SetSplitPoint(sp);
+					SetSplitPoint(splitPoint);
 
 					// DBG_PRINTF("[%s] nel display va scritto: SPLIT>{%s}  KEY#:%d, (menu level 1), func:%d, par:%d\n",__func__,noteNamearray[(sp%12)],tasto,selectedFunction,subMenuParameter);
-					DBG_PRINTF("write eeprom	immediatly\n");
+					DBG_PRINTF("write eeprom immediatly\n");
 				break;
 				
 				case PARAMETER_2:

@@ -19,6 +19,7 @@
 #include "midiEvents.h"
 #include "math.h"  
 #include "ButtonScanner.h"
+#include "EepromManager.h"
 
 #define VERBOSE_MODE 1
 
@@ -43,11 +44,14 @@ struct key_t {
 };
 
 struct split_point {
+	uint8 marker;
 	uint8 point;
 	uint8 lowerMidiChannel;
 	uint8 upperMidiChannel;
 	uint8 getNote;
-} split;
+};
+
+struct split_point split;
 
 void SplitGetNote (void) {
 	split.getNote = 1;
@@ -117,15 +121,15 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
     uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
 	uint8 midiChannel = split.upperMidiChannel;
 	
-	if (split.getNote) { 
+	if (split.getNote) { // flag per prendere la nota
 		split.point = play_note; // devo prendere lo splitPoint
-		split.getNote = 0;
-		SplitCallbackFunction(split.point);
+		split.getNote = 0; // cancello il flag
+		SplitCallbackFunction(split.point); // ritorno
 	}
 	
-	if(split.point) {
-		if (play_note < split.point ) {
-			midiChannel = split.lowerMidiChannel;
+	if(split.point) { // se esiste uno split point
+		if (play_note < split.point ) { // sela nota e inferiore 
+			midiChannel = split.lowerMidiChannel; // si tratta di un basso
 		}
 	}
 		
@@ -164,10 +168,20 @@ void KeyScanInit(void)
     uint8 keyNumber;
 
 	// init split point
+	split.marker = MARKER_MIDI;
 	split.point = 0; // 24 = C5
 	split.upperMidiChannel = MIDI_CHANNEL_1;
 	split.lowerMidiChannel = MIDI_CHANNEL_2;
 	split.getNote = 0;
+	
+	uint8 pdata[CYDEV_EEPROM_ROW_SIZE];
+	LoadMidiData(pdata);
+	if (pdata[0] == MARKER_MIDI) {
+		DBG_PRINTF("carico in struttura ");
+		DBG_PRINT_ARRAY(pdata,4);
+		DBG_PRINTF("\n");
+		memcpy((uint8 *) &split,pdata,4); 
+	}
 	
     // Init keys
     for (keyNumber = 0; keyNumber < 88; keyNumber++) 

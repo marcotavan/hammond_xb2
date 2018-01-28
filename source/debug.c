@@ -170,6 +170,8 @@ void CommandParser(uint8 *data, uint8 len)
             // erboot, erase all, ecc
             switch (parameter[0]) {
                 case 1: {
+					USB_Stop(); 
+					CyDelay(500);
                     CySoftwareReset();
                 } break;
                 

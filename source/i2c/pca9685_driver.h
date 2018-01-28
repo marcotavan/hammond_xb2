@@ -55,7 +55,7 @@
 // per channel. We can set the off cycle value to be lower than the on cycle, which will
 // put the high edge across the 0-4095 phase cycle range, which is supported by device.
 static uint16_t phaseDistTable[16] = { 0, 2048, 1024, 3072, 512, 3584, 1536, 2560, 256, 3840, 1280, 2304, 3328, 768, 2816, 1792 };
-    
+
 typedef enum {
     PCA9685_PhaseBalancer_None = -1,    // Disables phase balancing, all high phase areas start at begining of cycle
     PCA9685_PhaseBalancer_Linear = 0,   // Balances all outputs linearly, 256 steps away from previous output

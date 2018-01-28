@@ -52,9 +52,9 @@ uint8 scriviInEeprom(uint8 type)
                 EEPROM_StartWrite(ps, row);
             } break;
             
-            case EEPROM_DRAWBARS: {
-                row = 2;
-                ps = (uint8 *) &switchType;
+            case EEPROM_MIDI: {
+                row = EEPROM_ROW_MIDI;
+                ps = (uint8 *) &split;
                 EEPROM_StartWrite(ps, row);
             } break;
             
@@ -64,7 +64,7 @@ uint8 scriviInEeprom(uint8 type)
                 EEPROM_StartWrite(ps, row);
             } break;
             
-            case EEPROM_MIDI: {
+            case EEPROM_DRAWBARS: {
                 row = 4;
                 ps = (uint8 *) &switchType;
                 EEPROM_StartWrite(ps, row);
@@ -137,12 +137,29 @@ void EepromPoll(void)
             if (eeprom_timeout[EEPROM_MIDI] == 0)
             {
                 DBG_PRINTF("scrivi EEPROM_MIDI\n");
+				eeprom_timeout[EEPROM_MIDI] = scriviInEeprom(EEPROM_MIDI);
             }
         }
     }
 }
 
 
+void LoadMidiData(uint8 *pdata) {
+	    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
+    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_MIDI));  
+        
+    // punto all-inizio della struttura
+    memcpy(pdata,(uint8 *) internal_eeprom.RegPointer,CYDEV_EEPROM_ROW_SIZE); 
+}
+
+
+void LoadSwitchData(uint8 *pdata) {
+	    // ricarica da eeprom se c'è il marker else prendi da default i pulsanti.
+    internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
+        
+    // punto all-inizio della struttura
+    memcpy(pdata,(uint8 *) internal_eeprom.RegPointer,CYDEV_EEPROM_ROW_SIZE); 
+}
 
 #if (1)
 /*****************************************************************************\

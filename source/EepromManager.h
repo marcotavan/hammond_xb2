@@ -16,15 +16,18 @@
 #include "project.h"
 
 #define MARKER_EEPROM_DEFAULT 0xA5
+#define MARKER_MIDI 0xA1
 
 enum {
     EEPROM_BUTTON,
-    EEPROM_DRAWBARS,
+    EEPROM_MIDI,
     EEPROM_PRESET,
-    EEPROM_MIDI
+	EEPROM_DRAWBARS,
 };
 
-#define EEPROM_ROW_BUTTONS 1
+// internal_eeprom.RegPointer = (reg8 *)(CYDEV_EE_BASE + (CYDEV_EEPROM_ROW_SIZE * EEPROM_ROW_BUTTONS));  
+#define EEPROM_ROW_BUTTONS 	1
+#define EEPROM_ROW_MIDI 	2
 
 //variabili eeprom
 struct _internal_eeprom_
@@ -40,5 +43,10 @@ void EepromPoll(void);
 void eeprom_init(void);
 
 void internal_eeprom_inspector(uint16 start_row, uint16 last_row);
+void LoadSwitchData(uint8 *pdata);
+void LoadMidiData(uint8 *pdata);
+
+extern struct split_point split;
+
 #endif
 // EOF
