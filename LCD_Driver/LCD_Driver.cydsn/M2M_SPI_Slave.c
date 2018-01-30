@@ -33,17 +33,19 @@ uint8 isBusy;
 
 union lcdData_t {
 	struct display_data_t {
-		uint8 address;
-		uint8 len;
+		uint8 address;		// address
+		uint8 len;			// datalen
+		uint8 position;
 		uint8 type;
-		uint8 val;
-		uint8 data[16];
+		uint8 payload[16];
 		uint8 crc1;
 		uint8 crc2;
 	} displayData;
 	
-	uint8 data[MAX_DATA];
-} LcdData;
+	uint8 dataArray[MAX_DATA];
+};
+
+union lcdData_t LcdData;
 
 /*****************************************************************************\
 *  Funzione:     hasElements()                                                *
@@ -133,11 +135,19 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 //    static uint8 spiData[100];
 //	static uint8 divider = 0;
 	uint16 crc;
+
+    uint8 text[16] = {'a','b','c','d',
+				  'e','f','g','h',
+				  'i','j','k','l',
+	  	 	 	  'm','n','o','p'};
 	
+	static uint8 	blank[16];
+
 	if(isInitialized == 0) {
 		// Control_Reg_LV5239TAZ_Write(Control_Reg_LV5239TAZ_Read() & ~BIT2);
 		M2M_SPI_Init();
 		isInitialized = 1;
+		memset(blank,' ',sizeof(blank));		
 	}
 	
 	/*
@@ -155,19 +165,26 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 	}
 	*/
 	if(isBusy == 0) {
+		/*
+		spiData[0] = M2M_SPI_ADDRESS;
+		spiData[1] = 16;		// dataLen
+		spiData[2] = type;		// type write data
+		spiData[3] = position;	// pos
+		*/
+		
 		//if(tick_100ms(TICK_SPI)) {
 			if(hasElements()) { // ci sono elementi in coda
 				ptrOut++;	// primo elemento da prelevare
 				ptrOut %= DIM_QUEUE; 
-				memcpy(LcdData.data,rawData[ptrOut],MAX_DATA);
+				memcpy(LcdData.dataArray,rawData[ptrOut],MAX_DATA);
 				
 				#ifdef DEBUG_VERBOSE
 				DBG_PRINTF("%02d: ",ptrOut); // posizione del rpimo elemento
 				DBG_PRINTF("%02X %02X %02X %02X |%02X %02X ",
 					LcdData.displayData.address,
 					LcdData.displayData.len,
-					LcdData.displayData.type, // tipo carattere
-					LcdData.displayData.val,
+					LcdData.displayData.position,
+					LcdData.displayData.type,
 					LcdData.displayData.crc1,
 					LcdData.displayData.crc2
 				); // posizione
@@ -176,7 +193,7 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 				// parser 
 				#endif
 				
-				crc=crc16ccitt_1d0f(LcdData.data,20);
+				crc=crc16ccitt_1d0f(LcdData.dataArray,20);
 				
 		
 				if (crc == (LcdData.displayData.crc1<<8|LcdData.displayData.crc2)) {
@@ -185,31 +202,20 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 					
 					switch(LcdData.displayData.address) {
 						case M2M_SPI_ADDRESS: 	// -indirizzo per me
-							switch(LcdData.displayData.val) {
-								case 0:  // riga 0
-								case 1:  // riga 1
+							switch(LcdData.displayData.position) {
+								case ROW_0:  // riga 0
+								case ROW_1:  // riga 1
+									myLCD_Position(LcdData.displayData.position,0); 
+									
 									switch(LcdData.displayData.type) {
-										case 0: // caratteri standard 
-										 	// DBG_PRINTF("caratteri standard ");
-											if(lastPosition != LcdData.displayData.val) {
-												myLCD_Position(LcdData.displayData.val,0);
-												lastPosition = LcdData.displayData.val;
-											}
-											myLCD_WriteDisplayLcd(LcdData.displayData.data,LcdData.displayData.len);
-										
-											// myLCD_Position(0,0);
-											// myLCD_PrintString(LcdData.displayData.data);
-
-											// queste due funzioni a seguire impiegano circa 2ms
-
-											// myLCD_Position(0,0);  
-											// myLCD_PrintString(rawData[ptrOut]);
-						
+										case LCD_STANDARD: // caratteri standard 
+										 	// DBG_PRINTF("caratteri standard, row %d\n",LcdData.displayData.position);
+											myLCD_WriteDisplayLcd(LcdData.displayData.payload,16);
 											break;
 										
-										case 1: // caratteri custom	
-											// DBG_PRINTF("caratteri custom ");
-											Write_BarGraphs(LcdData.displayData.val,LcdData.displayData.data);
+										case LCD_BARGRAPHS: // caratteri custom	
+											// DBG_PRINTF("caratteri custom \n");
+											Write_BarGraphs(LcdData.displayData.position,LcdData.displayData.payload);
 											break;
 									} // switch(LcdData.displayData.type)
 								break;	
@@ -219,8 +225,8 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 						case  M2M_SPI_ADDRESS_SYSTEM:
 							switch(LcdData.displayData.type) {
 								case 0xA0: 
-									switch(LcdData.displayData.val) {
-										case 1:
+									switch(LcdData.displayData.position) {
+										case LCD_RESET:
 										// DBG_PRINTF("pronto per un reset\n");
 										// CyDelay(100);
 										CySoftwareReset();
@@ -228,7 +234,7 @@ void M2M_SPI_Slave_ApplicationPoll(void) {
 									}
 								break;
 							}
-							break;
+						break;
 					} //switch(LcdData.displayData.address)
 				} else {
 					SPIS_M2M_WriteTxData(NAK);

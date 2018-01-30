@@ -45,9 +45,19 @@ enum SPI_states_e {
 
 enum fontType_e {
 	LCD_STANDARD,
-	LCD_CUSTOM
+	LCD_BARGRAPHS
 };
 	
+uint8 text1[16] = {'a','b','c','d',
+				  'e','f','g','h',
+				  'i','j','k','l',
+	  	 	 	  'm','n','o','p'};
+	
+uint8 text2[16] = {'0','1','2','3',
+					'4','5','6','7',
+					'8','9','A','B',
+					'C','D','E','F'};
+/********************************************************************************************************************/
 void SendResetToDisplayBoard(void) {
     uint8 spiData[MAX_DATA];
 	uint16 crc;
@@ -107,15 +117,16 @@ void M2M_Write_command(uint8 type) {
 	spiData[4] = crc & 0xff;
 	M2MSpiWriteData(0,spiData,5);		// spedisce 20
 }
-
-void M2M_Write_LCD(uint8 type, uint8 position, uint8*data) {
+					  // ROW_0, LCD_STANDARD,  *text
+void M2M_Write_LCD(uint8 position, uint8 type, uint8 *data) {
+	#define DATA_LEN 16
     uint8 spiData[MAX_DATA];
 	uint16 crc;
 	
 	spiData[0] = M2M_SPI_ADDRESS;
-	spiData[1] = 16;		// dataLen
-	spiData[2] = type;		// type write data
-	spiData[3] = position;	// pos
+	spiData[1] = DATA_LEN;		// dataLen
+	spiData[2] = position;		
+	spiData[3] = type;	
 
 	memcpy(&spiData[4],data,16);	// filla 16
 	crc = crc16ccitt_1d0f(spiData,20);
@@ -131,6 +142,7 @@ void M2M_SPI_Master_ApplicationPoll(void){
 
 	static uint16 divider = 0;
 	static uint8 counter = 0;
+	static uint8 toggle = 0;
 	
 	if(isInitialized == 0) {
 		M2M_SPI_Init();
@@ -162,6 +174,15 @@ void M2M_SPI_Master_ApplicationPoll(void){
 		}
 	}
 	*/
+	
+	if(tick_1s(TICK_M2M_SPI)) {
+		toggle = ~toggle;
+		if(toggle) {
+			M2M_Write_LCD(ROW_1,LCD_STANDARD,text1);		// testo scritto nella riga bassa
+		} else {
+			M2M_Write_LCD(ROW_1,LCD_STANDARD,text2);		// testo scritto nella riga bassa
+		}
+	}
 }
 
 void Write_BarGraphs(uint8 *data)
@@ -171,8 +192,8 @@ void Write_BarGraphs(uint8 *data)
 	static char prev_bargraph[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 	uint8 flagWrite = 1; // MANDA IN CONTINUO
     // if (alternateTextCounter) return;  // non scrive niente
-    
-    // DBG_PRINTF("riscrivo barre %d\n",cnt++);
+
+	// DBG_PRINTF("riscrivo barre %d\n",cnt++);
     for (i=0;i<16;i++)
     {
 		if(prev_bargraph[i] != data[i]) {
@@ -186,7 +207,7 @@ void Write_BarGraphs(uint8 *data)
     }
     
 	if(flagWrite) {
-		 M2M_Write_LCD(ROW_1,LCD_STANDARD,data);
+		M2M_Write_LCD(ROW_0,LCD_BARGRAPHS,data);	// bargraphs
 	}
     // sposta il cursore sotto
     // LCD_Position(1,0);

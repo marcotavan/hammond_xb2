@@ -40,6 +40,12 @@
 #define ROW_0       0
 #define ROW_1       1    
 	
+enum fontType_e {
+	LCD_STANDARD,
+	LCD_BARGRAPHS
+};
+
+#define LCD_RESET 1
 /***************************************
 *        Function Prototypes
 ***************************************/

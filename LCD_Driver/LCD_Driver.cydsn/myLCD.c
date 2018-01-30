@@ -373,7 +373,6 @@ void myLCD_PrintString(char8 const string[])
 void myLCD_WriteDisplayLcd(uint8 *data, uint8 len) 
 {
     uint8 i;
-
     for(i=0; i<len; i++) {
         myLCD_WriteData(data[i]);
     }
@@ -1043,9 +1042,9 @@ void LCD_Application_Poll(void) {
 		myLCD_Start();
 		
 		myLCD_Position(0,0);  
-		myLCD_PrintString("Old Display TEST");
+		myLCD_PrintString("XB2 Marco Tavan");
 		
-		sprintf(str,"%s",__TIME__);
+		sprintf(str,"%s",__DATE__);
 	    myLCD_Position(1,0);  
 		myLCD_PrintString(str);
 /*	    
