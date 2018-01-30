@@ -17,6 +17,7 @@
 #include "debug.h"
 #include "tick.h"
 #include "crc16_ccitt.h"
+// #include "customLcd.h"
 
 #define DESELECT 	0
 #define ADDRESS_0 	1
@@ -43,11 +44,7 @@ enum SPI_states_e {
 	SPI_WAIT_BUSY_OE
 };
 
-enum fontType_e {
-	LCD_STANDARD,
-	LCD_BARGRAPHS
-};
-	
+
 uint8 text1[16] = {'a','b','c','d',
 				  'e','f','g','h',
 				  'i','j','k','l',
@@ -174,7 +171,7 @@ void M2M_SPI_Master_ApplicationPoll(void){
 		}
 	}
 	*/
-	
+	/*
 	if(tick_1s(TICK_M2M_SPI)) {
 		toggle = ~toggle;
 		if(toggle) {
@@ -183,6 +180,7 @@ void M2M_SPI_Master_ApplicationPoll(void){
 			M2M_Write_LCD(ROW_1,LCD_STANDARD,text2);		// testo scritto nella riga bassa
 		}
 	}
+	*/
 }
 
 void Write_BarGraphs(uint8 *data)
@@ -205,7 +203,12 @@ void Write_BarGraphs(uint8 *data)
 			flagWrite = 1;
 		}
     }
-    
+    /*
+	if (GetLockBargraphs()) {
+		flagWrite = 0;
+	}
+	*/
+	
 	if(flagWrite) {
 		M2M_Write_LCD(ROW_0,LCD_BARGRAPHS,data);	// bargraphs
 	}

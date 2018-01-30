@@ -53,6 +53,7 @@ static struct onHold_s {
     uint8 solo;
 }OnHold;
 
+struct switchType_t switchType;
 // static char str[20];
 const uint8 vibratoScannerPosition[] = {1,1,2,2,3,3};
 const uint8 vibratoScannerMidiValue[] = {11,33,55,77,99,127};
@@ -159,7 +160,7 @@ void InitSwitchButtons(void)
 
         switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
         switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
-        switchType.Tube_Overdrive_Switch = SWITCH_OFF;
+        switchType.Tube_Overdrive_Switch = 0;
         switchType.Vibrato_Lower_Switch = SWITCH_OFF;
         switchType.Vibrato_Upper_Switch = SWITCH_OFF;
         switchType.chorus_Knob = CHORUS_C1;
@@ -622,7 +623,7 @@ void ManageButton_Shift(uint8 status)
             // servirà un timeout?
             DBG_PRINTF("Shift on Hold, far lampeggiare i led del pannello -> alternate Function\n");
             // si accende il led dello shift se c'è^?
-			Display_Alternate_Text(ROW_1,ALT_Shift_on_Hold);
+			Display_Alternate_Text(ROW_0,ALT_Shift_on_Hold);
         }
         break;
         
@@ -656,11 +657,11 @@ void ManageButton_Solo(uint8 status)
 			if(GetVolumeSolo() == VOLUME_NORMAL) {
 				soloVolume = VOLUME_MAX;
 				sendControlChange(CC_Overall_Volume,127,MIDI_CHANNEL_1);
-				Display_Alternate_Text(ROW_1,ALT_Volume_Max);
+				Display_Analog(CC_Overall_Volume,127);
 			} else {
 				sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
 				soloVolume = VOLUME_NORMAL;
-				Display_Alternate_Text(ROW_1,ALT_Volume_Normal);
+				Display_Analog(CC_Overall_Volume,GetOverallVolumeLevel());
 			}
         }
         break;

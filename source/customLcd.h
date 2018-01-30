@@ -16,10 +16,11 @@
 #include "project.h"
 
 void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 value);
-void LCD_Poll(uint8 status);
+void LCD_Poll(void);
 
-void LCD_splashScreen(uint8 mex);
 void Display_Alternate_Text(uint8 where, uint8 what);
+void Display_Analog(uint8 CC, uint8 data);
+uint8 GetLockBargraphs(void);
 
 #define MAX_CHARS   16
 #define MAX_ROWS    2
@@ -110,6 +111,8 @@ enum alternative_text {
 	ALT_USR_Preset_6, // 
 	ALT_USR_Preset_7, // 
 	ALT_USR_Preset_8, // 
+	ALT_overdriveOn,
+	ALT_overdriveOff,
 };
 #endif
 /* [] END OF FILE */

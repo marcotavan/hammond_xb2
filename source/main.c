@@ -18,7 +18,7 @@
 #include "keyboardScanner.h"
 #include "VB3_midi_map.h"
 #include "analog.h"
-// #include "customLcd.h"
+#include "customLcd.h"
 #include "ButtonScanner.h"
 #include "EepromManager.h"
 #include "pca9685_driver.h"
@@ -159,8 +159,6 @@ int main()
     play_note = MIDI_FIRST_NOTE_61;
     /* Enable Global Interrupts */
     CyGlobalIntEnable;
-    
-    // LCD_splashScreen(0);
                 
     // SysTick_Start();  
     TimerTick_Start();
@@ -190,7 +188,7 @@ int main()
     {
 		USB_Poll();
 		
-        // LCD_Poll(1);
+        LCD_Poll();
         
         AnalogPoll();
       

@@ -24,7 +24,7 @@ uint8 GetVolumeSolo(void);
 uint8 GetPresetStatus(void);
 
 // potrebbe andare in eeprom
-struct _switchType_ {
+struct switchType_t {
     uint8 marker;
     uint8 rotarySpeaker_HalfMoon;
     uint8 rotarySpeaker_bypass;
@@ -38,7 +38,9 @@ struct _switchType_ {
     uint8 percussionHarmonics_Switch;
     uint8 upperManualPreset_Switch;
     uint8 lowerManualPreset_Switch;
-} switchType;
+};
+
+extern struct switchType_t switchType;
 
 uint8 SOLO_Button_on_Hold(void);
 

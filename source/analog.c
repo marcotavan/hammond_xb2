@@ -22,6 +22,7 @@
 #include "FiltroMediano.h"
 #include "ButtonScanner.h"
 #include "M2M_SPI_Master.h"
+#include "customLcd.h"
 
 #define MAX_SAMPLE  1
 #define DELTA_DRAWBARS		 3
@@ -42,8 +43,6 @@ enum rotarySpeed
 
 uint8 rotaryWheelStatus = ROTARY_SLOW_SPEED;
 static uint8 overallVolumeLevel = 0;
-
-uint8 overdrive = 0;
 
 #if ADC_ISR_ENABLE
 CY_ISR( ADC_ISR )
@@ -136,11 +135,12 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
             // if(SOLO_Button_on_Hold())
 			if(pitchWheelData < 40) {
-                if((SendOverdriveSwitchOn == 0) || (overdrive == 0)) {
+                if((SendOverdriveSwitchOn == 0) || (switchType.Tube_Overdrive_Switch == 0)) {
 					// qui ci enstra una volta sola
                     sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
-					overdrive = 1;
+					switchType.Tube_Overdrive_Switch = 1;
                     SendOverdriveSwitchOn = 1;
+					Display_Alternate_Text(ROW_1,ALT_overdriveOn);
                 }
                 
                 sendControlChange(CC_Tube_Overdrive_Drive,data,MIDI_CHANNEL_1);
@@ -171,12 +171,14 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			if(data > 88)
             {
 				
-					if(overdrive == 0) {
+					if(switchType.Tube_Overdrive_Switch == 0) {
 						sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
-						overdrive = 1;
-					} else if(overdrive == 2) {
+						switchType.Tube_Overdrive_Switch = 1;
+						Display_Alternate_Text(ROW_1,ALT_overdriveOn);
+					} else if(switchType.Tube_Overdrive_Switch == 2) {
 						sendControlChange(CC_Tube_Overdrive_Switch,0,MIDI_CHANNEL_1);
-						overdrive = 3;
+						switchType.Tube_Overdrive_Switch = 3;
+						Display_Alternate_Text(ROW_1,ALT_overdriveOff);
 					}
 				/*
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
@@ -216,10 +218,10 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             }
 			else {
 				// zona centrale
-				if(overdrive == 1) {
-					overdrive = 2;
-				} else if(overdrive == 3) {
-					overdrive = 0;
+				if(switchType.Tube_Overdrive_Switch == 1) {
+					switchType.Tube_Overdrive_Switch = 2;
+				} else if(switchType.Tube_Overdrive_Switch == 3) {
+					switchType.Tube_Overdrive_Switch = 0;
 				}
 			}
         }
@@ -242,7 +244,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 
             if (scaledData >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
-            
+            Display_Analog(CC_Expression_Pedal,data);
         }
         break;
         
@@ -260,6 +262,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             if (data >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+			Display_Analog(CC_Reverb,data);
         }
         break;
         
@@ -271,7 +274,8 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 1 	00000001 	01 	Modulation Wheel or Lever 	            0-127 	MSB
 			if(SHIFT_Button_on_Hold()) {
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
-            	Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
+            	// Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
+				Display_Analog(CC_Overall_Tone,data);
 			} else {
 				if(GetVolumeSolo() == VOLUME_NORMAL) {
 					overallVolumeLevel = data; // store per ritorno da solo
@@ -283,6 +287,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 
 		            if (data >= 126) offset = 0;
 		            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
+					Display_Analog(CC_Overall_Volume,data);
 				}
 			}
         }

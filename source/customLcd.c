@@ -30,11 +30,15 @@
 #include "customLcd.h"
 #include "tick.h"
 #include "debug.h"
+#include "M2M_SPI_Master.h"
+#include "ButtonScanner.h"
+#include "VB3_midi_map.h"
 
 // char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
 
 static uint8 lcdMessageStates = 0;
+// uint8 lockBargraphs = 0;
 
 void LCD_Position(uint8 a, uint8 b) {
 	
@@ -55,35 +59,35 @@ char8 *lcdTextMessage[10] =
 
 char8 *lcdAlternateTextMessage[100] =
 {
-    "ALT_ROTARY_FAST ",	// 0
-    "ALT_ROTARY_SLOW ", // 1
+    "FAST Rotary spkr",	// 0
+    "SLOW Rotary spkr", // 1
     "ALT_RESTART_RSLW", // 2
-    "ALT_ROTARY_STOP ", // 3
-    "ALT_Perc_On     ", // 4
-    "ALT_Perc_Off    ", // 5
-    "ALT_Perc_NORM   ", // 6
-    "ALT_Perc_SOFT   ", // 7
-    "ALT_Perc_3RD    ", // 8
-    "ALT_Perc_2ND    ", // 9
-    "ALT_Perc_SLOW   ", // 10
-    "ALT_Perc_FAST   ", // 11 
-    "ALT_VCS_UPPER_ON", // 12
-    "ALT_VCS_UPPR_OFF", // 13
-    "ALT_VCS_LOWER_ON", // 14
-    "ALT_VCS_LOWER_ON", // 15
-    "ALT_VCS_0       ", // 16
-    "ALT_VCS_1       ", // 17
-    "ALT_VCS_2       ", // 18
-    "ALT_VCS_3       ", // 19
-    "ALT_VCS_4       ", // 20
-    "ALT_VCS_5       ", // 21
-	"ALT_Overall_Tone", // 22
-	"ALT_RefreshAll  ", // 23
-	"ALT_Volume_Norm ", // 24
-	"ALT_Volume_Max  ", // 25
-	"ALT_Shift_Hold  ", // 26
-	"ALT_CANCEL_Press", // 27
-	"ALT_Edit        ", // 28
+    "STOP Rotary spkr", // 3
+    "ON Percussion   ", // 4
+    "OFF Percussion  ", // 5
+    "NORMAL Perc Lev ", // 6
+    "SOFT Perc Lev   ", // 7
+    "3RD Percussion  ", // 8
+    "2ND Percussion  ", // 9
+    "SLOW Percussion ", // 10
+    "FAST Percussion ", // 11 
+    "ON Scanner Up   ", // 12
+    "OFF Scanner Up  ", // 13
+    "ON Scanner Low  ", // 14
+    "OFF Scanner LOW ", // 15
+    "V1 Vibrato      ", // 16
+    "C1 Chorus       ", // 17
+    "V2 Vibrato      ", // 18
+    "C2 Chorus       ", // 19
+    "V3 Vibrato      ", // 20
+    "C3 Chorus       ", // 21
+	"Overall Tone    ", // 22
+	"Refresh All     ", // 23
+	"Volume Normal   ", // 24
+	"Volume Max      ", // 25
+	"Shift on Hold   ", // 26
+	"CANCEL Press    ", // 27
+	"Edit            ", // 28
 	"ALT_Preset_1    ", // 29
 	"ALT_Preset_2    ", // 30
 	"ALT_Preset_3    ", // 
@@ -124,46 +128,9 @@ char8 *lcdAlternateTextMessage[100] =
 	"ALT_USR_Preset_6", // 
 	"ALT_USR_Preset_7", // 
 	"ALT_USR_Preset_8", // 
+	"Overdrive ON    ",
+	"Overdrive OFF   ",
 }; // Max Array Size 50
-
-void LCD_splashScreen(uint8 mex)
-{
-    /* Start LCD and set position */
-    // alternateTextCounter = time;    // in 100ms
-    static uint8 isLcdInit = 0;
-    alternateTextCounter = 20;
-    
-	if(isLcdInit == 0)
-    {
-        DBG_PRINTF("wait for LCD\n");
-
-        LCD_PrintString("PSoC 5LP");
-	    LCD_Position(0,1);
-	    LCD_PrintString("Prima fila");
-	
-        DBG_PRINTF("LCD READY\n");
-        isLcdInit = 1;
-    }
-    
-    switch(mex)
-    {
-        case 0:
-            // LCD_ClearDisplay(); // spacca il display
-            LCD_Position(0,0);  // write
-            LCD_PrintString(lcdTextMessage[0]);  // write
-            LCD_Position(1,0);  // write
-            LCD_PrintString(lcdTextMessage[2]);  // write
-		
-        break;
-        
-        case 1:
-		
-            LCD_Position(1,0);  // write
-            LCD_PrintString(lcdTextMessage[1]);  // write
-		
-        break;
-    }
-}
 
 void LCD_bootlogo (uint8 time)
 {
@@ -179,8 +146,129 @@ void LCD_bootlogo (uint8 time)
 
 }
 
+void DisplayMainView(void){
+	char lcdMainText[16] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',};
+	/*
+        switchType.rotarySpeaker_HalfMoon = ROTARY_SLOW;        // ok
+        switchType.rotarySpeaker_bypass = SWITCH_ON;            // ok
+        switchType.Tube_Overdrive_Switch = 0;
+        switchType.Vibrato_Lower_Switch = SWITCH_OFF;
+        switchType.Vibrato_Upper_Switch = SWITCH_OFF;
+        switchType.chorus_Knob = CHORUS_C1;
+        switchType.percussion_Switch = SWITCH_ON;
+        switchType.percussionLevel_Switch = PERC_SOFT;
+        switchType.percussionDecay_Switch = PERC_FAST;
+        switchType.percussionHarmonics_Switch = PERC_2ND;
+        switchType.upperManualPreset_Switch = PRESET_B;
+        switchType.lowerManualPreset_Switch = PRESET_B;
+	*/
+	
+	switch(switchType.chorus_Knob) {
+		case CHORUS_C1:
+		lcdMainText[0] = 'C';
+		lcdMainText[1] = '1';
+		break;
+		
+		case CHORUS_C2:
+		lcdMainText[0] = 'C';
+		lcdMainText[1] = '2';
+		break;
 
-void LCD_Poll(uint8 status)
+		case CHORUS_C3:
+		lcdMainText[0] = 'C';
+		lcdMainText[1] = '3';
+		break;
+
+		case CHORUS_V1:
+		lcdMainText[0] = 'V';
+		lcdMainText[1] = '1';
+		break;
+
+		case CHORUS_V2:
+		lcdMainText[0] = 'V';
+		lcdMainText[1] = '2';
+		break;
+	
+		case CHORUS_V3:
+		lcdMainText[0] = 'V';
+		lcdMainText[1] = '3';
+		break;
+	}
+
+	if(switchType.Vibrato_Upper_Switch == SWITCH_OFF) {
+		lcdMainText[2] = '-';
+	} else {
+	    lcdMainText[2] = 'U';
+	}
+	
+	if(switchType.Vibrato_Lower_Switch == SWITCH_OFF) {
+		lcdMainText[3] = '-';
+	} else {
+	    lcdMainText[3] = 'L';
+	}
+	/*
+	if(switchType.percussion_Switch == SWITCH_OFF){
+		lcdMainText[5] = '-';
+		// lcdMainText[6] = 'f';
+	} else {
+		switch(switchType.percussionHarmonics_Switch) {
+			case PERC_2ND:
+				lcdMainText[5] = '2';
+				// lcdMainText[6] = 'D';
+			break;
+			case PERC_3RD:
+				lcdMainText[5] = '3';
+				// lcdMainText[6] = 'D';
+			break;
+		}
+	}
+	*/
+	switch(switchType.percussionLevel_Switch) {
+		case PERC_SOFT:
+			lcdMainText[5] = 'S';
+			lcdMainText[6] = 'f';
+			lcdMainText[7] = 't';
+		break;
+		case PERC_NORM:
+			lcdMainText[5] = 'N';
+			lcdMainText[6] = 'm';
+			lcdMainText[7] = 'l';
+		break;
+	}
+
+	switch(switchType.percussionDecay_Switch) {
+		case PERC_FAST:
+			lcdMainText[9] = 'F';
+			lcdMainText[10] = 's';
+			lcdMainText[11] = 't';
+		break;
+		case PERC_SLOW:
+			lcdMainText[9] = 'S';
+			lcdMainText[10] = 'l';
+			lcdMainText[11] = 'w';
+		break;
+	}
+	
+	switch(switchType.Tube_Overdrive_Switch) {
+		case 0:
+		case 3:
+			lcdMainText[13] = 'O';
+			lcdMainText[14] = 'f';
+			lcdMainText[15] = 'f';
+		break;
+		case 1:
+		case 2:	
+			lcdMainText[13] = 'D';
+			lcdMainText[14] = 'r';
+			lcdMainText[15] = 'v';
+		break;
+	}
+	
+	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) lcdMainText);		// testo scritto nella riga bassa
+	// M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) lcdAlternateTextMessage[50]);		// testo scritto nella riga bassa
+}
+
+void LCD_Poll(void)
 {
     // chiamata nel main
     static uint8 isModuleNotInitialized = 1;
@@ -189,18 +277,8 @@ void LCD_Poll(uint8 status)
     {
        // memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
         // LCD_bootlogo(50);
-        
+        alternateTextCounter = 10;
         isModuleNotInitialized = 0;
-    }
-    
-    if(status == 0)
-    {
-        // ricarica lo splashscreen in caso di disconnseesione
-        if(lcdMessageStates == 2)
-        {
-            lcdMessageStates = 0;
-            alternateTextCounter = 10;
-        }
     }
     
     if (tick_100ms(TICK_LCD))
@@ -208,35 +286,13 @@ void LCD_Poll(uint8 status)
         if(alternateTextCounter)
         {
             alternateTextCounter--;
-            if(alternateTextCounter == 0)
-            {
-                if(status == 0) // not initialized
-                {
-                    switch(lcdMessageStates)
-                    {
-                        case 0: // -> vai in 1
-                        lcdMessageStates = 1;
-                        LCD_splashScreen(1);
-                        break;
-                        
-                        case 1: // -> vai in 2
-                        lcdMessageStates = 0;
-                        LCD_splashScreen(0);
-                        break;
-                    }
-                }
-                else
-                {
-                    lcdMessageStates = 2;
-                    // swappa LCD
-                    // LCD_ClearDisplay();
-                    // Write_BarGraphs();
-                }
-                
+            if(alternateTextCounter == 0) {
+                DisplayMainView();
+                // alternateTextCounter = refreshTime;
             }
         }
 		
-		/*Write_BarGraphs(); origimale */
+		/*Write_BarGraphs(); originale */
     }
 	
 	if (tick_10ms(TICK_LCD)) {
@@ -246,13 +302,44 @@ void LCD_Poll(uint8 status)
 
 void Display_Alternate_Text(uint8 where, uint8 what)
 {
-    // where = where;
-    // what = what;
-    LCD_Position(where,0);
-    LCD_PrintString(lcdAlternateTextMessage[what]);
-    DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdAlternateTextMessage[what]);
-    // nop
+	// scrive un testo alternativo
+	if(where == ROW_0) {
+		// lockBargraphs = 1;
+	}
+	
+    alternateTextCounter = 11;
+	// DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdAlternateTextMessage[what]);
+	M2M_Write_LCD(where,LCD_STANDARD,(uint8 *) lcdAlternateTextMessage[what]);		// testo scritto nella riga bassa
 }
 
+void Display_Analog(uint8 CC, uint8 data)
+{
+	// scrive il livello del dato
+	char text[17];
+	
+    alternateTextCounter = 20;
+	switch(CC) {
+		case CC_Expression_Pedal:
+			sprintf(text,"Pedal : %3d     ",data);
+			break;
+		case CC_Reverb:
+			sprintf(text,"Reverb: %3d     ",data);
+			break;
+		case CC_Overall_Tone:
+			sprintf(text,"Tone:   %3d     ",data);
+			break;
+		case CC_Overall_Volume:
+			sprintf(text,"Volume: %3d     ",data);
+			break;
+	}
+	// DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdAlternateTextMessage[what]);
+	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *)text);		// testo scritto nella riga bassa
+}
+
+/*
+uint8 GetLockBargraphs (void ) {
+	return lockBargraphs;	
+}
+*/
 /* [] END OF FILE */
 
