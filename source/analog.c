@@ -168,18 +168,20 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             // 32:65 STOP
             // 96:127 FAST
 			pitchWheelData = data;
-			if(data > 88)
-            {
-				
-					if(switchType.Tube_Overdrive_Switch == 0) {
+			if(data > 88) {
+				switch(switchType.Tube_Overdrive_Switch) {
+					case 0:
 						sendControlChange(CC_Tube_Overdrive_Switch,127,MIDI_CHANNEL_1);
 						switchType.Tube_Overdrive_Switch = 1;
 						Display_Alternate_Text(ROW_1,ALT_overdriveOn);
-					} else if(switchType.Tube_Overdrive_Switch == 2) {
+					break;
+						
+					case 2: 
 						sendControlChange(CC_Tube_Overdrive_Switch,0,MIDI_CHANNEL_1);
 						switchType.Tube_Overdrive_Switch = 3;
 						Display_Alternate_Text(ROW_1,ALT_overdriveOff);
-					}
+					break;
+				}	
 				/*
                 if (rotaryWheelStatus == ROTARY_SLOW_SPEED)
                 {
@@ -218,10 +220,13 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             }
 			else {
 				// zona centrale
-				if(switchType.Tube_Overdrive_Switch == 1) {
-					switchType.Tube_Overdrive_Switch = 2;
-				} else if(switchType.Tube_Overdrive_Switch == 3) {
-					switchType.Tube_Overdrive_Switch = 0;
+				switch(switchType.Tube_Overdrive_Switch) {
+					case 1:
+						switchType.Tube_Overdrive_Switch = 2;
+					break;
+					case 3:
+						switchType.Tube_Overdrive_Switch = 0;
+					break;
 				}
 			}
         }

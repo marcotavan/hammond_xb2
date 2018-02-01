@@ -34,19 +34,7 @@
 #include "ButtonScanner.h"
 #include "VB3_midi_map.h"
 
-// char str_bargraph[MAX_ROWS][MAX_CHARS]; // contiene le barre
 uint8 alternateTextCounter = 0;
-
-static uint8 lcdMessageStates = 0;
-// uint8 lockBargraphs = 0;
-
-void LCD_Position(uint8 a, uint8 b) {
-	
-}
-
-void LCD_PrintString(char data[]){
-
-}
 
 char8 *lcdTextMessage[10] =
 {
@@ -132,19 +120,6 @@ char8 *lcdAlternateTextMessage[100] =
 	"Overdrive OFF   ",
 }; // Max Array Size 50
 
-void LCD_bootlogo (uint8 time)
-{
-    /* Start LCD and set position */
-    alternateTextCounter = time;    // in 100ms
-
-    LCD_Position(0,0);
-    LCD_PrintString(lcdTextMessage[0]);
-    
-    LCD_Position(1,0);
-    LCD_PrintString(lcdTextMessage[2]);
-    // LCD_ClearDisplay();
-
-}
 
 void DisplayMainView(void){
 	char lcdMainText[16] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',};
@@ -238,12 +213,12 @@ void DisplayMainView(void){
 
 	switch(switchType.percussionDecay_Switch) {
 		case PERC_FAST:
-			lcdMainText[9] = 'F';
+			lcdMainText[9]  = 'F';
 			lcdMainText[10] = 's';
 			lcdMainText[11] = 't';
 		break;
 		case PERC_SLOW:
-			lcdMainText[9] = 'S';
+			lcdMainText[9]  = 'S';
 			lcdMainText[10] = 'l';
 			lcdMainText[11] = 'w';
 		break;
@@ -276,7 +251,6 @@ void LCD_Poll(void)
     if(isModuleNotInitialized)
     {
        // memset(str_bargraph,0,sizeof(str_bargraph[0][0])*MAX_CHARS*MAX_ROWS);
-        // LCD_bootlogo(50);
         alternateTextCounter = 10;
         isModuleNotInitialized = 0;
     }

@@ -98,9 +98,19 @@ void RefreshAllButtonElements(void) {
         MIDI_CHANNEL_1);
     CyDelay(10);
     
-    sendControlChange(CC_Tube_Overdrive_Switch,             
-        switchType.Tube_Overdrive_Switch,       
-        MIDI_CHANNEL_1);
+	switch(switchType.Tube_Overdrive_Switch) {
+		case 1:
+		case 2:
+		    sendControlChange(CC_Tube_Overdrive_Switch,             
+		        127,       
+		        MIDI_CHANNEL_1);
+			break;
+		default:	
+			sendControlChange(CC_Tube_Overdrive_Switch,             
+		        0,       
+		        MIDI_CHANNEL_1);
+			break;
+	}
     CyDelay(10);
 
     sendControlChange(CC_Vibrato_Lower,                     
