@@ -35,6 +35,7 @@
 #include "VB3_midi_map.h"
 
 uint8 alternateTextCounter = 0;
+uint8 lockBargraphs = 0;
 
 char8 *lcdTextMessage[10] =
 {
@@ -241,6 +242,12 @@ void DisplayMainView(void){
 	
 	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) lcdMainText);		// testo scritto nella riga bassa
 	// M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) lcdAlternateTextMessage[50]);		// testo scritto nella riga bassa
+	if(lockBargraphs) {
+		lockBargraphs = 0;
+		uint8 data[16];
+		memset(data,0xFF,sizeof(data));
+		Write_BarGraphs(data);
+	}
 }
 
 void LCD_Poll(void)
@@ -278,7 +285,7 @@ void Display_Alternate_Text(uint8 where, uint8 what)
 {
 	// scrive un testo alternativo
 	if(where == ROW_0) {
-		// lockBargraphs = 1;
+		lockBargraphs = 1;
 	}
 	
     alternateTextCounter = 11;
@@ -305,6 +312,9 @@ void Display_Analog(uint8 CC, uint8 data)
 		case CC_Overall_Volume:
 			sprintf(text,"Volume: %3d     ",data);
 			break;
+		case CC_Tube_Overdrive_Drive:
+			sprintf(text,"Overdrive: %3d     ",data);
+			break;	
 	}
 	// DBG_PRINTF("frase da scrivere sul display: riga %d, %s\n",where,lcdAlternateTextMessage[what]);
 	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *)text);		// testo scritto nella riga bassa

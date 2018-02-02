@@ -210,7 +210,9 @@ void Write_BarGraphs(uint8 *data)
 	*/
 	
 	if(flagWrite) {
-		M2M_Write_LCD(ROW_0,LCD_BARGRAPHS,data);	// bargraphs
+		if(lockBargraphs == 0) {
+			M2M_Write_LCD(ROW_0,LCD_BARGRAPHS,data);	// bargraphs
+		}
 	}
     // sposta il cursore sotto
     // LCD_Position(1,0);

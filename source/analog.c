@@ -148,7 +148,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                 lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
                 barGraph = ((data>>4) /*+ 1*/) & 0x7F;
                 str_bargraph[ROW_0][lcdColPosition] =  barGraph;
-                
+                Display_Analog(CC_Tube_Overdrive_Drive,data);
                 if (data >= 126) offset = 0;
                 str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
             } else {
