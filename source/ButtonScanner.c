@@ -615,14 +615,16 @@ void ManageButton_Shift(uint8 status)
         // case BUTTON_PRESSED:     // valido immediatamente
         case BUTTON_SHORT_PRESS:    // valido al rilascio breve
         {
-            Display_Alternate_Text(ROW_1,ALT_Cancel_on_Press);
-			ResetButtonCycle();
-			SendProgramChange(0, MIDI_CHANNEL_1);
-			
-			OnHold.shift = FALSE;
-            // DBG_PRINTF("Shift Released, i led del pannello tornano normali\n");
-			RefreshAllAnalogElements();
-			presetStatus = PRESET_FREE;
+			if(OnHold.shift == TRUE) {
+	            Display_Alternate_Text(ROW_0,ALT_Cancel_on_Press);
+				ResetButtonCycle();
+				SendProgramChange(0, MIDI_CHANNEL_1);
+				
+				OnHold.shift = FALSE;
+	            // DBG_PRINTF("Shift Released, i led del pannello tornano normali\n");
+				RefreshAllAnalogElements();
+				presetStatus = PRESET_FREE;
+			}
         }
         break;
         

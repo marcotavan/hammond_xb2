@@ -114,13 +114,13 @@ enum chorus_type_t {
 };
 
 enum perc_level_t {
-    PERC_SOFT = 0x00,
-    PERC_NORM = 0x7F
+    PERC_NORM = 0x00,
+    PERC_SOFT = 0x7F
 };
 
 enum perc_decay_t {
-    PERC_FAST = 0x00,
-    PERC_SLOW = 0x7F
+    PERC_SLOW = 0x00,
+    PERC_FAST = 0x7F
 };
 
 enum perc_type_t {
