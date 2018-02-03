@@ -556,5 +556,42 @@ void Check_if_host_requested_USB_Suspend(void)
 		// usbActivityCounter++;
     }
 }      
-
+/*
+da controllare cosa abbassa il volume
+[sendControlChange]: b0 1 0 
+[sendControlChange]: b0 85 127 
+[sendControlChange]: b0 67 127 
+[sendControlChange]: b0 30 0 
+[sendControlChange]: b0 31 0 
+[sendControlChange]: b0 73 127 
+[sendControlChange]: b0 66 127 
+[sendControlChange]: b0 70 127 
+[sendControlChange]: b0 71 0 
+[sendControlChange]: b0 72 127 
+[sendControlChange]: b0 49 127 
+[MidiMergePoll] ClearRxBuffer
+[FiltroMediano]:chn 0 velocizzo il filtro
+[sendControlChange]: b0 12 127 
+[FiltroMediano]:chn 1 velocizzo il filtro
+[sendControlChange]: b0 13 127 
+[sendControlChange]: b0 14 0 
+[sendControlChange]: b0 15 0 
+[sendControlChange]: b0 16 0 
+[sendControlChange]: b0 17 0 
+[sendControlChange]: b0 18 0 
+[sendControlChange]: b0 19 0 
+[sendControlChange]: b0 20 0 
+[sendControlChange]: b0 67 127 
+[sendControlChange]: b0 76 0 
+[sendControlChange]: b0 11 0 
+[sendControlChange]: b0 84 0 
+[sendControlChange]: b0 7 0 
+[sendControlChange]: b0 14 127 
+[sendControlChange]: b0 15 95 
+[sendControlChange]: b0 19 113 
+[sendControlChange]: b0 20 127 
+[sendControlChange]: b0 11 127 
+[sendControlChange]: b0 84 7 
+[sendControlChange]: b0 7 122 
+*/
 /* [] END OF FILE */

@@ -783,6 +783,20 @@ void ManageButton_Edit(uint8 status)
     }       
 }
 
+void ManageDamperPedal(uint8 status) {
+	// MIDI CC 64 	Damper Pedal / Sustain Pedal 	On/Off switch that controls sustain. (See also Sostenuto CC 66) 0 to 63 = Off, 64 to 127 = On
+	
+	switch(status) {
+		case BUTTON_PRESSED:
+			sendControlChange(CC_DamperPedal,127,MIDI_CHANNEL_1);
+			break;
+
+		case BUTTON_RELEASED:
+			sendControlChange(CC_DamperPedal,0,MIDI_CHANNEL_1);
+			break;
+	}	
+}
+
 static uint8 buttonCycle[9] = {0,0,0,0,0,0,0,0,0};
 	
 void ResetButtonCycle(void) {
@@ -1484,18 +1498,27 @@ void FootSwitchManager(void) {
 			}
 		}
 	} else {
+		if(debounce[0] == 0){
+			DBG_PRINTF("FootSwitch_0 released %d\n",counter[0]++);
+		}
 		debounce[0] = FOOTSWITCH_DEBOUNCE;
 	}
 	
-	if(FootSwitch_1_Read() == 0){
+	if(FootSwitch_1_Read() == 0){ // pedalino premuto
 		if(debounce[1]) {
 			debounce[1]--;
 			if(debounce[1] == 0) {
 				DBG_PRINTF("FootSwitch_1 pressed %d\n",counter[1]++);
+				ManageDamperPedal(BUTTON_PRESSED);
 			}
 		}
 	} else {
+		if(debounce[1] == 0){
+			DBG_PRINTF("FootSwitch_1 released %d\n",counter[1]++);
+			ManageDamperPedal(BUTTON_RELEASED);
+		}
 		debounce[1] = FOOTSWITCH_DEBOUNCE;
+		
 	}
 	
 	if(FootSwitch_2_Read() == 0){
@@ -1506,6 +1529,9 @@ void FootSwitchManager(void) {
 			}
 		}
 	} else {
+		if(debounce[2] == 0){
+			DBG_PRINTF("FootSwitch_2 released %d\n",counter[2]++);
+		}
 		debounce[2] = FOOTSWITCH_DEBOUNCE;
 	}
 }
