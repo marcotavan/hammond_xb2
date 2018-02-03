@@ -75,13 +75,13 @@ uint8 LogVelocity(uint16 counter)
 
     // Every time the interval between the first and second switch doubles, lower
     // the midi velocity by this much:
-    static const int velocityAttenuation = 20;
+    static const float velocityAttenuation = 15.8; // 13-20, 18 schiaccaito
 
-    int velocity;
+    float velocity;
     
     //  excel velocity.xls     => 127 - (127 + ((LOG10(A2/$F$1)/LOG10(2))*20))
     
-    velocity = 127 - (127 + ((log(counter/shortestInterval)/LOG_2) * velocityAttenuation));
+    velocity = 127 - (127 + ((log((float)counter/shortestInterval)/LOG_2) * velocityAttenuation));
     
     // velocity = 127 - (127 + ((icsi_log((counter/shortestInterval),lookup_table, 8)/LOG_2) * velocityAttenuation));
     
@@ -115,7 +115,7 @@ uint8 LinearVelocity(uint16 counter)
 
 void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
 {
-    uint8 logVelocity = 0;
+    uint8 Velocity = 0;
     uint8 linearVelocity = 0; 
     
     uint8 play_note = MIDI_FIRST_NOTE_61 + numTasto;
@@ -138,10 +138,11 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
         case KEY_PRESSED:
         {    
             // Pin_SPIF_Write(1);
-            logVelocity = LogVelocity(counter);       // 100uS
-            // Pin_SPIF_Write(0);
+            Velocity = LogVelocity(counter);       // 100uS
+            // Velocity = LinearVelocity(counter);
+			// Pin_SPIF_Write(0);
             
-            sendNoteOn(play_note,logVelocity,midiChannel);
+            sendNoteOn(play_note,Velocity,midiChannel);
         }
         break;
         
@@ -157,7 +158,9 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
     }
     
     #if VERBOSE_MODE 
-    DBG_PRINTF("[%s] %3d %3d %4d %3d %3d\n",__func__,event,numTasto,key[numTasto].counter,linearVelocity,logVelocity);
+	if (event==KEY_PRESSED){
+    	DBG_PRINTF("[%s] %3d %3d %4d %3d %3d\n",__func__,event,numTasto,key[numTasto].counter,linearVelocity,Velocity);
+	}
     #endif
 }
 
@@ -260,7 +263,9 @@ void MatrixScanner(void)
                 if (key[numTasto].state == KEY_IS_GOING_DOWN)
                 {
                     // conto poich[ non sono ancora arrivato giu del tutto
-                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
+                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) {
+						key[numTasto].counter++;
+					}
                 }
             }
             else
@@ -333,7 +338,9 @@ void MatrixScanner(void)
                 
                 if (key[numTasto].state == KEY_IS_GOING_UP)
                 {
-                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) key[numTasto].counter++;
+                    if (key[numTasto].counter != MAX_SLOW_VELOCITY_COUNTER) {
+						key[numTasto].counter++;
+					}
                 }
             }
         } // for(bank=0;bank<4;bank++)
