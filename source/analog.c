@@ -485,7 +485,7 @@ void RefreshAllAnalogElements(void){
 }
 
 void TriggerVolumeRead(void) {
-	volumeRead = 10;
+	volumeRead = 10; // attesa 100ms
 }								
 
 /* [] END OF FILE */
