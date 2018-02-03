@@ -23,7 +23,7 @@ MIDI CC 20 – 31 	Undefined
 MIDI CC 32 – 63 	Controller 0-31 Least Significant Bit (LSB) 	 
 MIDI CC 64 	Damper Pedal / Sustain Pedal 	On/Off switch that controls sustain. (See also Sostenuto CC 66) 0 to 63 = Off, 64 to 127 = On
 MIDI CC 65 	Portamento On/Off Switch 	On/Off switch 0 to 63 = Off, 64 to 127 = On
-MIDI CC 66 	Sostenuto On/Off Switch 	On/Off switch – Like the Sustain controller (CC 64), However it only holds notes that were “On” when the pedal was pressed. People use it to “hold” chords” and play melodies over the held chord. 0 to 63 = Off, 64 to 127 = On
+* MIDI CC 66 	Sostenuto On/Off Switch 	On/Off switch – Like the Sustain controller (CC 64), However it only holds notes that were “On” when the pedal was pressed. People use it to “hold” chords” and play melodies over the held chord. 0 to 63 = Off, 64 to 127 = On
 MIDI CC 67 	Soft Pedal On/Off Switch 	On/Off switch - Lowers the volume of notes played. 0 to 63 = Off, 64 to 127 = On
 MIDI CC 68 	Legato FootSwitch 	On/Off switch - Turns Legato effect between 2 subsequent notes On or Off. 0 to 63 = Off, 64 to 127 = On
 MIDI CC 69 	Hold 2 	Another way to “hold notes” (see MIDI CC 64 and MIDI CC 66). However notes fade out according to their release parameter rather than when the pedal is released.
@@ -37,10 +37,10 @@ MIDI CC 76 	Sound Controller 7 	Generic – Some manufacturers may use to furthe
 MIDI CC 77 	Sound Controller 8 	Generic – Some manufacturers may use to further shave their sounds.
 MIDI CC 78 	Sound Controller 9 	Generic – Some manufacturers may use to further shave their sounds.
 MIDI CC 79 	Sound Controller 10 	Generic – Some manufacturers may use to further shave their sounds.
-MIDI CC 80 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
-MIDI CC 81 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
-MIDI CC 82 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On 
-MIDI CC 83 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
+* MIDI CC 80 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
+* MIDI CC 81 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
+* MIDI CC 82 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On 
+* MIDI CC 83 	General Purpose MIDI CC Controller 	Generic On/Off switch 0 to 63 = Off, 64 to 127 = On
 MIDI CC 84 	Portamento CC Control 	Controls the amount of Portamento.
 MIDI CC 85 – 90 	Undefined 	 
 MIDI CC 91 	Effect 1 Depth 	Usually controls reverb send amount
