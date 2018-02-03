@@ -26,5 +26,6 @@
 	void AnalogPoll(void);
 	uint8 GetOverallVolumeLevel(void);
 	void RefreshAllAnalogElements(void);
+	void TriggerVolumeRead(void);
 #endif
 /* [] END OF FILE */

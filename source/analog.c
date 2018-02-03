@@ -474,4 +474,9 @@ void RefreshAllAnalogElements(void){
 	DBG_PRINTF("reinvia tutti i dati delle analogiche\n");
 	memset(analogVal,0xff,sizeof(analogVal));
 }
+
+void TriggerVolumeRead(void) {
+	analogVal[VOLUME_ANALOG_INPUT] = 0x00;
+}								
+
 /* [] END OF FILE */

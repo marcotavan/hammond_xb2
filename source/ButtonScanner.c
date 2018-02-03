@@ -489,37 +489,37 @@ void ManageButton_PercussionLevel(uint8 status)
         break;
         
         // case BUTTON_LONG_PRESS
-        case BUTTON_ON_HOLD:
+		case BUTTON_ON_HOLD:
         {
-            switch(switchType.percussionLevel_Switch) 
+            switch(switchType.percussionDecay_Switch) 
             {
-                case PERC_SOFT:
-                switchType.percussionLevel_Switch = PERC_NORM;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_NORM);
+                case PERC_FAST:
+                switchType.percussionDecay_Switch = PERC_SLOW;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SLOW);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_NORM\n");
+				DBG_PRINTF("ALT_Percussion_SLOW\n");
 				#endif
                 break;
             
-                case PERC_NORM: 
-                switchType.percussionLevel_Switch = PERC_SOFT;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
+                case PERC_SLOW: 
+                switchType.percussionDecay_Switch = PERC_FAST;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_SOFT\n");
+				DBG_PRINTF("ALT_Percussion_FAST\n");
 				#endif
                 break;
                 
                 default:
-                switchType.percussionLevel_Switch = PERC_SOFT;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
+                switchType.percussionDecay_Switch = PERC_FAST;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_SOFT\n");
+				DBG_PRINTF("ALT_Percussion_FAST\n");
 				#endif
                 break;
             }
             
-            sendControlChange(CC_Percussion_Volume, 
-                switchType.percussionLevel_Switch,        
+            sendControlChange(CC_Percussion_Decay,            
+                switchType.percussionDecay_Switch,     
                 MIDI_CHANNEL_1);
         }
         break;
@@ -581,37 +581,37 @@ void ManageButton_PercussionType(uint8 status)
         break;
         
         // case BUTTON_LONG_PRESS
-        case BUTTON_ON_HOLD:
+		case BUTTON_ON_HOLD:
         {
-            switch(switchType.percussionDecay_Switch) 
+            switch(switchType.percussionLevel_Switch) 
             {
-                case PERC_FAST:
-                switchType.percussionDecay_Switch = PERC_SLOW;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_SLOW);
+                case PERC_SOFT:
+                switchType.percussionLevel_Switch = PERC_NORM;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_NORM);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_SLOW\n");
+				DBG_PRINTF("ALT_Percussion_NORM\n");
 				#endif
                 break;
             
-                case PERC_SLOW: 
-                switchType.percussionDecay_Switch = PERC_FAST;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
+                case PERC_NORM: 
+                switchType.percussionLevel_Switch = PERC_SOFT;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_FAST\n");
+				DBG_PRINTF("ALT_Percussion_SOFT\n");
 				#endif
                 break;
                 
                 default:
-                switchType.percussionDecay_Switch = PERC_FAST;
-                Display_Alternate_Text(ROW_1,ALT_Percussion_FAST);
+                switchType.percussionLevel_Switch = PERC_SOFT;
+                Display_Alternate_Text(ROW_1,ALT_Percussion_SOFT);
 				#if BUTTON_UART_DEBUG
-				DBG_PRINTF("ALT_Percussion_FAST\n");
+				DBG_PRINTF("ALT_Percussion_SOFT\n");
 				#endif
                 break;
             }
             
-            sendControlChange(CC_Percussion_Decay,            
-                switchType.percussionDecay_Switch,     
+            sendControlChange(CC_Percussion_Volume, 
+                switchType.percussionLevel_Switch,        
                 MIDI_CHANNEL_1);
         }
         break;
@@ -689,7 +689,9 @@ void ManageButton_Solo(uint8 status)
 				sendControlChange(CC_Overall_Volume,127,MIDI_CHANNEL_1);
 				Display_Analog(CC_Overall_Volume,127);
 			} else {
-				sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
+				// sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
+				// GetOverallVolumeLevel();
+				TriggerVolumeRead();
 				soloVolume = VOLUME_NORMAL;
 				Display_Analog(CC_Overall_Volume,GetOverallVolumeLevel());
 			}
