@@ -17,7 +17,7 @@
 void ButtonScannerPoll(void);
 void ButtonCommand(uint8 numTasto,uint8 status);
 void InitSwitchButtons(void);
-void RefreshAllButtonElements(void);
+void RefreshAllButtonElements(uint8 from);
 
 uint8 SHIFT_Button_on_Hold(void);
 uint8 GetVolumeSolo(void);
@@ -25,19 +25,22 @@ uint8 GetPresetStatus(void);
 
 // potrebbe andare in eeprom
 struct switchType_t {
-    uint8 marker;
-    uint8 rotarySpeaker_HalfMoon;
-    uint8 rotarySpeaker_bypass;
-    uint8 Tube_Overdrive_Switch;
-    uint8 Vibrato_Upper_Switch;
-    uint8 Vibrato_Lower_Switch;
-    uint8 chorus_Knob;
-    uint8 percussion_Switch;
-    uint8 percussionLevel_Switch;
-    uint8 percussionDecay_Switch;
-    uint8 percussionHarmonics_Switch;
-    uint8 upperManualPreset_Switch;
-    uint8 lowerManualPreset_Switch;
+    uint8 marker;						// 1
+    uint8 rotarySpeaker_HalfMoon;		// 2
+    uint8 rotarySpeaker_bypass;			// 3
+    uint8 Tube_Overdrive_Switch;		// 4
+    uint8 Vibrato_Upper_Switch;			// 5
+    uint8 Vibrato_Lower_Switch;			// 6
+    uint8 chorus_Knob;					// 7
+    uint8 percussion_Switch;			// 8
+    uint8 percussionLevel_Switch;		// 9
+    uint8 percussionDecay_Switch;		// 10
+    uint8 percussionHarmonics_Switch;	// 11
+    uint8 upperManualPreset_Switch;		// 12
+    uint8 lowerManualPreset_Switch;		// 13
+	uint8 free1;
+	uint8 free2;
+	uint8 free3;
 };
 
 extern struct switchType_t switchType;

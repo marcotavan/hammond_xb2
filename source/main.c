@@ -558,40 +558,39 @@ void Check_if_host_requested_USB_Suspend(void)
 }      
 /*
 da controllare cosa abbassa il volume
-[sendControlChange]: b0 1 0 
-[sendControlChange]: b0 85 127 
-[sendControlChange]: b0 67 127 
-[sendControlChange]: b0 30 0 
-[sendControlChange]: b0 31 0 
-[sendControlChange]: b0 73 127 
-[sendControlChange]: b0 66 127 
-[sendControlChange]: b0 70 127 
-[sendControlChange]: b0 71 0 
-[sendControlChange]: b0 72 127 
-[sendControlChange]: b0 49 127 
-[MidiMergePoll] ClearRxBuffer
-[FiltroMediano]:chn 0 velocizzo il filtro
-[sendControlChange]: b0 12 127 
-[FiltroMediano]:chn 1 velocizzo il filtro
-[sendControlChange]: b0 13 127 
-[sendControlChange]: b0 14 0 
-[sendControlChange]: b0 15 0 
-[sendControlChange]: b0 16 0 
-[sendControlChange]: b0 17 0 
-[sendControlChange]: b0 18 0 
-[sendControlChange]: b0 19 0 
-[sendControlChange]: b0 20 0 
-[sendControlChange]: b0 67 127 
-[sendControlChange]: b0 76 0 
-[sendControlChange]: b0 11 0 
-[sendControlChange]: b0 84 0 
-[sendControlChange]: b0 7 0 
-[sendControlChange]: b0 14 127 
-[sendControlChange]: b0 15 95 
-[sendControlChange]: b0 19 113 
-[sendControlChange]: b0 20 127 
-[sendControlChange]: b0 11 127 
-[sendControlChange]: b0 84 7 
-[sendControlChange]: b0 7 122 
+[sendControlChange]: b0 1 0 	// Modulation
+[sendControlChange]: b0 85 127 	// CC_Rotary_Speaker_Bypass
+[sendControlChange]: b0 67 127 	// CC_Tube_Overdrive_Switch
+[sendControlChange]: b0 30 0  	// CC_Vibrato_Lower
+[sendControlChange]: b0 31 0 	// CC_Vibrato_Upper
+[sendControlChange]: b0 73 127 	// CC_Vibrato_Type
+[sendControlChange]: b0 66 127 	// CC_Percussion_On_Off
+[sendControlChange]: b0 70 127 	// CC_Percussion_Volume
+[sendControlChange]: b0 71 0 	// CC_Percussion_Decay
+[sendControlChange]: b0 72 127 	// CC_Percussion_Harmonic
+[sendControlChange]: b0 49 127 	// CC_Upper_Manual_Drawbars_AB_Switch
+
+[sendControlChange]: b0 12 127 	// free
+[sendControlChange]: b0 13 127 	// free
+[sendControlChange]: b0 14 0 	// free
+[sendControlChange]: b0 15 0 	// free
+[sendControlChange]: b0 16 0 	// free
+[sendControlChange]: b0 17 0 	// free
+[sendControlChange]: b0 18 0 	// free
+[sendControlChange]: b0 19 0 	// free
+[sendControlChange]: b0 20 0 	// free
+
+[sendControlChange]: b0 67 127 	// CC_Tube_Overdrive_Switch
+[sendControlChange]: b0 76 0 	// CC_Tube_Overdrive_Drive
+[sendControlChange]: b0 11 0 	// CC_Expression_Pedal
+[sendControlChange]: b0 84 0 	// CC_Reverb
+[sendControlChange]: b0 7 0 	// CC_Overall_Volume
+[sendControlChange]: b0 14 127 	// free
+[sendControlChange]: b0 15 95 	// free
+[sendControlChange]: b0 19 113 	// free
+[sendControlChange]: b0 20 127 	// free
+[sendControlChange]: b0 11 127 	// CC_Expression_Pedal
+[sendControlChange]: b0 84 7 	// CC_Reverb
+[sendControlChange]: b0 7 122 	// CC_Overall_Volume
 */
 /* [] END OF FILE */

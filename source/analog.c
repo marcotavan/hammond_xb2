@@ -29,6 +29,7 @@
 #define DELTA_POTENZIOMETRI 2
 volatile uint8 adcConversionDone = 0;
 static  void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data);
+static uint8 InitAnalogicheCompletata = 10;
 
 #define DEBUG_UART_ATTIVO (0)
 
@@ -407,58 +408,55 @@ void AnalogPoll(void)
                 
                 validData = FiltroMediano(analogChannel,averageSamples);    //
                 
-                switch (analogChannel)
-                {
-                    case MOD_WHEEL_ANALOG_INPUT:
-                    { // analogInputs
-                        if(isValidDifference(analogVal[analogChannel],validData,1)) // granularita del dato in uscita: 1 la differenza è 1 55 56 57 58 
-                        {
-                            // c'è una valida differenza con il campione precedente?
-                            AnalogEventTrigger(analogChannel,analogChannel, validData);
-                            analogVal[analogChannel] = validData;
-							divider = 1;
-                        }
-                    }
-                    break;
-					
-                    case EXPRESSION_ANALOG_INPUT:
-					case REVERB_ANALOG_INPUT:
-					case VOLUME_ANALOG_INPUT:					
-                    case PITCH_WHEEL_ANALOG_INPUT:
-                    { // analogInputs
-                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_POTENZIOMETRI)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
-                        {
-                            // c'è una valida differenza con il campione precedente?
-                            AnalogEventTrigger(analogChannel,analogChannel, validData);
-                            analogVal[analogChannel] = validData;
-							divider = 1;
-                        }
-                    }
-                    break;
-                    
-                    default: 
-                    { // drawbars
-                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_DRAWBARS)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
-                        {
-                            // c'è una valida differenza con il campione precedente?
-                            AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);
-                            analogVal[analogChannel] = validData;
-							divider = 1;
-                        }
-                    }
-                    break;
+				if(InitAnalogicheCompletata == 0) {
+	                switch (analogChannel) {
+	                    case MOD_WHEEL_ANALOG_INPUT:
+	                    { // analogInputs
+	                        if(isValidDifference(analogVal[analogChannel],validData,1)) // granularita del dato in uscita: 1 la differenza è 1 55 56 57 58 
+	                        {
+	                            // c'è una valida differenza con il campione precedente?
+	                            AnalogEventTrigger(analogChannel,analogChannel, validData);
+	                            analogVal[analogChannel] = validData;
+								divider = 1;
+	                        }
+	                    }
+	                    break;
+						
+	                    case EXPRESSION_ANALOG_INPUT:
+						case REVERB_ANALOG_INPUT:
+						case VOLUME_ANALOG_INPUT:					
+	                    case PITCH_WHEEL_ANALOG_INPUT:
+	                    { // analogInputs
+	                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_POTENZIOMETRI)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
+	                        {
+	                            // c'è una valida differenza con il campione precedente?
+	                            AnalogEventTrigger(analogChannel,analogChannel, validData);
+	                            analogVal[analogChannel] = validData;
+								divider = 1;
+	                        }
+	                    }
+	                    break;
+	                    
+	                    default: 
+	                    { // drawbars
+	                        if(isValidDifference(analogVal[analogChannel],validData,DELTA_DRAWBARS)) // granularita del dato in uscita: 2 la differenza è 2 55 57 59 61
+	                        {
+	                            // c'è una valida differenza con il campione precedente?
+	                            AnalogEventTrigger(EVENT_DRAWBAR_GENERIC,analogChannel, validData);
+	                            analogVal[analogChannel] = validData;
+								divider = 1;
+	                        }
+	                    }
+	                    break;
+	                }
                 }
-                
                 analogChannel++;
                 if (analogChannel == MAX_ANALOG_CHANNELS) {
                     analogChannel = 0;
+					if(InitAnalogicheCompletata) {
+						InitAnalogicheCompletata--;
+					}
                 }
-                
-				/*
-				if(tick_100ms(TICK_ANALOG)) {
-					Write_BarGraphs(str_bargraph[ROW_0]);
-				}
-				*/
 				
                 AMux_FastSelect(analogChannel);
             }

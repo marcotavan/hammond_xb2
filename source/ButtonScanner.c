@@ -86,7 +86,7 @@ static uint8 EditFunction = BUTTON_NONE;
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
 
-void RefreshAllButtonElements(void) {
+void RefreshAllButtonElements(uint8 from) {
 	// invia via midi la configurazione di default
     sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
         switchType.rotarySpeaker_HalfMoon,
@@ -188,7 +188,25 @@ void InitSwitchButtons(void)
     OnHold.shift = FALSE;
     OnHold.solo = FALSE;
     
-	RefreshAllButtonElements();
+	DBG_PRINTF("%s\n",__func__);
+	RefreshAllButtonElements(0);
+	RefreshAllAnalogElements();
+	
+	/*
+    sendControlChange(CC_Rotary_Speaker_Speed_Fast_Slow,   
+    sendControlChange(CC_Rotary_Speaker_Bypass,             
+	switch(switchType.Tube_Overdrive_Switch) {
+    sendControlChange(CC_Tube_Overdrive_Switch,             
+	sendControlChange(CC_Tube_Overdrive_Switch,             
+    sendControlChange(CC_Vibrato_Lower,                     
+    sendControlChange(CC_Vibrato_Upper,
+    sendControlChange(CC_Vibrato_Type,          
+    sendControlChange(CC_Percussion_On_Off,          
+    sendControlChange(CC_Percussion_Volume,         
+    sendControlChange(CC_Percussion_Decay,        
+    sendControlChange(CC_Percussion_Harmonic,       
+    sendControlChange(CC_Upper_Manual_Drawbars_AB_Switch,
+	*/
 	
 	StartMidiMerge();
 	// aggiungere lo SPLIT ON
@@ -721,7 +739,7 @@ void ManageButton_Record(uint8 status)
         {
 			DBG_PRINTF("ManageButton_Record BUTTON_ON_HOLD -> RefreshAll Elements\n");
 			Display_Alternate_Text(ROW_1,ALT_RefreshAll_Elements);
-			RefreshAllButtonElements();
+			RefreshAllButtonElements(1);
 			RefreshAllAnalogElements();
         }
         break;
