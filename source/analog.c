@@ -52,7 +52,7 @@ CY_ISR( ADC_ISR )
     adcConversionDone = 1;
 }
 #endif
-
+uint8 volumeRead = 0;
 uint8 const PresetKorgCx3Drawbars[9] = {16,17,18,19,20,21,21,23,24};
 uint8 const PresetVb3Drawbars[9]     = {12,13,14,15,16,17,18,19,20};
 
@@ -377,6 +377,15 @@ void AnalogPoll(void)
 				divider = 20;
 			}
 		}
+		
+		if(volumeRead) {
+			// per fiorzare la rilettura del valore analogico del volume
+			volumeRead--;
+			if(volumeRead == 0) {
+				analogVal[VOLUME_ANALOG_INPUT] = 0xff;
+				// DBG_PRINTF("volume read %d\n",volumeRead);
+			}
+		}
 	}
 		
 	if(tick_1ms(TICK_ANALOG))
@@ -476,7 +485,7 @@ void RefreshAllAnalogElements(void){
 }
 
 void TriggerVolumeRead(void) {
-	analogVal[VOLUME_ANALOG_INPUT] = 0x00;
+	volumeRead = 10;
 }								
 
 /* [] END OF FILE */
