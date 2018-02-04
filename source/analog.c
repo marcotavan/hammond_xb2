@@ -149,7 +149,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
                 lcdColPosition = event-MOD_WHEEL_ANALOG_INPUT;
                 barGraph = ((data>>4) /*+ 1*/) & 0x7F;
                 str_bargraph[ROW_0][lcdColPosition] =  barGraph;
-                Display_Analog(CC_Tube_Overdrive_Drive,data);
+                Display_Analog_Value(CC_Tube_Overdrive_Drive,data);
                 if (data >= 126) offset = 0;
                 str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
             } else {
@@ -250,7 +250,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 
             if (scaledData >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
-            Display_Analog(CC_Expression_Pedal,data);
+            Display_Analog_Value(CC_Expression_Pedal,data);
         }
         break;
         
@@ -268,7 +268,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
             
             if (data >= 126) offset = 0;
             str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
-			Display_Analog(CC_Reverb,data);
+			Display_Analog_Value(CC_Reverb,data);
         }
         break;
         
@@ -281,7 +281,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 			if(SHIFT_Button_on_Hold()) {
 				sendControlChange(CC_Overall_Tone,data,MIDI_CHANNEL_1);
             	// Display_Alternate_Text(ROW_1,ALT_Overall_Tone);
-				Display_Analog(CC_Overall_Tone,data);
+				Display_Analog_Value(CC_Overall_Tone,data);
 			} else {
 				if(GetVolumeSolo() == VOLUME_NORMAL) {
 					overallVolumeLevel = data; // store per ritorno da solo
@@ -293,7 +293,7 @@ void AnalogEventTrigger(uint8 event, uint8 channel, uint16 data)
 
 		            if (data >= 126) offset = 0;
 		            str_bargraph[ROW_1][lcdColPosition] = '0'+barGraph-offset;
-					Display_Analog(CC_Overall_Volume,data);
+					Display_Analog_Value(CC_Overall_Volume,data);
 				}
 			}
         }

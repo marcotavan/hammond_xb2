@@ -121,7 +121,6 @@ char8 *lcdAlternateTextMessage[100] =
 	"Overdrive OFF   ",
 }; // Max Array Size 50
 
-
 void DisplayMainView(void){
 	char lcdMainText[16] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',};
 	/*
@@ -281,6 +280,10 @@ void LCD_Poll(void)
 	}
 }
 
+void DisplayEditFunction(char * text) {
+	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) text);		// testo scritto nella riga bassa
+}
+	
 void Display_Alternate_Text(uint8 where, uint8 what)
 {
 	// scrive un testo alternativo
@@ -293,7 +296,7 @@ void Display_Alternate_Text(uint8 where, uint8 what)
 	M2M_Write_LCD(where,LCD_STANDARD,(uint8 *) lcdAlternateTextMessage[what]);		// testo scritto nella riga bassa
 }
 
-void Display_Analog(uint8 CC, uint8 data)
+void Display_Analog_Value(uint8 CC, uint8 data)
 {
 	// scrive il livello del dato
 	char text[17];

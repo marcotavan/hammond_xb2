@@ -19,8 +19,9 @@ void LCD_DrawVerticalBG(uint8 row, uint8 column, uint8 maxCharacters, uint8 valu
 void LCD_Poll(void);
 
 void Display_Alternate_Text(uint8 where, uint8 what);
-void Display_Analog(uint8 CC, uint8 data);
+void Display_Analog_Value(uint8 CC, uint8 data);
 uint8 GetLockBargraphs(void);
+void DisplayEditFunction(char * text);
 
 #define MAX_CHARS   16
 #define MAX_ROWS    2

@@ -687,13 +687,13 @@ void ManageButton_Solo(uint8 status)
 			if(GetVolumeSolo() == VOLUME_NORMAL) {
 				soloVolume = VOLUME_MAX;
 				sendControlChange(CC_Overall_Volume,127,MIDI_CHANNEL_1);
-				Display_Analog(CC_Overall_Volume,127);
+				Display_Analog_Value(CC_Overall_Volume,127);
 			} else {
 				// sendControlChange(CC_Overall_Volume,GetOverallVolumeLevel(),MIDI_CHANNEL_1);
 				// GetOverallVolumeLevel();
 				TriggerVolumeRead();
 				soloVolume = VOLUME_NORMAL;
-				Display_Analog(CC_Overall_Volume,GetOverallVolumeLevel());
+				Display_Analog_Value(CC_Overall_Volume,GetOverallVolumeLevel());
 			}
         }
         break;
@@ -824,6 +824,7 @@ void ResetButtonCycle(void) {
 }
 
 void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMenuParameter) {
+	char8 *lcdEditTextMessage;
 	
 	switch(selectedFunction) {
 		case FUNC_vibrato:
@@ -856,22 +857,28 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 		case FUNC_Split:
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
-							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#:C2 | (menu level 0)");
+					DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#:C2 | (menu level 0)");
+					lcdEditTextMessage = "SPLIT:OFF KEY:C2";
+	
+					DisplayEditFunction(lcdEditTextMessage);
+					
 				break; // case MENU_LEVEL_0:
 				
 				case MENU_LEVEL_1:
 					switch(subMenuParameter) { // select
 						case PARAMETER_1:
 							DBG_PRINTF(" nel display va scritto: | SPLIT>{OFF}  KEY#:C2 | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
-						break; // PARAMETER_1
+							lcdEditTextMessage = "SPLIT>OFF KEY:C2";
+							DisplayEditFunction(lcdEditTextMessage);
+							break; // PARAMETER_1
 							
 						case PARAMETER_2:
 							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#>{C2} | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
+							lcdEditTextMessage = "SPLIT:OFF KEY>C2";
+							DisplayEditFunction(lcdEditTextMessage);
 						break; // case PARAMETER_2:
 					}	// switch(subMenuParameter)
 				break; // subMenuParameter
-					
-					
 			} // switch(level)
 		break; // case FUNC_Split:
 	}
