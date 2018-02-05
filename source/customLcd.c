@@ -29,14 +29,21 @@
 
 #include "customLcd.h"
 #include "tick.h"
+#include "common.h"
 #include "debug.h"
 #include "M2M_SPI_Master.h"
 #include "ButtonScanner.h"
 #include "VB3_midi_map.h"
+#include "pca9685_driver.h"
 
 uint8 alternateTextCounter = 0;
 uint8 lockBargraphs = 0;
+uint8 BlinkSwitch = 0;
 
+char8 EditTextMessage[16];
+char8 EditBlnkMessage[16];
+char8 EditTempMessage[16];
+	
 char8 *lcdTextMessage[10] =
 {
     "Xb2 Retrofit 1.0",   // 0
@@ -277,11 +284,31 @@ void LCD_Poll(void)
 	
 	if (tick_10ms(TICK_LCD)) {
 		// aa
+		if(BlinkSwitch) {
+			if(BlinkTime(FAST_BLINK)) {
+				// strncmp: ret 0	the contents of both strings are equal
+				if(strncmp(EditTextMessage, EditTempMessage, sizeof(EditTempMessage)) != 0) {
+					strncpy(EditTempMessage,EditTextMessage,sizeof(EditTempMessage));
+					DBG_PRINTF(" scrivo %s sul display\n",EditTextMessage);
+					M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
+				}
+			} else {
+				if(strncmp(EditBlnkMessage, EditTempMessage, sizeof(EditTempMessage)) != 0) {
+					strncpy(EditTempMessage,EditTextMessage,sizeof(EditTempMessage));
+					DBG_PRINTF(" scrivo %s sul display\n",EditBlnkMessage);
+					M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditBlnkMessage);		// testo scritto nella riga bassa
+				}
+			}
+		}
 	}
 }
 
-void DisplayEditFunction(char * text) {
-	M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) text);		// testo scritto nella riga bassa
+void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch) {
+	
+	strncpy(EditTextMessage,text,sizeof(EditBlnkMessage));
+	strncpy(EditBlnkMessage,textblink,sizeof(EditBlnkMessage));
+	memset(EditTempMessage,' ',sizeof(EditTempMessage));
+	BlinkSwitch = BlinkLcdSwitch;
 }
 	
 void Display_Alternate_Text(uint8 where, uint8 what)

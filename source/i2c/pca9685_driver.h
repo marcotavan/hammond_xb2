@@ -49,6 +49,11 @@
 	
 #define PCA9685_MODE2_OUTDRV_TOTEM_POLE 0x04
 #define PCA9685_MODE2_INVRT			 	0x10
+
+#define MAX_REFRESH_TIMEOUT 50
+#define FAST_BLINK	BIT0
+#define MID_BLINK	BIT1
+#define SLOW_BLINK	BIT2
 	
 // To balance the load out in a weaved fashion, we use this offset table to distribute
 // the load on the outputs in a more interleaving fashion than just a simple 16 offset
@@ -97,6 +102,7 @@ void PWM_setPWMFreq(float freq);
 void PCA9685_setAllChannelsPWM(uint16_t pwmAmount);
 void test_pwm(void);
 void LedPoll(void);
+uint8 BlinkTime(uint8 vel);
 
 #define ROSSO_LESLIE_FAST 		0
 #define VERDE_LESLIE_FAST 		1

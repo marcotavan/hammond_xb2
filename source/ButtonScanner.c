@@ -762,6 +762,7 @@ void EditModeExit(void) {
 	EditMode = EDIT_MODE_OFF;
 	prevKey = 0;
 	Display_Alternate_Text(ROW_1,ALT_Edit); // non so cosa fa questo
+	DisplayEditFunction(NULL,NULL,0);
 }
 
 void ManageButton_Edit(uint8 status)
@@ -825,6 +826,7 @@ void ResetButtonCycle(void) {
 
 void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMenuParameter) {
 	char8 *lcdEditTextMessage;
+	char8 *lcdEditBlnkMessage;
 	
 	switch(selectedFunction) {
 		case FUNC_vibrato:
@@ -860,7 +862,7 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 					DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#:C2 | (menu level 0)");
 					lcdEditTextMessage = "SPLIT:OFF KEY:C2";
 	
-					DisplayEditFunction(lcdEditTextMessage);
+					DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 					
 				break; // case MENU_LEVEL_0:
 				
@@ -869,13 +871,15 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 						case PARAMETER_1:
 							DBG_PRINTF(" nel display va scritto: | SPLIT>{OFF}  KEY#:C2 | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
 							lcdEditTextMessage = "SPLIT>OFF KEY:C2";
-							DisplayEditFunction(lcdEditTextMessage);
+							lcdEditBlnkMessage = "SPLIT OFF KEY:C2";
+							DisplayEditFunction(lcdEditTextMessage,lcdEditBlnkMessage,1);
 							break; // PARAMETER_1
 							
 						case PARAMETER_2:
 							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#>{C2} | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
 							lcdEditTextMessage = "SPLIT:OFF KEY>C2";
-							DisplayEditFunction(lcdEditTextMessage);
+							lcdEditBlnkMessage = "SPLIT:OFF KEY C2";
+							DisplayEditFunction(lcdEditTextMessage,lcdEditBlnkMessage,1);
 						break; // case PARAMETER_2:
 					}	// switch(subMenuParameter)
 				break; // subMenuParameter
@@ -1316,7 +1320,7 @@ void ButtonCommand(uint8 numTasto,uint8 status)
     } // switch(numTasto)
     
     // chiamare una scrittura in eeprom
-	if(GetEditMode() == 0) {
+	if(GetEditMode() == EDIT_MODE_OFF) {
     	WriteDataToEeprom(EEPROM_BUTTON);
     }
 } // ButtonCommand

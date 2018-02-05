@@ -53,8 +53,8 @@ enum Volume_level_t {
 };
 
 enum Edit_Mode_t {
-	EDIT_MODE_OFF,
-	EDIT_MODE_ON
+	EDIT_MODE_OFF, 	// 0
+	EDIT_MODE_ON	// 1
 };
 
 enum tasti_t {

@@ -40,6 +40,7 @@ static uint8 pca9685_lastI2CError = 0;         // Last i2c error
 PCA9685_PhaseBalancer _phaseBalancer; // Phase balancer scheme to distribute load
 
 #define VERBOSE_DEBUG 0
+uint8 globalBlink = 0;
 
 uint8 lowByte(uint16 data) {
 	// verificare
@@ -472,17 +473,12 @@ uint8 menuLed(void) {
 	return 1;
 }
 
-#define MAX_REFRESH_TIMEOUT 50
-#define FAST_BLINK	BIT0
-#define MID_BLINK	BIT1
-#define SLOW_BLINK	BIT2
-
-uint8 BlinkTime(uint8 blink, uint8 vel) {
-	if(blink & vel) return 1;
+uint8 BlinkTime(uint8 vel) {
+	if(globalBlink & vel) return 1;
 	else return 0;
 }
 
-void LeslieFastButtonLed(uint8 blink) {
+void LeslieFastButtonLed(uint8 vel) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
@@ -490,7 +486,7 @@ void LeslieFastButtonLed(uint8 blink) {
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_01_LESLIE) {
 			
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_LESLIE;
 					oneShot = 0; 
@@ -533,14 +529,14 @@ void LeslieFastButtonLed(uint8 blink) {
 	}
 }
 	
-void VibratoOnButtonLed(uint8 blink) {
+void VibratoOnButtonLed(uint8 vel) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
 
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_00_VIBRATO) {
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_VIBRATO;
 					oneShot = 0;
@@ -560,7 +556,7 @@ void VibratoOnButtonLed(uint8 blink) {
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_00_VIBRATO) == BUTTON_ON_HOLD) {
-		if(BlinkTime(blink, MID_BLINK)) {
+		if(BlinkTime(vel)) {
 			if(oneShot) {
 				switch(switchType.Vibrato_Lower_Switch) {
 					case SWITCH_ON:
@@ -600,14 +596,14 @@ void VibratoOnButtonLed(uint8 blink) {
 	}
 }	
 
-void Percussion3rdButtonLed(uint8 blink) {
+void Percussion3rdButtonLed(uint8 vel) {
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
 	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_04_PERC_3RD) {
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_3RD_PERCUSSION;
 					oneShot = 0;
@@ -627,7 +623,7 @@ void Percussion3rdButtonLed(uint8 blink) {
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_04_PERC_3RD) == BUTTON_ON_HOLD) {
-		if(BlinkTime(blink, MID_BLINK)) {
+		if(BlinkTime(vel)) {
 			if(oneShot) {
 				switch(switchType.percussionLevel_Switch) {
 					case PERC_SOFT:
@@ -667,7 +663,7 @@ void Percussion3rdButtonLed(uint8 blink) {
 	}
 }
 
-void Percussion2ndButtonLed(uint8 blink){
+void Percussion2ndButtonLed(uint8 vel){
 	static uint8 prev = 1;
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
@@ -675,7 +671,7 @@ void Percussion2ndButtonLed(uint8 blink){
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_08_PERC_2ND) {
 			
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_2ND_PERCUSSION;
 					oneShot = 0;
@@ -695,7 +691,7 @@ void Percussion2ndButtonLed(uint8 blink){
 	if(refresh) refresh--;	
 	
 	if(GetButtonStatus(BUTTON_08_PERC_2ND) == BUTTON_ON_HOLD) {
-		if(BlinkTime(blink, MID_BLINK)) {
+		if(BlinkTime(vel)) {
 			if(oneShot) {
 				switch(switchType.percussionDecay_Switch) {
 					case PERC_FAST:
@@ -735,14 +731,14 @@ void Percussion2ndButtonLed(uint8 blink){
 	}
 }
 
-void OrganSoloButtonLed(uint8 blink) {
+void OrganSoloButtonLed(uint8 vel) {
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
 	
 	if(GetEditMode() == EDIT_MODE_ON) {
 		if(GetEditFunction() == BUTTON_12_SOLO) {
 						
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_ORGAN;
 					oneShot = 0;
@@ -773,7 +769,7 @@ void OrganSoloButtonLed(uint8 blink) {
 			break;
 		
 		default:
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot) {
 					LED_ROSSO_ORGAN; 
 					oneShot = 0;
@@ -789,7 +785,7 @@ void OrganSoloButtonLed(uint8 blink) {
 	}
 }
 
-void EditButtonLed(uint8 blink) {
+void EditButtonLed(uint8 vel) {
 	static uint8 refresh = 0;
 	static uint8 oneShot = 1;
 	
@@ -807,7 +803,7 @@ void EditButtonLed(uint8 blink) {
 			break;
 			
 		default:
-			if(BlinkTime(blink, MID_BLINK)) {
+			if(BlinkTime(vel)) {
 				if(oneShot){
 					LED_EDIT_ON;
 					oneShot = 0; 
@@ -823,14 +819,11 @@ void EditButtonLed(uint8 blink) {
 	} 
 }
 
-void LedPoll(void)
-{
+void LedPoll(void) {
 	static uint16 pwm = 0;
-	static uint8 toggle = 0;
-	
 	if(tick_100ms(TICK_PWM_LED)){
-		toggle++;
-		
+		globalBlink++;
+
 		switch(menuLed()) {
 			case 0xff:
 				if(pwm==PCA9685_FULL) {
@@ -873,12 +866,12 @@ void LedPoll(void)
 				
 			case 1:
 				// funzionamento normale dei led
-				LeslieFastButtonLed(toggle);
-				VibratoOnButtonLed(toggle);
-				Percussion3rdButtonLed(toggle);
-				Percussion2ndButtonLed(toggle);
-				OrganSoloButtonLed(toggle);
-				EditButtonLed(toggle);
+				LeslieFastButtonLed(MID_BLINK);
+				VibratoOnButtonLed(MID_BLINK);
+				Percussion3rdButtonLed(MID_BLINK);
+				Percussion2ndButtonLed(MID_BLINK);
+				OrganSoloButtonLed(MID_BLINK);
+				EditButtonLed(MID_BLINK);
 			break; // case 1:
 			
 		}

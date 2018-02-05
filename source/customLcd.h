@@ -21,7 +21,7 @@ void LCD_Poll(void);
 void Display_Alternate_Text(uint8 where, uint8 what);
 void Display_Analog_Value(uint8 CC, uint8 data);
 uint8 GetLockBargraphs(void);
-void DisplayEditFunction(char * text);
+void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch);
 
 #define MAX_CHARS   16
 #define MAX_ROWS    2
@@ -115,5 +115,6 @@ enum alternative_text {
 	ALT_overdriveOn,
 	ALT_overdriveOff,
 };
+
 #endif
 /* [] END OF FILE */
