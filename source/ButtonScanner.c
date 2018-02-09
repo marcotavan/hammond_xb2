@@ -83,6 +83,11 @@ static uint8 presetStatus = PRESET_FREE;
 static uint8 EditMode = EDIT_MODE_OFF;
 static uint8 EditFunction = BUTTON_NONE;
 
+static uint8 selectedFunction = 0;  // rimane questa> FUNC_Split
+static uint8 menuLevel = MENU_LEVEL_0;
+static uint8 subMenuParameter = PARAMETER_0; // niente da cambiare
+
+
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
 
@@ -211,6 +216,13 @@ void InitSwitchButtons(void)
 	StartMidiMerge();
 	// aggiungere lo SPLIT ON
     // Display_Alternate_Text(ROW_1,ALT_InitSwitchButtons_Done);
+	
+	selectedFunction = 0;
+	menuLevel = MENU_LEVEL_0;
+	subMenuParameter = PARAMETER_0;
+	presetStatus = PRESET_FREE;
+	EditMode = EDIT_MODE_OFF;
+	EditFunction = BUTTON_NONE;
  }
 
 /*****************************************************************************\
@@ -758,15 +770,20 @@ static uint8 prevKey = 0; // globale...
 
 void EditModeExit(void) {		
 	// WriteDataToEeprom(EEPROM_BUTTON);
-	DBG_PRINTF("salvare in eeprom i parametri modificati\n");
+	DBG_PRINTF("%s: salvare in eeprom i parametri modificati\n",__func__);
 	EditMode = EDIT_MODE_OFF;
 	prevKey = 0;
 	Display_Alternate_Text(ROW_1,ALT_Edit); // non so cosa fa questo
 	DisplayEditFunction(NULL,NULL,0);
+	
+	selectedFunction = 0;
+	menuLevel = MENU_LEVEL_0;
+	subMenuParameter = PARAMETER_0;
 }
 
 void ManageButton_Edit(uint8 status)
 {
+	char8 *lcdEditTextMessage;
     switch (status) 
     {
         // case BUTTON_PRESSED:     // valido immediatamente
@@ -785,6 +802,9 @@ void ManageButton_Edit(uint8 status)
 			switch(EditMode) {
 				case EDIT_MODE_OFF:
 					EditMode = EDIT_MODE_ON;
+					OnHold.shift = FALSE;
+					lcdEditTextMessage = "Enter Edit Mode";
+					DisplayEditFunction(lcdEditTextMessage,NULL,0);
 					// reset prev
 					prevKey = 0;
 					break;
@@ -824,39 +844,61 @@ void ResetButtonCycle(void) {
 	memset(buttonCycle,0,sizeof(buttonCycle));
 }
 
-void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMenuParameter) {
+void FunctionViewSelected(uint8 selectedFunction) {
 	char8 *lcdEditTextMessage;
 	char8 *lcdEditBlnkMessage;
-	
+
 	switch(selectedFunction) {
 		case FUNC_vibrato:
+			lcdEditTextMessage = "FUNC_vibrato    ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_tune:
+			lcdEditTextMessage = "FUNC_tune       ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_percussion:
+			lcdEditTextMessage = "FUNC_percussion ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_footSwitch:
+			lcdEditTextMessage = "FUNC_footSwitch ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_Drawbar:
+			lcdEditTextMessage = "FUNC_Drawbar    ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			// DBG_PRINTF("%s %s \n",__func__,lcdEditTextMessage);
 		break;
 		
 		case FUNC_Midi:
+			lcdEditTextMessage = "FUNC_Midi       ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_Effect:
+			lcdEditTextMessage = "FUNC_Effect     ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_Preset:
+			lcdEditTextMessage = "FUNC_Preset     ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_Reset:
+			lcdEditTextMessage = "FUNC_Reset      ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
 		break;
 		
 		case FUNC_Split:
+			lcdEditTextMessage = "FUNC_Split      ";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			/*
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
 					DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#:C2 | (menu level 0)");
@@ -869,21 +911,23 @@ void FunctionViewParameter(uint8 selectedFunction, uint8 menuLevel, uint8 subMen
 				case MENU_LEVEL_1:
 					switch(subMenuParameter) { // select
 						case PARAMETER_1:
-							DBG_PRINTF(" nel display va scritto: | SPLIT>{OFF}  KEY#:C2 | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
-							lcdEditTextMessage = "SPLIT>OFF KEY:C2";
-							lcdEditBlnkMessage = "SPLIT OFF KEY:C2";
-							DisplayEditFunction(lcdEditTextMessage,lcdEditBlnkMessage,1);
+							lcdEditBlnkMessage = "SPLIT>    KY:";
+							// sprintf(tm,"%s%s",lcdEditTextMessage,noteNamearray[2]);
+							DBG_PRINTF(" nel display va scritto: SPLIT>{%s} KEY#:%s%d   - %s\n","off",noteNamearray[(GetSplitPoint())%12],(GetSplitPoint()),lcdEditTextMessage);
+							
+							DisplayEditFunction(tm,lcdEditBlnkMessage,1);
 							break; // PARAMETER_1
 							
 						case PARAMETER_2:
 							DBG_PRINTF(" nel display va scritto: | SPLIT:OFF  KEY#>{C2} | (menu level 1), func:%d, par:%d\n",selectedFunction,subMenuParameter);
-							lcdEditTextMessage = "SPLIT:OFF KEY>C2";
-							lcdEditBlnkMessage = "SPLIT:OFF KEY C2";
+							lcdEditTextMessage = "SPLIT:OFF KY>C2 ";
+							lcdEditBlnkMessage = "SPLIT:OFF KY>   ";
 							DisplayEditFunction(lcdEditTextMessage,lcdEditBlnkMessage,1);
 						break; // case PARAMETER_2:
 					}	// switch(subMenuParameter)
 				break; // subMenuParameter
 			} // switch(level)
+			*/
 		break; // case FUNC_Split:
 	}
 }
@@ -982,7 +1026,6 @@ uint8 FunctionSelect(uint8 numTasto){
 					SPLIT>OFF, KEY#:C2
 					DBG_PRINTF("[%s]\t %d=%s %d\n",__func__,NoteNumber, noteNamearray[(NoteNumber%12)], Velocity);
 				*/
-				FunctionViewParameter(selectedFunction,MENU_LEVEL_0, 0);
 			}
 			break;
 		
@@ -1013,6 +1056,7 @@ uint8 FunctionSelect(uint8 numTasto){
 			break;
 	}
 	DBG_PRINTF("\n");
+	FunctionViewSelected(selectedFunction);
 	editFunctionToggle = ~editFunctionToggle;
 	
 	return selectedFunction;
@@ -1048,17 +1092,17 @@ uint8 SubMenuPage(uint8 selectedFunction) {
 }
 */
 
+
+
 /*****************************************************************************\
 *  TEMPLATE: gestisce la funzione tasto  Generico
 \*****************************************************************************/
 void ManageButton_Preset(uint8 status,uint8 numTasto)
 {
-	static uint8 selectedFunction = 0;  // rimane questa> FUNC_Split
-	static uint8 menuLevel = MENU_LEVEL_0;
-	static uint8 subMenuParameter = PARAMETER_0; // niente da cambiare
-	
-	if (GetEditMode()) {
-		switch (status) {
+	if (GetEditMode()) 
+	{
+		switch (status) 
+		{
 	        case BUTTON_PRESSED:     // valido immediatamente
 	        // case BUTTON_SHORT_PRESS:    // valido al rilascio breve
 	        {
@@ -1071,10 +1115,10 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 								case MENU_LEVEL_0: // pagina principale con EDIT attivo
 									menuLevel = MENU_LEVEL_1;
 									subMenuParameter = PARAMETER_1; // parametro da cambiare
-								
+									DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0);
 									// switch(selectedFunction) {
 									//	case FUNC_Split:
-											FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
+											// FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
 									//	break;
 									// } // switch(selectedFunction) 
 								break; // case MENU_LEVEL_0:
@@ -1084,17 +1128,20 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 										case FUNC_Split: // funzione con 2 parametri
 											switch(subMenuParameter) {
 												case PARAMETER_1:
+													
+													DisplayEditFunction("PARAMETER_1  ","PARAMETER_1  ",0);
 													subMenuParameter = PARAMETER_2; // pagina principale con EDIT attivo
 												break;
 											
 												case PARAMETER_2:
+													DisplayEditFunction("PARAMETER_2  ","PARAMETER_2  ",0);
 													subMenuParameter = PARAMETER_1; // pagina principale con EDIT attivo
 												break;
 											} // switch(subMenuPage)
 										break;	// case FUNC_Split:
 									} // switch(selectedFunction)
 									
-									FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
+									// FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
 									
 								break; // case MENU_LEVEL_1:
 							} // switch(menuLevel)
@@ -1193,7 +1240,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 		return; // evita di cambiare lo stato in edit mode
 	} // else...
 	
-	// resetto per entrare bene la prossima volta.
+	DBG_PRINTF(" resetto per entrare bene la prossima volta.\n");
 	selectedFunction = 0;
 	menuLevel = MENU_LEVEL_0;
 	subMenuParameter = PARAMETER_0;

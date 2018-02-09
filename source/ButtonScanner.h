@@ -44,7 +44,7 @@ struct switchType_t {
 };
 
 extern struct switchType_t switchType;
-
+extern const char *noteNamearray[];
 uint8 SOLO_Button_on_Hold(void);
 
 enum Volume_level_t {
@@ -172,5 +172,6 @@ uint8 GetEditMode(void);
 uint8 GetEditFunction(void);
 void SplitCallbackFunction(uint8 splitPoint);
 void SetSplitPoint(uint8 sp);
+uint8 GetSplitPoint(void);
 #endif    
 /* [] END OF FILE */

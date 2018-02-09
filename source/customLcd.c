@@ -258,6 +258,7 @@ void DisplayMainView(void){
 
 void LCD_Poll(void)
 {
+	uint8 retval;
     // chiamata nel main
     static uint8 isModuleNotInitialized = 1;
     
@@ -283,19 +284,21 @@ void LCD_Poll(void)
     }
 	
 	if (tick_10ms(TICK_LCD)) {
-		// aa
 		if(BlinkSwitch) {
-			if(BlinkTime(FAST_BLINK)) {
-				// strncmp: ret 0	the contents of both strings are equal
-				if(strncmp(EditTextMessage, EditTempMessage, sizeof(EditTempMessage)) != 0) {
+			if(BlinkTime(SLOW_BLINK)) {
+				retval = strncmp(EditTextMessage, EditTempMessage, sizeof(EditTempMessage)); 
+				if(retval) {
+					// DBG_PRINTF("1 strncmp: ret %02x %s %s\n",retval,EditTextMessage,EditTempMessage);
 					strncpy(EditTempMessage,EditTextMessage,sizeof(EditTempMessage));
-					DBG_PRINTF(" scrivo %s sul display\n",EditTextMessage);
+					// DBG_PRINTF(" scrivo %s sul display\n",EditTextMessage);
 					M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
 				}
 			} else {
-				if(strncmp(EditBlnkMessage, EditTempMessage, sizeof(EditTempMessage)) != 0) {
-					strncpy(EditTempMessage,EditTextMessage,sizeof(EditTempMessage));
-					DBG_PRINTF(" scrivo %s sul display\n",EditBlnkMessage);
+				retval = strncmp(EditBlnkMessage, EditTempMessage, sizeof(EditTempMessage));
+				if(retval) {
+					// DBG_PRINTF("0 strncmp: ret %02x %s %s\n",retval,EditBlnkMessage,EditTempMessage);
+					strncpy(EditTempMessage,EditBlnkMessage,sizeof(EditTempMessage));
+					// DBG_PRINTF(" scrivo %s sul display\n",EditBlnkMessage);
 					M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditBlnkMessage);		// testo scritto nella riga bassa
 				}
 			}
@@ -304,11 +307,16 @@ void LCD_Poll(void)
 }
 
 void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch) {
-	
+	// 
 	strncpy(EditTextMessage,text,sizeof(EditBlnkMessage));
 	strncpy(EditBlnkMessage,textblink,sizeof(EditBlnkMessage));
 	memset(EditTempMessage,' ',sizeof(EditTempMessage));
+	if(BlinkLcdSwitch == 0) {
+		M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
+	}
 	BlinkSwitch = BlinkLcdSwitch;
+	
+	// M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
 }
 	
 void Display_Alternate_Text(uint8 where, uint8 what)

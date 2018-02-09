@@ -61,6 +61,9 @@ void SetSplitPoint(uint8 sp) {
 	split.point = sp;	
 }
 
+uint8 GetSplitPoint(void) {
+	return split.point;	
+}
 struct key_t key[MAX_KEYS];
 
 double LOG_2 = 0;
