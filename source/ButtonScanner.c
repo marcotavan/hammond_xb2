@@ -90,6 +90,7 @@ static uint8 subMenuParameter = PARAMETER_0; // niente da cambiare
 
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
+void WriteSplitPoint(void);
 
 void RefreshAllButtonElements(uint8 from) {
 	// invia via midi la configurazione di default
@@ -896,12 +897,11 @@ void FunctionViewSelected(uint8 selectedFunction) {
 		break;
 		
 		case FUNC_Split:
-			lcdEditTextMessage = "Edit Split      ";
+			lcdEditTextMessage = "Edit Split Point";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 			CyDelay(100); // altrimenti non scrive sul display
-			lcdEditTextMessage = "SPLIT:OFF KEY:C2";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_1);
 			
+			WriteSplitPoint();
 			/*
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
@@ -1635,5 +1635,27 @@ uint8 GetEditMode(void) {
 uint8 GetEditFunction(void) {
 	// TODO
 	return EditFunction;
+}
+
+void WriteSplitPoint(void) {
+	
+	char splitTextMessage[16];
+	uint8 note = (GetSplitPoint()-MIDI_FIRST_NOTE_61)%12;
+	uint8 len;
+	memset(splitTextMessage,'v',sizeof(splitTextMessage));
+	if(GetSplitPoint()) {
+		len=sprintf(splitTextMessage,"SPLIT:%s KY:%s%d","On ",
+		noteNamearray[note],\
+		GetSplitPoint()/12);
+		if(len%2) { // se dispari aggiungo uno spazio
+			sprintf(splitTextMessage,"%s%s",splitTextMessage," ");
+		}
+	} else {
+		sprintf(splitTextMessage,"SPLIT:OFF KY:---");
+	}
+	
+	// DBG_PRINTF("%s %d\n",__func__,a);	
+	DisplayEditFunction(splitTextMessage,splitTextMessage,0,ROW_1);
+	
 }
 /* [] END OF FILE */
