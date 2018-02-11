@@ -313,16 +313,18 @@ void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch, ui
 	memset(EditTempMessage,' ',sizeof(EditTempMessage));
 	LockBargraphs(1);
 	if(BlinkLcdSwitch == 0) {
-		M2M_Write_LCD(row,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
+		M2M_Write_LCD(row,LCD_STANDARD,(uint8 *) EditTextMessage);		
 	}
 	BlinkSwitch = BlinkLcdSwitch;
 	
-	// M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		// testo scritto nella riga bassa
+	// M2M_Write_LCD(ROW_1,LCD_STANDARD,(uint8 *) EditTextMessage);		
 }
 	
 void Display_Alternate_Text(uint8 where, uint8 what)
 {
 	// scrive un testo alternativo
+	if(GetEditMode()) return; // evita di scrivere sul display se siamo in edit mode
+	
 	if(where == ROW_0) {
 		LockBargraphs(1);
 	}
@@ -335,6 +337,7 @@ void Display_Alternate_Text(uint8 where, uint8 what)
 void Display_Analog_Value(uint8 CC, uint8 data)
 {
 	// scrive il livello del dato
+	if(GetEditMode()) return;
 	char text[17];
 	
     alternateTextCounter = 20;

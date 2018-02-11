@@ -850,54 +850,58 @@ void FunctionViewSelected(uint8 selectedFunction) {
 
 	switch(selectedFunction) {
 		case FUNC_vibrato:
-			lcdEditTextMessage = "FUNC_vibrato    ";
+			lcdEditTextMessage = "Edit Vibrato    ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_tune:
-			lcdEditTextMessage = "FUNC_tune       ";
+			lcdEditTextMessage = "Edit tune       ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_percussion:
-			lcdEditTextMessage = "FUNC_percussion ";
+			lcdEditTextMessage = "Edit percussion ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_footSwitch:
-			lcdEditTextMessage = "FUNC_footSwitch ";
+			lcdEditTextMessage = "Edit footSwitch ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Drawbar:
-			lcdEditTextMessage = "FUNC_Drawbar    ";
+			lcdEditTextMessage = "Edit Drawbar    ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 			// DBG_PRINTF("%s %s \n",__func__,lcdEditTextMessage);
 		break;
 		
 		case FUNC_Midi:
-			lcdEditTextMessage = "FUNC_Midi       ";
+			lcdEditTextMessage = "Edit Midi       ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Effect:
-			lcdEditTextMessage = "FUNC_Effect     ";
+			lcdEditTextMessage = "Edit Effect     ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Preset:
-			lcdEditTextMessage = "FUNC_Preset     ";
+			lcdEditTextMessage = "Edit Preset     ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Reset:
-			lcdEditTextMessage = "FUNC_Reset      ";
+			lcdEditTextMessage = "Edit Reset      ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Split:
-			lcdEditTextMessage = "FUNC_Split      ";
+			lcdEditTextMessage = "Edit Split      ";
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
+			CyDelay(100); // altrimenti non scrive sul display
+			lcdEditTextMessage = "SPLIT:OFF KEY:C2";
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_1);
+			
 			/*
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
@@ -1115,7 +1119,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 								case MENU_LEVEL_0: // pagina principale con EDIT attivo
 									menuLevel = MENU_LEVEL_1;
 									subMenuParameter = PARAMETER_1; // parametro da cambiare
-									DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0,ROW_0);
+									// DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0,ROW_0);
 									// switch(selectedFunction) {
 									//	case FUNC_Split:
 											// FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
