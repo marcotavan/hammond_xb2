@@ -24,7 +24,7 @@ void M2M_SPI_Init(void);
 void Write_BarGraphs(uint8 *data);
 uint8 M2MSpiWriteData(uint8 address, uint8 *data, uint8 len);
 void M2M_Write_LCD(uint8 position, uint8 type, uint8 *data);
-
+void ResetBarGraphs();
 extern uint8 lockBargraphs;
 #endif 
     /* [] END OF FILE */

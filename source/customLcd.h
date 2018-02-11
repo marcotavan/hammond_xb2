@@ -20,8 +20,8 @@ void LCD_Poll(void);
 
 void Display_Alternate_Text(uint8 where, uint8 what);
 void Display_Analog_Value(uint8 CC, uint8 data);
-uint8 GetLockBargraphs(void);
-void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch);
+void DisplayEditFunction(char * text, char * textblink, uint8 BlinkLcdSwitch, uint8 row);
+void LockBargraphs (uint8 lock);
 
 #define MAX_CHARS   16
 #define MAX_ROWS    2
@@ -114,6 +114,7 @@ enum alternative_text {
 	ALT_USR_Preset_8, // 
 	ALT_overdriveOn,
 	ALT_overdriveOff,
+	ALT_Edit_Exit
 };
 
 #endif

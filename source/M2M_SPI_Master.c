@@ -183,15 +183,32 @@ void M2M_SPI_Master_ApplicationPoll(void){
 	*/
 }
 
+static uint8 prev_bargraph[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+
+void ResetBarGraphs() {
+	DBG_PRINTF("%s\n",__func__);
+	uint8 prevBarValue[16];
+	uint8 tmpdata[16];
+
+	memcpy(prevBarValue,prev_bargraph,sizeof(prevBarValue)); // salvo la posizione dei bargraps
+
+	memset(prev_bargraph,0x0,sizeof(prev_bargraph));	// cancello i precedenti per far commutare la fujnzione successiva
+	memset(tmpdata,0xff,sizeof(tmpdata));				// preparo un array temporaneo da inviare per cancellare il display
+	lockBargraphs = 0; 									// libero il semaforo
+	Write_BarGraphs(tmpdata);							// scrivo un blank del display
+	Write_BarGraphs(prevBarValue);						// riscrivo immediatamentei bargraphs
+}
+
+
 void Write_BarGraphs(uint8 *data)
 {
     uint8 i;
-    static uint16 cnt = 0;
-	static char prev_bargraph[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-	uint8 flagWrite = 1; // MANDA IN CONTINUO
+    //static uint16 cnt = 0;
+
+	uint8 flagWrite = 1; // 1: MANDA IN CONTINUO
     // if (alternateTextCounter) return;  // non scrive niente
 
-	// DBG_PRINTF("riscrivo barre %d\n",cnt++);
+	// DBG_PRINTF("riscrivo barre... \n");
     for (i=0;i<16;i++)
     {
 		if(prev_bargraph[i] != data[i]) {
@@ -212,6 +229,7 @@ void Write_BarGraphs(uint8 *data)
 	if(flagWrite) {
 		if(lockBargraphs == 0) {
 			M2M_Write_LCD(ROW_0,LCD_BARGRAPHS,data);	// bargraphs
+			// DBG_PRINTF("M2M_Write_LCD riscrivo barre \n");
 		}
 	}
     // sposta il cursore sotto

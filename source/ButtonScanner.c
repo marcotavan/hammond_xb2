@@ -773,8 +773,8 @@ void EditModeExit(void) {
 	DBG_PRINTF("%s: salvare in eeprom i parametri modificati\n",__func__);
 	EditMode = EDIT_MODE_OFF;
 	prevKey = 0;
-	Display_Alternate_Text(ROW_1,ALT_Edit); // non so cosa fa questo
-	DisplayEditFunction(NULL,NULL,0);
+	Display_Alternate_Text(ROW_1,ALT_Edit_Exit); // non so cosa fa questo
+	DisplayEditFunction(NULL,NULL,0,ROW_1);
 	
 	selectedFunction = 0;
 	menuLevel = MENU_LEVEL_0;
@@ -803,8 +803,8 @@ void ManageButton_Edit(uint8 status)
 				case EDIT_MODE_OFF:
 					EditMode = EDIT_MODE_ON;
 					OnHold.shift = FALSE;
-					lcdEditTextMessage = "Enter Edit Mode";
-					DisplayEditFunction(lcdEditTextMessage,NULL,0);
+					lcdEditTextMessage = "Edit Mode ON    ";
+					DisplayEditFunction(lcdEditTextMessage,NULL,1,ROW_1);
 					// reset prev
 					prevKey = 0;
 					break;
@@ -851,53 +851,53 @@ void FunctionViewSelected(uint8 selectedFunction) {
 	switch(selectedFunction) {
 		case FUNC_vibrato:
 			lcdEditTextMessage = "FUNC_vibrato    ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_tune:
 			lcdEditTextMessage = "FUNC_tune       ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_percussion:
 			lcdEditTextMessage = "FUNC_percussion ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_footSwitch:
 			lcdEditTextMessage = "FUNC_footSwitch ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Drawbar:
 			lcdEditTextMessage = "FUNC_Drawbar    ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 			// DBG_PRINTF("%s %s \n",__func__,lcdEditTextMessage);
 		break;
 		
 		case FUNC_Midi:
 			lcdEditTextMessage = "FUNC_Midi       ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Effect:
 			lcdEditTextMessage = "FUNC_Effect     ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Preset:
 			lcdEditTextMessage = "FUNC_Preset     ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Reset:
 			lcdEditTextMessage = "FUNC_Reset      ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 		break;
 		
 		case FUNC_Split:
 			lcdEditTextMessage = "FUNC_Split      ";
-			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0);
+			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 			/*
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
@@ -1115,7 +1115,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 								case MENU_LEVEL_0: // pagina principale con EDIT attivo
 									menuLevel = MENU_LEVEL_1;
 									subMenuParameter = PARAMETER_1; // parametro da cambiare
-									DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0);
+									DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0,ROW_0);
 									// switch(selectedFunction) {
 									//	case FUNC_Split:
 											// FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
@@ -1129,12 +1129,12 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 											switch(subMenuParameter) {
 												case PARAMETER_1:
 													
-													DisplayEditFunction("PARAMETER_1  ","PARAMETER_1  ",0);
+													DisplayEditFunction("PARAMETER_1  ","PARAMETER_1  ",0,ROW_0);
 													subMenuParameter = PARAMETER_2; // pagina principale con EDIT attivo
 												break;
 											
 												case PARAMETER_2:
-													DisplayEditFunction("PARAMETER_2  ","PARAMETER_2  ",0);
+													DisplayEditFunction("PARAMETER_2  ","PARAMETER_2  ",0,ROW_0);
 													subMenuParameter = PARAMETER_1; // pagina principale con EDIT attivo
 												break;
 											} // switch(subMenuPage)
