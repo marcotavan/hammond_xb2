@@ -16,7 +16,7 @@
 #include "project.h"
 
 #define MARKER_EEPROM_DEFAULT 0xA5
-#define MARKER_MIDI 0xA1
+#define MARKER_MIDI 0xA2
 
 enum {
     EEPROM_BUTTON,

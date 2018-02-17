@@ -23,6 +23,9 @@
 void KeyScan_Poll(void);
 void KeyScanInit(void);
 void SplitGetNote (void);
+void SetSplitMode(uint8 mode);
+uint8 GetSplitMode(void);
+
 #endif 
 
 /* [] END OF FILE */

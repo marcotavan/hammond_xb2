@@ -87,10 +87,12 @@ static uint8 selectedFunction = 0;  // rimane questa> FUNC_Split
 static uint8 menuLevel = MENU_LEVEL_0;
 static uint8 subMenuParameter = PARAMETER_0; // niente da cambiare
 
+char splitTextMessage[16];
+char splitBlinkMessage[16];
 
 void FootSwitchManager(void);
 void ResetButtonCycle(void);
-void WriteSplitPoint(void);
+void WriteSplitPoint(uint8 blnk);
 
 void RefreshAllButtonElements(uint8 from) {
 	// invia via midi la configurazione di default
@@ -901,7 +903,7 @@ void FunctionViewSelected(uint8 selectedFunction) {
 			DisplayEditFunction(lcdEditTextMessage,lcdEditTextMessage,0,ROW_0);
 			CyDelay(100); // altrimenti non scrive sul display
 			
-			WriteSplitPoint();
+			WriteSplitPoint(0);
 			/*
 			switch(menuLevel) {
 				case MENU_LEVEL_0:
@@ -1103,7 +1105,7 @@ uint8 SubMenuPage(uint8 selectedFunction) {
 \*****************************************************************************/
 void ManageButton_Preset(uint8 status,uint8 numTasto)
 {
-	if (GetEditMode()) 
+	if (GetEditMode()) // true in edit
 	{
 		switch (status) 
 		{
@@ -1114,34 +1116,44 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 				switch(keyTranslator[numTasto]) {
 					case TASTO_FRECCIA: // tasto_>
 						if(selectedFunction) {
-							// entro in submenu e blocco tutti i tasti tranne quello che mi interessa
+							// DBG_PRINTF("entro in submenu e blocco tutti i tasti tranne quello che mi interessa\n");
 							switch(menuLevel) {
 								case MENU_LEVEL_0: // pagina principale con EDIT attivo
 									menuLevel = MENU_LEVEL_1;
-									subMenuParameter = PARAMETER_1; // parametro da cambiare
+									subMenuParameter = PARAMETER_0; // parametro da cambiare
 									// DisplayEditFunction("MENU_LEVEL_1  ","MENU_LEVEL_1  ",0,ROW_0);
 									// switch(selectedFunction) {
 									//	case FUNC_Split:
 											// FunctionViewParameter(selectedFunction,menuLevel,subMenuParameter);
 									//	break;
 									// } // switch(selectedFunction) 
-								break; // case MENU_LEVEL_0:
+								// break; // case MENU_LEVEL_0: cado subito giu altrimenti dovrei premere ddue volte
 									
 								case MENU_LEVEL_1: 
 									switch(selectedFunction) {
 										case FUNC_Split: // funzione con 2 parametri
 											switch(subMenuParameter) {
-												case PARAMETER_1:
-													
-													DisplayEditFunction("PARAMETER_1  ","PARAMETER_1  ",0,ROW_0);
-													subMenuParameter = PARAMETER_2; // pagina principale con EDIT attivo
+												case PARAMETER_2:
+												case PARAMETER_0:
+													splitTextMessage[5] = '>'; // sostituisco i ":" con ">"
+													splitTextMessage[12] = ':'; // sostituisco ">" con ":"
+													memcpy(splitBlinkMessage,splitTextMessage,sizeof(splitTextMessage)); // copia tutto
+													memset(&splitBlinkMessage[6],' ',3); // cancello il testo che non mi serve
+													DisplayEditFunction(splitTextMessage,splitBlinkMessage,1,ROW_1); // attivo il lampeggio
+													subMenuParameter = PARAMETER_1; // pagina principale con EDIT attivo
+													// DBG_PRINTF("aaa\n");
 												break;
 											
-												case PARAMETER_2:
-													DisplayEditFunction("PARAMETER_2  ","PARAMETER_2  ",0,ROW_0);
-													subMenuParameter = PARAMETER_1; // pagina principale con EDIT attivo
+												case PARAMETER_1:
+													splitTextMessage[5]  = ':'; // sostituisco 
+													splitTextMessage[12] = '>'; // sostituisco 
+													memcpy(splitBlinkMessage,splitTextMessage,sizeof(splitTextMessage)); // copia tutto
+													memset(&splitBlinkMessage[13],' ',3); // cancello il testo che non mi serve
+													DisplayEditFunction(splitTextMessage,splitBlinkMessage,1,ROW_1); // attivo il lampeggio
+													subMenuParameter = PARAMETER_2; // pagina principale con EDIT attivo
 												break;
 											} // switch(subMenuPage)
+											// WriteSplitPoint();
 										break;	// case FUNC_Split:
 									} // switch(selectedFunction)
 									
@@ -1155,24 +1167,37 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 					case TASTO_ON_PIU: // on / +
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
-								/*
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
 											case PARAMETER_1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{ON}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												// DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{ON}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 												// doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
+												// splitTextMessage[5] = '>';
+												// memcpy(splitBlinkMessage,splitTextMessage,sizeof(splitTextMessage)); // copia tutto
+												// memset(&splitBlinkMessage[6],' ',3);
+												SetSplitMode(1);
+												splitTextMessage[6]='O';
+												splitTextMessage[7]='n';
+												splitTextMessage[8]=' ';
+												DisplayEditFunction(splitTextMessage,splitBlinkMessage,1,ROW_1);
 											break;
 											
 											case PARAMETER_2:
-												DBG_PRINTF("press any key to split...\n");
+												// DBG_PRINTF("press any key to split...\n");
 												// doAction(selectedFunction,subMenuParameter,TASTO_ON_PIU);
+												//if(GetSplitPoint()) 
+												{
+													SetSplitPoint(1+GetSplitPoint());
+												}
+												WriteSplitPoint(1);
+												// DBG_PRINTF("GetSplitPoint>%d\n",GetSplitPoint());
 											break;
 										}
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
-								*/
-								doAction(selectedFunction,subMenuParameter,1);
+								
+								// doAction(selectedFunction,subMenuParameter,1);
 							break; // case MENU_LEVEL_1:
 						} // switch(menuLevel)
 					break; // case 2: // on / +
@@ -1180,24 +1205,35 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 					case TASTO_OFF_MENO: // off / -
 						switch(menuLevel) {
 							case MENU_LEVEL_1:
-								/*
+								
 								switch(selectedFunction) {
 									case FUNC_Split:
 										switch (subMenuParameter) { // parametro da cambiare
 											case PARAMETER_1:
-												DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{OFF}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
+												// DBG_PRINTF("func:%d, nel display va scritto: SPLIT>{OFF}  KEY#:C2, (menu level 1), par:%d\n",selectedFunction,subMenuParameter);
 												// doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
+												SetSplitMode(0);
+												splitTextMessage[6]='O';
+												splitTextMessage[7]='f';
+												splitTextMessage[8]='f';
+												DisplayEditFunction(splitTextMessage,splitBlinkMessage,1,ROW_1);
 											break; // case 1:
 												
 											case PARAMETER_2:
-												DBG_PRINTF("press any key to split...\n");
+												// DBG_PRINTF("press any key to split...\n");
 												// doAction(selectedFunction,subMenuParameter,TASTO_OFF_MENO);
+												if(GetSplitPoint()-1) {
+													SetSplitPoint(GetSplitPoint()-1);
+												}
+												
+												WriteSplitPoint(1);
+												// DBG_PRINTF("GetSplitPoint>%d\n",GetSplitPoint());
 											break;
 										}
 									break; // case FUNC_Split:
 								} // switch(selectedFunction) 
-								*/
-								doAction(selectedFunction,subMenuParameter,0);
+								
+								// doAction(selectedFunction,subMenuParameter,0);
 							break; // case 1:
 						} // switch(menuLevel)
 						break; // case 3: // off / -
@@ -1216,7 +1252,7 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 								
 							case MENU_LEVEL_1:
 								// subMenuPage = SubMenuPage(selectedFunction);
-								DBG_PRINTF("posso cambiare pagina della funzione %d, se disponibile\n",selectedFunction);
+								// DBG_PRINTF("posso cambiare pagina della funzione %d, se disponibile\n",selectedFunction);
 							break;
 						} // switch(menuLevel) 
 						// se torna con una funzione allora attivo il menu (!= 0)
@@ -1234,7 +1270,11 @@ void ManageButton_Preset(uint8 status,uint8 numTasto)
 					case TASTO_DRAWBAR_SPLIT: 
 					case TASTO_MIDI_EFFECT: 
 					case TASTO_PRESET_RESET: 
-						// EditFunctionSelect(keyTranslator[numTasto]);
+
+					case TASTO_ON_PIU:
+					case TASTO_OFF_MENO:
+					
+					// EditFunctionSelect(keyTranslator[numTasto]);
 						break;
 				}
 				break;
@@ -1637,25 +1677,27 @@ uint8 GetEditFunction(void) {
 	return EditFunction;
 }
 
-void WriteSplitPoint(void) {
+void WriteSplitPoint(uint8 blnk) {
+	if(GetSplitPoint()<MIDI_FIRST_NOTE_61) {
+		SetSplitPoint(MIDI_FIRST_NOTE_61);
+	}
 	
-	char splitTextMessage[16];
 	uint8 note = (GetSplitPoint()-MIDI_FIRST_NOTE_61)%12;
 	uint8 len;
-	memset(splitTextMessage,'v',sizeof(splitTextMessage));
-	if(GetSplitPoint()) {
-		len=sprintf(splitTextMessage,"SPLIT:%s KY:%s%d","On ",
+	// memset(splitTextMessage,'v',sizeof(splitTextMessage));
+	
+	
+	len=sprintf(splitTextMessage,"SPLIT:%s KY:%s%d",
+		GetSplitMode()?"On ":"Off",\
 		noteNamearray[note],\
 		GetSplitPoint()/12);
-		if(len%2) { // se dispari aggiungo uno spazio
-			sprintf(splitTextMessage,"%s%s",splitTextMessage," ");
-		}
-	} else {
-		sprintf(splitTextMessage,"SPLIT:OFF KY:---");
+	
+	if(len%2) { // se dispari aggiungo uno spazio
+		sprintf(splitTextMessage,"%s%s",splitTextMessage," ");
 	}
 	
 	// DBG_PRINTF("%s %d\n",__func__,a);	
-	DisplayEditFunction(splitTextMessage,splitTextMessage,0,ROW_1);
+	DisplayEditFunction(splitTextMessage,splitBlinkMessage,blnk,ROW_1);
 	
 }
 /* [] END OF FILE */

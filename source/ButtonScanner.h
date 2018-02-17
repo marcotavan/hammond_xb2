@@ -165,6 +165,7 @@ enum parameters_t {
 	PARAMETER_0,
 	PARAMETER_1,
 	PARAMETER_2,
+	PARAMETER_3
 };
 
 uint8 GetButtonStatus(uint8 numTasto);

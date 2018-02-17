@@ -48,6 +48,7 @@ struct split_point {
 	uint8 point;
 	uint8 lowerMidiChannel;
 	uint8 upperMidiChannel;
+	uint8 mode;
 	uint8 getNote;
 };
 
@@ -65,6 +66,15 @@ uint8 GetSplitPoint(void) {
 	return split.point;	
 	// 0: no split point
 }
+
+void SetSplitMode(uint8 mode) {
+	split.mode = mode;	
+}
+
+uint8 GetSplitMode(void) {
+	return split.mode;	
+}
+
 struct key_t key[MAX_KEYS];
 
 double LOG_2 = 0;
@@ -127,12 +137,13 @@ void EventTrigger(uint8 event, uint8 numTasto, uint16 counter)
 	
 	if (split.getNote) { // flag per prendere la nota
 		split.point = play_note; // devo prendere lo splitPoint
+		split.mode = 1;
 		split.getNote = 0; // cancello il flag
 		SplitCallbackFunction(split.point); // ritorno
 	}
 	
-	if(split.point) { // se esiste uno split point
-		if (play_note < split.point ) { // sela nota e inferiore 
+	if(split.mode) { // se esiste uno split point
+		if (play_note < split.point ) { // se la nota e inferiore 
 			midiChannel = split.lowerMidiChannel; // si tratta di un basso
 		}
 	}
@@ -177,17 +188,20 @@ void KeyScanInit(void)
 	// init split point
 	split.marker = MARKER_MIDI;
 	split.point = 0; // 24 = C5
+	split.mode = 0;
 	split.upperMidiChannel = MIDI_CHANNEL_1;
 	split.lowerMidiChannel = MIDI_CHANNEL_2;
 	split.getNote = 0;
+	
+	#define splitParametersLen 5
 	
 	uint8 pdata[CYDEV_EEPROM_ROW_SIZE];
 	LoadMidiData(pdata);
 	if (pdata[0] == MARKER_MIDI) {
 		DBG_PRINTF("carico in struttura ");
-		DBG_PRINT_ARRAY(pdata,4);
+		DBG_PRINT_ARRAY(pdata,splitParametersLen);
 		DBG_PRINTF("\n");
-		memcpy((uint8 *) &split,pdata,4); 
+		memcpy((uint8 *) &split,pdata,splitParametersLen); 
 	}
 	
     // Init keys
