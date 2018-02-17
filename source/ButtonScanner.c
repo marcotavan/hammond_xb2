@@ -953,6 +953,7 @@ void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
 			switch (subMenuParameter) { // parametro da cambiare
 				
 				case PARAMETER_1:
+				/*
 					if(tasto == 0) { // on/off split point in base a tasto off
 						splitPoint = 0;
 					} else { // tasto on
@@ -963,11 +964,12 @@ void doAction(uint8 selectedFunction, uint8 subMenuParameter, uint8 tasto) {
 
 					// DBG_PRINTF("[%s] nel display va scritto: SPLIT>{%s}  KEY#:%d, (menu level 1), func:%d, par:%d\n",__func__,noteNamearray[(sp%12)],tasto,selectedFunction,subMenuParameter);
 					DBG_PRINTF("write eeprom immediatly\n");
+				*/
 				break;
 				
 				case PARAMETER_2:
 					DBG_PRINTF("[%s] press any key to split...\n",__func__);
-					SplitGetNote();
+					// SplitGetNote();
 				break;
 			}
 		break; // case FUNC_Split:
@@ -1687,8 +1689,9 @@ void WriteSplitPoint(uint8 blnk) {
 	// memset(splitTextMessage,'v',sizeof(splitTextMessage));
 	
 	
-	len=sprintf(splitTextMessage,"SPLIT:%s KY:%s%d",
+	len=sprintf(splitTextMessage,"SPLIT:%s KY%s%s%d",
 		GetSplitMode()?"On ":"Off",\
+		blnk?">":":",\
 		noteNamearray[note],\
 		GetSplitPoint()/12);
 	
