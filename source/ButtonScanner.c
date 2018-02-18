@@ -778,7 +778,7 @@ void EditModeExit(void) {
 	prevKey = 0;
 	Display_Alternate_Text(ROW_1,ALT_Edit_Exit); // non so cosa fa questo
 	DisplayEditFunction(NULL,NULL,0,ROW_1);
-	
+	SplitCallbackFunction(GetSplitPoint());
 	selectedFunction = 0;
 	menuLevel = MENU_LEVEL_0;
 	subMenuParameter = PARAMETER_0;
