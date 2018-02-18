@@ -1306,7 +1306,7 @@
     </Group>
     <Group key="3a6b7973-c7f9-4903-a9ee-48228d96b007">
       <Group key="0">
-        <Data key="Port Format" value="6,3" />
+        <Data key="Port Format" value="2,4" />
       </Group>
     </Group>
     <Group key="3b8ce73a-fa3b-4929-a2e2-542f3318aa1d">
@@ -1467,7 +1467,7 @@
     </Group>
     <Group key="418a1aa8-8be8-463e-b056-4913aba901b3">
       <Group key="0">
-        <Data key="Port Format" value="6,2" />
+        <Data key="Port Format" value="2,3" />
       </Group>
     </Group>
     <Group key="432ea994-f814-4e89-a60e-ba3c6c1ea6c7/ed092b9b-d398-4703-be89-cebf998501f6">
