@@ -79,6 +79,9 @@ uint8 sendMidiMessage(enum kMIDIType type,
 					  byte channel)
 {
     // static uint16 var3 = 0;
+	
+	
+	DBG_PRINTF("[%s] type:%02X data1:%02X data2:%02X channel:%02X\n",__func__,type,data1,data2,channel);
     static uint8 midiMsg[MIDI_MSG_SIZE];
     uint8 err = 0;
     
@@ -135,7 +138,7 @@ uint8 sendMidiMessage(enum kMIDIType type,
 		}
         else 
         {
-            // DBG_PRINTF("USB_2BYTE_COMMON\n");
+            DBG_PRINTF("USB_2BYTE_COMMON\n");
 			SendUartMidiOut(MIDI_2BYTE_COMMON, midiMsg);
 			
 			#if defined USB_MIDI_INTERFACE
